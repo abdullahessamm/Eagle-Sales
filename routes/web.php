@@ -13,6 +13,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/{params?}', function () {
+//     $view = view('errors.503');
+//     return response($view, 503);
+// })->where('params', '.*');
+
+if (env('APP_MAINTENANCE')) {
+    Route::get('/{params?}', function () {
+        $view = view('errors.503');
+        return response($view, 503);
+    })->where('params', '.*');
+} else {
+    Route::get('/', function () {
+        return view('welcome');
+    });
+}
