@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
             $table->smallInteger('created_by')->unsigned()->nullable();
             $table->foreign('created_by')->references('id')->on('back_office_users')->onDelete('set null');
-            $table->timestamp('created_at')->default(now());
+            $table->timestamp('created_at');
         });
     }
 

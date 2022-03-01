@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('email', 70)->unique()->nullable();
             $table->string('phone', 15)->unique()->nullable();
             $table->boolean('is_our_client')->default(false);
-            $table->timestamp('created_at')->default(now());
+            $table->timestamp('created_at');
         });
     }
 

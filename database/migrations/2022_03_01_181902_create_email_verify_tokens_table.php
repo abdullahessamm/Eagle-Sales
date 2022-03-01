@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('email_verify_tokens', function (Blueprint $table) {
             $table->bigInteger('user_id')->unsigned()->unique();
             $table->char('token', 40)->unique();
-            $table->timestamp('expires_at');
-            $table->timestamp('created_at')->default(now());
+            $table->timestamp('expires_at')->nullable();
+            $table->timestamp('created_at')->nullable();
         });
     }
 

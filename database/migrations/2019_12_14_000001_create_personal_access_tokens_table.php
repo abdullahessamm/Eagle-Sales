@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('device_ip', 15);
             $table->string('device_mac', 17)->nullable();
             $table->timestamp('expires_at')->nullable();
-            $table->timestamp('last_use')->default(now());
+            $table->timestamp('last_use')->nullable();
             $table->timestamps();
         });
     }

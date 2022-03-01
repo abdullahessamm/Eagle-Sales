@@ -18,7 +18,7 @@ return new class extends Migration
             $table->bigInteger('comment_id')->unsigned();
             $table->foreign('comment_id')->references('id')->on('order_comments')->onDelete('cascade');
             $table->string('comment');
-            $table->timestamp('created_at')->default(now());
+            $table->timestamp('created_at');
         });
     }
 

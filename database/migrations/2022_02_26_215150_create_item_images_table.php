@@ -19,7 +19,7 @@ return new class extends Migration
             $table->boolean('is_cover')->default(false);
             $table->bigInteger('item_id')->unsigned();
             $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
-            $table->timestamp('created_at')->default(now());
+            $table->timestamp('created_at');
         });
     }
 

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->boolean('notification_type')->default(0);
             $table->bigInteger('fired_by')->unsigned();
             $table->foreign('fired_by')->references('id')->on('users')->onDelete('cascade');
-            $table->timestamp('created_at')->default(now());
+            $table->timestamp('created_at');
         });
     }
 

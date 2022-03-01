@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('search_keywords', function (Blueprint $table) {
             $table->string('keyword', 50)->unique()->primary();
-            $table->timestamp('created_at')->default(now());
+            $table->timestamp('created_at');
         });
     }
 
