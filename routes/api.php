@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TestController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,10 +24,8 @@ if (env("APP_MAINTENANCE")) {
         return response()->json(['msg' => 'test msg'], 200);
     });
     
-    Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-        return $request->user();
-    });
-    
+    //Application routes
+    Route::any('/test', [App\Http\Controllers\TestController::class, 'index']);
     
     
     //Not found routes

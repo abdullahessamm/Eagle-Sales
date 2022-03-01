@@ -18,9 +18,27 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'f_name',
+        'l_name',
+        'avatar_uri',
+        'personal_id_uri',
         'email',
+        'country',
+        'city',
+        'username',
         'password',
+        'is_active',
+        'job',
+        'serial_code',
+        'remember_token',
+        'created_by',
+        'updated_by',
+        'is_approved',
+        'approved_by',
+        'approved_at',
+        'email_verified_at',
+        'last_seen',
+        'updated_at'
     ];
 
     /**
@@ -31,14 +49,5 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
     ];
 }

@@ -15,11 +15,15 @@ return new class extends Migration
     {
         Schema::create('personal_access_tokens', function (Blueprint $table) {
             $table->id();
-            $table->morphs('tokenable');
-            $table->string('name');
-            $table->string('token', 64)->unique();
-            $table->text('abilities')->nullable();
-            $table->timestamp('last_used_at')->nullable();
+            $table->bigInteger('user_id')->unsigned();
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->char('token', 50)->unique();
+            $table->char('serial', 40);
+            $table->string('user_agent');
+            $table->string('device_ip', 15);
+            $table->string('device_mac', 17)->nullable();
+            $table->timestamp('expires_at')->nullable();
+            $table->timestamp('last_use')->default(now());
             $table->timestamps();
         });
     }
