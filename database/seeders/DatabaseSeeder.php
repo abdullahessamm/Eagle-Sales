@@ -34,8 +34,8 @@ class DatabaseSeeder extends Seeder
             User::create([
                 'f_name'            => $names[$i],
                 'l_name'            => $reversedNames[$i],
-                'email'             => "user_$i@gmail.com",
-                'username'          => "user_$i",
+                'email'             => "user_" . $i + 1 . "@gmail.com",
+                'username'          => "user_" . $i + 1,
                 'password'          => \Hash::make('password'),
                 'is_active'         => true,
                 'country'           => 'SA',

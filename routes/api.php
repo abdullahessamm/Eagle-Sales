@@ -20,14 +20,23 @@ if (env("APP_MAINTENANCE")) {
         return response()->json(['msg' => 'server under maintenance mode'], 503);
     })->where('params', '.*');
 } else {
-    Route::get('/test', function () {
-        return response()->json(['msg' => 'test msg'], 200);
+    //Application routes
+    Route::middleware(['guest'])->group(function () {
+        Route::post('/login', [App\Http\Controllers\AuthController::class, 'login']);
+        Route::get('/auth/{serialAccessToken}', [App\Http\Controllers\AuthController::class, 'getSerial']);
     });
     
-    //Application routes
-    Route::any('/test', [App\Http\Controllers\TestController::class, 'index']);
     
     
+    //testing
+    Route::get('/my-token', function() {
+        if (cache()->has(request()->bearerToken())) {
+            $cachedValue = cache()->get(request()->bearerToken());
+            return $cachedValue;
+        }
+        return auth()->user();
+    })->middleware('auth');
+
     //Not found routes
     Route::any('/{params?}', function () {
         return response()->json(['msg' => 'Not Found'], 404);

@@ -18,11 +18,13 @@ return new class extends Migration
             $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
             $table->char('token', 50)->unique();
+            $table->string('serial_access_token', 50)->unique();
             $table->char('serial', 40);
             $table->string('user_agent');
             $table->string('device_ip', 15);
             $table->string('device_mac', 17)->nullable();
             $table->timestamp('expires_at')->nullable();
+            $table->timestamp('serial_access_token_expires_at')->nullable();
             $table->timestamp('last_use')->nullable();
             $table->timestamps();
         });

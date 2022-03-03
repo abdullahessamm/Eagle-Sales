@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => 'api',
         'passwords' => 'users',
     ],
 
@@ -39,6 +39,12 @@ return [
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
+        ],
+        'api' => [
+            'driver'   => 'token',
+            'input_key' => 'token',
+            'storage_key' => 'token',
+            'provider' => 'access_tokens'
         ],
     ],
 
@@ -65,10 +71,11 @@ return [
             'model' => App\Models\User::class,
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'access_tokens' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\PersonalAccessToken::class
+        ]
+
     ],
 
     /*
