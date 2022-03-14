@@ -24,9 +24,9 @@ return new class extends Migration
             $table->string('city', 10);
             $table->string('username', 80)->unique();
             $table->char('password', 60);
-            $table->boolean('is_active');
-            $table->tinyInteger('job');
-            $table->char('serial_code')->unique();
+            $table->boolean('is_active')->default(true);
+            $table->tinyInteger('job')->unsigned();
+            $table->char('serial_code', 50)->unique();
             $table->rememberToken();
             $table->bigInteger('created_by')->nullable()->unsigned();
             $table->foreign('created_by')->references('id')->on('users');

@@ -14,18 +14,18 @@ return new class extends Migration
     public function up()
     {
         Schema::create('permissions', function (Blueprint $table) {
-            $table->smallInteger('backoffice_user_id')->unsigned();
+            $table->smallInteger('backoffice_user_id')->unsigned()->unique();
             $table->foreign('backoffice_user_id')->references('id')->on('back_office_users');
-            $table->tinyInteger('suppliers_access_level')->unsigned();
-            $table->tinyInteger('customers_access_level')->unsigned();
-            $table->tinyInteger('sellers_access_level')->unsigned();
-            $table->tinyInteger('categorys_access_level')->unsigned();
-            $table->tinyInteger('items_access_level')->unsigned();
-            $table->tinyInteger('backoffice_emps_access_level')->unsigned();
-            $table->tinyInteger('orders_access_level')->unsigned();
-            $table->tinyInteger('commissions_access_level')->unsigned();
-            $table->tinyInteger('journey_plan_access_level')->unsigned();
-            $table->tinyInteger('pricelists_access_level')->unsigned();
+            $table->char('suppliers_access_level', 4)->default('0000');
+            $table->char('customers_access_level', 4)->default('0000');
+            $table->char('sellers_access_level', 4)->default('0000');
+            $table->char('categorys_access_level', 4)->default('0000');
+            $table->char('items_access_level', 4)->default('0000');
+            $table->char('backoffice_emps_access_level', 4)->default('0000');
+            $table->char('orders_access_level', 4)->default('0000');
+            $table->char('commissions_access_level', 4)->default('0000');
+            $table->char('journey_plan_access_level', 4)->default('0000');
+            $table->char('pricelists_access_level', 4)->default('0000');
             $table->boolean('app_config_access');
         });
     }

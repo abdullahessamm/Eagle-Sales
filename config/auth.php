@@ -72,7 +72,7 @@ return [
         ],
 
         'access_tokens' => [
-            'driver' => 'eloquent',
+            'driver' => 'cache-token',
             'model' => App\Models\PersonalAccessToken::class
         ]
 

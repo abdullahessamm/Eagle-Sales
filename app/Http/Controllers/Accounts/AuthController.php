@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Accounts;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use \Str;
 use App\Models\PersonalAccessToken;
 use App\Models\User;
-use Illuminate\Support\Facades\Cache;
 
 class AuthController extends Controller
 {
@@ -80,7 +80,6 @@ class AuthController extends Controller
         ];
 
         $generatedToken = PersonalAccessToken::create($token); //create the token!
-        Cache::put($token['token'], $generatedToken, now()->addDays(2)); //cache token
         return $generatedToken;
     }
 
@@ -141,13 +140,11 @@ class AuthController extends Controller
         ]);
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
-        $token = $request->bearerToken();
-        $tokenRecord = PersonalAccessToken::where('token', $token);
+        $tokenRecord = PersonalAccessToken::where('token', auth()->user()['token']);
         $tokenRecord->delete();
-        cache()->forget($token);
-        
+
         return response()->json(['success' => true]);
     }
 

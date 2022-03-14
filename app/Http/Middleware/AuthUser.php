@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Events\CacheExpired;
 use App\Models\PersonalAccessToken;
 use Closure;
 use Illuminate\Http\Request;
@@ -25,30 +24,19 @@ class AuthUser
      */
     public function handle(Request $request, Closure $next)
     {
-        $token = $request->bearerToken();
+        $token = auth()->user();
         
-        if (is_null($token))
+        if (! $token)
             return $this->unauthRsponse;
 
-        if (! cache()->has($token)) {
-            $this->tokenRecord = auth()->user();
-            if (! $this->tokenRecord)
-                return $this->unauthRsponse;
-            
-            event(new CacheExpired('token', 'regenerate', [
-                'key' => $token,
-                'val' => $this->tokenRecord
-            ]));
-        } else $this->tokenRecord = cache()->get($token);
+        $this->tokenRecord = $token;
         
         if (
             ! $this->checkSerial() ||
             ! $this->checkMAC()
         )
         {
-            return response()->json(['enterd']);
-            PersonalAccessToken::where('id', $this->tokenRecord['id'])->delete();
-            cache()->forget($token);
+            PersonalAccessToken::where('id', $this->tokenRecord['id'])->first()->delete();
             return $this->unauthRsponse;
         }
         

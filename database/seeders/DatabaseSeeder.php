@@ -2,12 +2,12 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use \App\Models\User;
+// use Database\Seeders\Accounts\UserSeeder as AccountsUserSeeder;
 
 class DatabaseSeeder extends Seeder
 {
+
     /**
      * Seed the application's database.
      *
@@ -15,34 +15,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $names = [
-            'Ahmed',
-            'Ali',
-            'Abdullah',
-            'Salah',
-            'Sameh',
-            'Mohamed',
-            'Abdulrahman',
-            'Mahmoud',
-            'Tamer',
-            'Ehab'
-        ];
-
-        $reversedNames = array_reverse($names);
-
-        for($i=0; $i<10; $i++) {
-            User::create([
-                'f_name'            => $names[$i],
-                'l_name'            => $reversedNames[$i],
-                'email'             => "user_" . $i + 1 . "@gmail.com",
-                'username'          => "user_" . $i + 1,
-                'password'          => \Hash::make('password'),
-                'is_active'         => true,
-                'country'           => 'SA',
-                'city'              => 'Gadda',
-                'job'               => $i <= 3 ? $i : 0,
-                'serial_code'       => $i . \Str::random(19)
-            ]);
-        }
+        $this->call([
+            Accounts\UserSeeder::class,
+            Accounts\SupplierSeeder::class,
+            Accounts\AdminSeeder::class,
+            Accounts\PermissionSeeder::class,
+        ]);
     }
 }

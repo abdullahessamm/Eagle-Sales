@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('l2_address_ar')->unique()->nullable();
             $table->string('location_coords', 50)->unique()->nullable();
             $table->string('vat_no', 20)->unique();
+            $table->float('credit_limit', 12, 2)->nullable();
             $table->tinyInteger('category_id')->unsigned();
             $table->foreign('category_id')->references('id')->on('customer_categories');
             $table->float('shop_space', 6, 2)->nullable();

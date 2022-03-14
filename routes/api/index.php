@@ -1,7 +1,5 @@
 <?php
 
-use App\Http\Controllers\TestController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,21 +18,14 @@ if (env("APP_MAINTENANCE")) {
         return response()->json(['msg' => 'server under maintenance mode'], 503);
     })->where('params', '.*');
 } else {
-    //Application routes
-    Route::middleware(['guest'])->group(function () {
-        Route::post('/login', [App\Http\Controllers\AuthController::class, 'login']);
-        Route::get('/auth/{serialAccessToken}', [App\Http\Controllers\AuthController::class, 'getSerial']);
-    });
+    //Accounts routes
+    Route::prefix('/')->group(__DIR__ . '/Accounts/index.php');
     
     
     
     //testing
     Route::get('/my-token', function() {
-        if (cache()->has(request()->bearerToken())) {
-            $cachedValue = cache()->get(request()->bearerToken());
-            return $cachedValue;
-        }
-        return auth()->user();
+        return request()->user();
     })->middleware('auth');
 
     //Not found routes

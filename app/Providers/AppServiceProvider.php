@@ -2,6 +2,18 @@
 
 namespace App\Providers;
 
+use App\Models\AttackAttempt;
+use App\Models\BackOfficeUser;
+use App\Models\BlockedIp;
+use App\Models\Permission;
+use App\Models\PersonalAccessToken;
+use App\Models\User;
+use App\Observers\AttackObserver;
+use App\Observers\BackofficeUserObserver;
+use App\Observers\BlockedIpObserver;
+use App\Observers\PermissionsObserver;
+use App\Observers\TokenObserver;
+use App\Observers\UserObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +35,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        PersonalAccessToken::observe(TokenObserver::class);
+        User::observe(UserObserver::class);
+        BackOfficeUser::observe(BackofficeUserObserver::class);
+        Permission::observe(PermissionsObserver::class);
+        AttackAttempt::observe(AttackObserver::class);
+        BlockedIp::observe(BlockedIpObserver::class);
     }
 }
