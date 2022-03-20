@@ -141,6 +141,8 @@ class AuthController extends Controller
         $tokenRecord = PersonalAccessToken::where('token', auth()->user()['token'])->where('serial', auth()->user()['serial']);
         $tokenRecord->delete();
 
+        cache()->forget(auth()->user()['token']);
+
         return response()->json(['success' => true]);
     }
 
