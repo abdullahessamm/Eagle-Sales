@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-if (env("APP_MAINTENANCE")) {
+if (env("API_MAINTENANCE")) {
     Route::any('/{params?}', function () {
         return response()->json(['msg' => 'server under maintenance mode'], 503);
     })->where('params', '.*');
