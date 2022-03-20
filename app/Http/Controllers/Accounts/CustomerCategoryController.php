@@ -23,8 +23,8 @@ class CustomerCategoryController extends Controller
             throw new \App\Exceptions\ForbiddenException;
 
         $validation = Validator::make($request->all(), [
-            'category_name' => 'required|regex:/^[a-zA-Z]{20}$/',
-            'category_name_ar' => ['required', new ArabicLetters, 'min:20', 'max:20']
+            'category_name' => 'required|regex:/^[a-zA-Z]{3,20}$/',
+            'category_name_ar' => ['required', new ArabicLetters, 'min:3', 'max:20']
         ]);
 
         if ($validation->fails())
@@ -112,8 +112,8 @@ class CustomerCategoryController extends Controller
     {
         $validation = Validator::make($request->all(), [
             'id' => 'required|regex:/^[0-9]+$/',
-            'category_name' => 'required_without:category_name_ar|regex:/^[a-zA-Z]{20}$/',
-            'category_name_ar' => ['required_without:category_name', new ArabicLetters]
+            'category_name' => 'required_without:category_name_ar|regex:/^[a-zA-Z]{3,20}$/',
+            'category_name_ar' => ['required_without:category_name', new ArabicLetters, 'min:3', 'max:20']
         ]);
 
         if ($validation->fails())
