@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('customer_categories', function (Blueprint $table) {
             $table->tinyInteger('id', true, true);
             $table->string('category_name', 20)->unique();
+            $table->string('category_name_ar', 20)->unique();
             $table->timestamps();
         });
     }

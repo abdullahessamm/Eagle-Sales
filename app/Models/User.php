@@ -12,6 +12,12 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    const SUPPLIER_JOB_NUMBER = 0;
+    const HIERD_SELLER_JOB_NUMBER = 1;
+    const FREELANCER_SELLER_JOB_NUMBER = 2;
+    const CUSTOMER_JOB_NUMBER = 3;
+    const ADMIN_JOB_NUMBER = 4;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -76,8 +82,8 @@ class User extends Authenticatable
                 break;
         }
         
-        $serialFirstPart = $userLetter . '_' . $this->id . '|';
-        $this->serial_code = $serialFirstPart . \Str::random(50 - strlen($serialFirstPart));
+        $serialFirstPart = $userLetter . (string) $this->id . '_';
+        $this->serial_code = $serialFirstPart . \Str::random(25 - strlen($serialFirstPart));
 
         try {
             $this->save();

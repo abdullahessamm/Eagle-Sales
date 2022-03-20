@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Middleware\Permissions\Sellers;
+namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
 
-class CreateSellerMiddleware
+class ApprovedUser
 {
     /**
      * Handle an incoming request.
@@ -16,14 +16,9 @@ class CreateSellerMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $userData = auth()->user()->userData;
-        $permissions = $userData->userInfo->permissions;
-        $permissionsOnSellers = $permissions->sellers_access_level;
-        $creatable = substr($permissionsOnSellers, 0, 1);
-
-        if ($creatable)
+        if ((bool) auth()->user()->userData->is_approved)
             return $next($request);
-
-        throw new \App\Exceptions\ForbiddenException();
+        else
+            throw new \App\Exceptions\ForbiddenException();
     }
 }

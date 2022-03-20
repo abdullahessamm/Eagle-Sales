@@ -21,7 +21,7 @@ class DBException extends Exception
             'device_name' => 'server',
             'type' => QueryException::class,
             'code' => $this->e->getCode(),
-            'message' => $this->e->message
+            'message' => $this->e->getMessage()
         ]);
     }
 

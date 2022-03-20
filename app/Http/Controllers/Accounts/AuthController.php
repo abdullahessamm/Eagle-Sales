@@ -95,23 +95,19 @@ class AuthController extends Controller
 
     /**
      * 
-     * Error code will be `0`, `1` or `2` describes as following
-     * `0` if account in under review and not accepted.
-     * `1` if account denied by admins
-     * `2` if account banned
+     * Error code will be `0`, `1` describes as following
+     * `0` if account denied by admins.
+     * `1` if account banned
      */
     private function responseToNotActiveUser()
     {
         $errorCode = null;
         
-        if ($this->user->is_approved === null) // pending approvals
+        if ($this->user->is_approved === 0) //account denied
             $errorCode = 0;
         
-        if ($this->user->is_approved === 0) //account denied
-            $errorCode = 1;
-        
         if (! $this->user->is_active) //account banned
-            $errorCode = 2;
+            $errorCode = 1;
 
         return response()->json([
             'success'   => false,
@@ -142,7 +138,7 @@ class AuthController extends Controller
 
     public function logout()
     {
-        $tokenRecord = PersonalAccessToken::where('token', auth()->user()['token']);
+        $tokenRecord = PersonalAccessToken::where('token', auth()->user()['token'])->where('serial', auth()->user()['serial']);
         $tokenRecord->delete();
 
         return response()->json(['success' => true]);

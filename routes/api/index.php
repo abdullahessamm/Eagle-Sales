@@ -30,6 +30,6 @@ if (env("APP_MAINTENANCE")) {
 
     //Not found routes
     Route::any('/{params?}', function () {
-        return response()->json(['msg' => 'Not Found'], 404);
+        return response()->json(['msg' => 'Route not found'], 404);
     })->where('params', '.*');
 }

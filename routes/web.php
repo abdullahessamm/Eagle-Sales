@@ -29,5 +29,6 @@ if (env('APP_MAINTENANCE')) {
     });
 
     Route::get('/verify-mail/{userID}', [App\Http\Controllers\MailController::class, 'verifyMail'])
-        ->where('userID', '^\d+$');
+        ->where('userID', '^\d+$')->name('verify mail');
+        
 }

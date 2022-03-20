@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string('phone', 15)->unique();
             $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->char('verify_code', 6);
+            $table->char('verify_code', 6)->nullable();
+            $table->boolean('is_primary')->default(false);
             $table->timestamp('verify_code_expires_at')->nullable();
             $table->timestamp('verified_at')->nullable();
             $table->timestamps();

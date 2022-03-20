@@ -31,7 +31,7 @@ class EmailVerifyToken extends Model
             return static::create([
                 'user_id'    => $user_id,
                 'token'      => "$user_id|" . \Str::random(39 - strlen($user_id)),
-                'expires_at' => now()->addHour(),
+                'expires_at' => now()->addDay(),
                 'created_at' => now()
             ]);
         } catch (QueryException $e) {

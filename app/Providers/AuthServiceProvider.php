@@ -3,9 +3,15 @@
 namespace App\Providers;
 
 use App\Auth\CacheTokenProvider;
+use App\Models\BackOfficeUser;
+use App\Models\Customer;
+use App\Models\Seller;
+use App\Models\Supplier;
+use App\Policies\BackOfficeUserPolicy;
+use App\Policies\CustomerPolicy;
+use App\Policies\SellerPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -15,7 +21,10 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        // 'App\Models\Model' => 'App\Policies\ModelPolicy',
+        BackOfficeUser::class => BackOfficeUserPolicy::class,
+        Supplier::class       => SupplierPolicy::class,
+        Seller::class         => SellerPolicy::class,
+        Customer::class       => CustomerPolicy::class
     ];
 
     /**

@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             Accounts\SupplierSeeder::class,
             Accounts\AdminSeeder::class,
             Accounts\PermissionSeeder::class,
+            AppConfigSeeder::class,
         ]);
     }
 }

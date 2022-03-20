@@ -18,17 +18,16 @@ class RejectRequestsFromBlockedIps
     public function handle(Request $request, Closure $next)
     {
         $requestIP = $request->ip();
-        $blockedResponse = response()->json(['success' => false, 'msg' => 'Your ip \'' . $requestIP . '\' has been blocked'], 403);
-        
+                
         if (cache()->has('blocked_ips')) {
             $blocked_ips = cache()->get('blocked_ips');
             
             if (in_array($requestIP, $blocked_ips))
-                return $blockedResponse;
+                throw new \App\Exceptions\ForbiddenException;
         }
 
         if (BlockedIp::where('ip', $requestIP)->first())
-            return $blockedResponse;
+            throw new \App\Exceptions\ForbiddenException;
         
         return $next($request);
     }

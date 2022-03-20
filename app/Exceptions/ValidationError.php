@@ -22,5 +22,7 @@ class ValidationError extends Exception
                 'success' => false,
                 'errors' => $this->errors
             ], 400);
+
+        return response()->json(['success' => false], 400);
     }
 }

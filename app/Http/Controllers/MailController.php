@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\EmailVerified;
 use App\Models\EmailVerifyToken;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -28,7 +29,7 @@ class MailController extends Controller
         $user->save();
         $token->delete();
 
-        //event here
+        // TODO fire event and broadcast it
 
         return response('Email Vrified!');
     }
