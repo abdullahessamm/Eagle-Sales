@@ -138,7 +138,6 @@ class AuthController extends Controller
 
     public function logout()
     {
-        return 'logout';
         $tokenRecord = PersonalAccessToken::where('token', auth()->user()['token'])->where('serial', auth()->user()['serial']);
         $tokenRecord->delete();
 
