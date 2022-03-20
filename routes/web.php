@@ -25,7 +25,7 @@ if (env('APP_MAINTENANCE')) {
     })->where('params', '.*');
 } else {
     Route::get('/', function () {
-        return view('welcome');
+        return view('errors.503');
     });
 
     Route::get('/verify-mail/{userID}', [App\Http\Controllers\MailController::class, 'verifyMail'])

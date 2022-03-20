@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="{{url('images/logo_bg.png')}}">
+    <link rel="icon" href="{{url('images/Logo.png')}}">
     <title>{{env('APP_NAME')}} | 503</title>
 </head>
 <style>
@@ -50,7 +50,7 @@
 <body>
     <div class="company">
         <div class="logo">
-            <img src="{{url('images/logo.png')}}" alt="logo" draggable="false">
+            <img src="{{url('images/Logo1.png')}}" alt="logo" draggable="false">
         </div>
         <h4> Eagle sales </h4>
     </div>
