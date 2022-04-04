@@ -7,6 +7,6 @@
     <title>{{ env('APP_NAME') }}</title>
 </head>
 <body>
-    Hello
+    {{ public_path() }}
 </body>
 </html>

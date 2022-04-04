@@ -26,7 +26,7 @@ if (env('APP_MAINTENANCE')) {
     })->where('params', '.*');
 } else {
     Route::get('/', function () {
-        return view('errors.503');
+        return view('welcome');
     });
 
     // Route::get('/test/{id}', [UserUpdater::class, 'changePassword']);
