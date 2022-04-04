@@ -59,6 +59,9 @@ class SellerPolicy
      */
     public function create(User $user)
     {
+        if ($user->job !== User::ADMIN_JOB_NUMBER)
+            return false;
+        
         $userPermissions = $user->userInfo->permissions;
         $createSellerPermission = (bool) substr($userPermissions->sellers_access_level, 0, 1);
         return $createSellerPermission;
@@ -86,6 +89,27 @@ class SellerPolicy
 
         if ($user->job === User::HIERD_SELLER_JOB_NUMBER ||
             $user->job === User::FREELANCER_SELLER_JOB_NUMBER
-        ) return $user->userInfo->id === $seller->id;
+        )
+        {
+            $userAccount = $seller->getUser();
+            if ($userAccount->is_approved)
+                return false;
+            return $user->userInfo->id === $seller->id;
+        }
+    }
+
+    public function ban(User $user)
+    {
+        if ($user->job !== User::ADMIN_JOB_NUMBER)
+            return false;
+        
+        $userPermissions = $user->userInfo->permissions;
+        $createSellerPermission = (bool) substr($userPermissions->sellers_access_level, 2, 1);
+        return $createSellerPermission;
+    }
+
+    public function approve(User $user)
+    {
+        return $this->ban($user);
     }
 }

@@ -32,14 +32,14 @@ class RegisterController extends Controller
     private function userCreator(Request $request, bool $createdByAdmin = false)
     {
         $rules = [
-            'f_name'    => 'required|regex:/^[a-zA-Z]+$/|min:2|max:50',
-            'f_name_ar' => ['required', 'min:2', 'max:50', new ArabicLetters],
-            'l_name'    => 'required|regex:/^[a-zA-Z]+$/|min:2|max:50',
-            'l_name_ar' => ['required', 'min:2', 'max:50', new ArabicLetters],
-            'email'     => 'required|email|max:255|unique:users,email',
+            'f_name'    => 'required|regex:/^[a-zA-Z]+$/|min:2|max:20',
+            'f_name_ar' => ['required', 'min:2', 'max:20', new ArabicLetters],
+            'l_name'    => 'required|regex:/^[a-zA-Z]+$/|min:2|max:20',
+            'l_name_ar' => ['required', 'min:2', 'max:20', new ArabicLetters],
+            'email'     => 'required|email|max:50|unique:users,email',
             'phone'     => 'required|regex:/^\+[0-9]{11,14}$/|unique:phones,phone',
-            'username'  => 'required|regex:/^\w[\w\.]+$/|min:5|max:80|unique:users,username',
-            'password'  => 'required|min:8|max:255|regex:/^[\w\d\D\W]+$/',
+            'username'  => 'required|regex:/^\w[\w\.]+$/|min:4|max:50|unique:users,username',
+            'password'  => 'required|min:8|max:80|regex:/^[\w\d\D\W]+$/',
             'country'   => 'required|regex:/^[A-Z]{2}$/',
             'city'      => 'required|string|min:3|max:10'
         ];
@@ -125,11 +125,11 @@ class RegisterController extends Controller
             'whatsapp_no'      => 'required|regex:/^\+966[0-9]{8,11}$/|unique:suppliers,whatsapp_no',
             'fb_page'          => 'regex:/^(https?:\/\/)?(www\.)?(m\.)?(fb)?(facebook)?(\.com)(\/[\w\D]+\/?)+$/|unique:suppliers,fb_page',
             'website_domain'   => 'regex:/^(https?:\/\/)?(([\da-z])+\.)?[\d\w\-]+\.[a-z]{2,3}$/|unique:suppliers,website_domain',
-            'location_coords'  => 'regex:/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/',
-            'l1_address'       => 'required|regex:/^[a-zA-Z\d]+[\w\d\ \-]+$/|min:4|max:255',
-            'l1_address_ar'    => ['required', new ArabicLettersWithSpaces, 'min:4', 'max:255'],
-            'l2_address'       => 'regex:/^[a-zA-Z\d]+[\w\d\ \-]+$/|min:4|max:255',
-            'l2_address_ar'    => [new ArabicLettersWithSpaces, 'min:4', 'max:255'],
+            'location_coords'  => 'regex:/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/|unique:suppliers,location_coords',
+            'l1_address'       => 'required|regex:/^[a-zA-Z\d]+[\w\d\ \-]+$/|min:4|max:255|unique:suppliers,l1_address',
+            'l1_address_ar'    => ['required', new ArabicLettersWithSpaces, 'min:4', 'max:255', 'unique:suppliers,l1_address_ar'],
+            'l2_address'       => 'regex:/^[a-zA-Z\d]+[\w\d\ \-]+$/|min:4|max:255|unique:suppliers,l2_address',
+            'l2_address_ar'    => [new ArabicLettersWithSpaces, 'min:4', 'max:255', 'unique:suppliers,l2_address_ar'],
         ];
 
         $validation = Validator::make($request->all(), $rules);
@@ -178,7 +178,7 @@ class RegisterController extends Controller
     private function registerSeller(bool $isFreelancer, Request $request)
     {
         $rules = [
-            'age'                 => 'required|regex:/^[0-9]{2,3}$/',
+            'age'                 => 'required|integer|between:16,100',
             'education'           => 'required|string|min:4|max:255',
             'l1_address'          => 'required|regex:/^[a-zA-Z\d]+[\w\d\ \-]+$/|min:4|max:255',
             'l1_address_ar'       => ['required', new ArabicLettersWithSpaces, 'min:4', 'max:255'],

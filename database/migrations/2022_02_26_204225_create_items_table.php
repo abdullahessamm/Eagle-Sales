@@ -15,21 +15,26 @@ return new class extends Migration
     {
         Schema::create('items', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('ar_name');
-            $table->tinyInteger('category_id')->unsigned();
+            $table->string('name', 50);
+            $table->string('ar_name', 50);
+            $table->smallInteger('category_id')->unsigned();
             $table->foreign('category_id')->references('id')->on('inventory_categories')->onDelete('cascade');
+            $table->string('brand', 50);
+            $table->string('ar_brand', 50);
             $table->string('barcode', 64)->unique()->nullable();
             $table->string('keywards');
-            $table->string('description', 255);
-            $table->string('ar_description', 255);
+            $table->mediumText('description');
+            $table->mediumText('ar_description');
             $table->boolean('has_promotions')->default(false);
             $table->boolean('is_var')->default(false);
             $table->boolean('is_available')->default(true);
-            $table->smallInteger('total_available_count')->nullable();
-            $table->boolean('is_approved')->default(false);
+            $table->smallInteger('total_available_count')->unsigned();
+            $table->boolean('is_approved')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->string('video_uri', 100)->nullable();
             $table->mediumInteger('supplier_id')->unsigned();
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
+            $table->float('price', 8, 2)->unsigned();
             $table->timestamps();
         });
     }

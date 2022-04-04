@@ -25,7 +25,7 @@ class PermissionSeeder extends Seeder
                 'suppliers_access_level' => $i === 0 ? '1111' : '0110',
                 'customers_access_level' => $i === 0 ? '1111' : '0110',
                 'sellers_access_level' => $i === 0 ? '1111' : '0110',
-                'categorys_access_level' => $i === 0 ? '1111' : '0110',
+                'categories_access_level' => $i === 0 ? '1111' : '0110',
                 'items_access_level' => $i === 0 ? '1111' : '0110',
                 'backoffice_emps_access_level' => $i === 0 ? '1111' : '0110',
                 'orders_access_level' => $i === 0 ? '1111' : '0110',

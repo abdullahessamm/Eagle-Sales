@@ -21,6 +21,8 @@ class CacheTokenProvider extends EloquentUserProvider
         // return auth user if cache expired
         $query = $this->createModel();
         $query = $query->where('token', $credentials['token']);
-        return $query->first();
+        if ($user = $query->first())
+            return $query->first()->withFullUserData();
+        return null;
     }
 }

@@ -82,4 +82,19 @@ class SupplierPolicy
         if ($user->job === User::SUPPLIER_JOB_NUMBER)
             return $user->userInfo->id === $supplier->id;
     }
+
+    public function ban(User $user)
+    {
+        if ($user->job !== User::ADMIN_JOB_NUMBER)
+            return false;
+        
+        $userPermissions = $user->userInfo->permissions;
+        $updateSupplierPermission = (bool) substr($userPermissions->suppliers_access_level, 2, 1);
+        return $updateSupplierPermission;
+    }
+
+    public function approve(User $user)
+    {
+        return $this->ban($user);
+    }
 }

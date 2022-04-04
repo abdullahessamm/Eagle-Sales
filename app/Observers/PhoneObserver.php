@@ -2,7 +2,6 @@
 
 namespace App\Observers;
 
-use App\Http\Controllers\PhoneController;
 use App\Models\Phone;
 
 class PhoneObserver
@@ -16,6 +15,6 @@ class PhoneObserver
      */
     public function created(Phone $phone)
     {
-        PhoneController::sendCode($phone);
+        $phone->sendVerifyCode();
     }
 }

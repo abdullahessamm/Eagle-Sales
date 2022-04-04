@@ -33,5 +33,14 @@ class PersonalAccessToken extends Model
         return $this->belongsTo(User::class, 'user_id', 'id')->first();
     }
 
-    
+    public function withFullUserData()
+    {
+        $this->userData = $this->getUser()->withFullInfo();
+        return $this;
+    }
+
+    public function getFullUserData()
+    {
+        return $this->getUser()->withFullInfo();
+    }
 }

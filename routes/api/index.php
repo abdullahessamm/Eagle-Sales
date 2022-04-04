@@ -8,9 +8,10 @@ if (env("API_MAINTENANCE")) {
     })->where('params', '.*');
 } else {
     //Accounts routes
-    Route::prefix('/')->group(__DIR__ . '/Accounts/index.php');
+    Route::prefix('/accounts')->group(__DIR__ . '/Accounts/index.php');
     
-    
+    //Items routes
+    Route::prefix('/items')->group(__DIR__ . '/Items/index.php');
     
     //testing
     Route::get('/my-token', function() {

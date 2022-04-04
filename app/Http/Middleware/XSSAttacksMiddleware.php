@@ -19,8 +19,9 @@ class XSSAttacksMiddleware
         $pattern = '/<.+>.*< *\/.+>/';
         $data = $request->all();
         foreach ($data as $key => $val) {
-            if (preg_match($pattern, $val))
-                throw new \App\Exceptions\XSSAttackAttempt();
+            if (is_string($val))
+                if (preg_match($pattern, $val))
+                    throw new \App\Exceptions\XSSAttackAttempt();
         }
         return $next($request);
     }

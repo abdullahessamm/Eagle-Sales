@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('app_configs', function (Blueprint $table) {
             $table->smallInteger('id', true, true);
-            $table->string('key', 50)->unique();
+            $table->string('key', 80)->unique();
             $table->string('value');
             $table->smallInteger('updated_by')->unsigned()->nullable();
             $table->foreign('updated_by')->references('id')->on('back_office_users')->onDelete('set null');

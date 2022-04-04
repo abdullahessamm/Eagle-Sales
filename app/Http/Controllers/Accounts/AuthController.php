@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use \Str;
 use App\Models\PersonalAccessToken;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 
 class AuthController extends Controller
 {
@@ -127,13 +128,29 @@ class AuthController extends Controller
             return response()->json(['success' => false], 404);
         
         if (! $tokenRecord->serial_access_token_expires_at->isFuture())
+        {
             return response()->json(['success' => false], 410);
+        }
+
+        $tokenRecord->serial_access_token_expires_at = now();
+
+        try {
+            $tokenRecord->save();
+        } catch (QueryException $e) {
+            throw new \App\Exceptions\DBException($e);
+        }
         
         return response()->json([
             'success' => true,
             'token'   => $tokenRecord->token,
-            'serial'  => $tokenRecord->serial
+            'serial'  => $tokenRecord->serial,
+            'user'    => $tokenRecord->getFullUserData(),
         ]);
+    }
+
+    public function getAuthedUserInfo()
+    {
+        return response()->json(['success'=> true, "user" => auth()->user()->userData]);
     }
 
     public function logout()

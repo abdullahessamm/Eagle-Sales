@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class UomConversionRule extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'uom_id',
+        'factor',
+        'operation_is_multiply',
+    ];
 }

@@ -2,8 +2,13 @@
 
 namespace App\Providers;
 
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
+use App\Events\Accounts\UserHasBeenBanned;
+use App\Events\Accounts\UserHasBeenReactivated;
+use App\Events\Items\ItemApprovalResponse;
+use App\Listeners\Accounts\DeactivateItemsForBannedSupplier;
+use App\Listeners\Accounts\ReactivateItemsForReactivatedSupplier;
+use App\Listeners\Items\SendMailToSupplier;
+use App\Listeners\Items\SendSmsToSupplier;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
 
@@ -15,7 +20,17 @@ class EventServiceProvider extends ServiceProvider
      * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
-        
+        UserHasBeenBanned::class => [
+            DeactivateItemsForBannedSupplier::class,
+        ],
+
+        UserHasBeenReactivated::class => [
+            ReactivateItemsForReactivatedSupplier::class
+        ],
+        ItemApprovalResponse::class => [
+            SendMailToSupplier::class,
+            SendSmsToSupplier::class
+        ],
     ];
 
     /**

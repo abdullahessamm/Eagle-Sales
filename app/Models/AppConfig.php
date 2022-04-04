@@ -13,4 +13,8 @@ class AppConfig extends Model
     protected $fillable = [
         'key', 'value', 'updated_by', 'updated_at'
     ];
+
+    protected $dates = [
+        'updated_at'
+    ];
 }

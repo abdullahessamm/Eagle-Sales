@@ -15,16 +15,16 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('f_name', 50);
-            $table->string('f_name_ar', 50);
-            $table->string('l_name', 50);
-            $table->string('l_name_ar', 50);
+            $table->string('f_name', 20);
+            $table->string('f_name_ar', 20);
+            $table->string('l_name', 20);
+            $table->string('l_name_ar', 20);
             $table->string('avatar_uri', 255)->nullable();
             $table->string('personal_id_uri', 255)->nullable();
-            $table->string('email')->unique();
+            $table->string('email', 50)->unique();
             $table->char('country', 2);
             $table->string('city', 10);
-            $table->string('username', 80)->unique();
+            $table->string('username', 50)->unique();
             $table->char('password', 60);
             $table->boolean('is_active')->default(true);
             $table->tinyInteger('job')->unsigned();

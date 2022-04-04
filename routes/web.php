@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Accounts\UserUpdater;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,6 +28,8 @@ if (env('APP_MAINTENANCE')) {
     Route::get('/', function () {
         return view('errors.503');
     });
+
+    // Route::get('/test/{id}', [UserUpdater::class, 'changePassword']);
 
     Route::get('/verify-mail/{userID}', [App\Http\Controllers\MailController::class, 'verifyMail'])
         ->where('userID', '^\d+$')->name('verify mail');

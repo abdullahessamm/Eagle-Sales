@@ -2,11 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Events\Accounts\UserHasBeenBanned;
+use App\Events\Accounts\UserHasBeenReactivated;
+use App\Events\UserHasBeenApproved;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Mail\Mailable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Mail;
+use Symfony\Component\Mailer\Exception\TransportException;
 
 class User extends Authenticatable
 {
@@ -55,7 +60,22 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'created_by',
+        'updated_by',
+        'approved_by',
+        'personal_id_uri',
     ];
+
+    public function getFullName()
+    {
+        return strtolower(ucfirst($this->f_name)) . ' ' . strtolower(ucfirst($this->l_name));
+    }
+
+    public function showHiddens()
+    {
+        $this->makeVisible(['created_by', 'updated_by', 'approved_by', 'personal_id_uri']);
+        return $this;
+    }
 
     public function generateSerialCode(): bool
     {
@@ -94,6 +114,26 @@ class User extends Authenticatable
         }
     }
 
+    public function accessTokens()
+    {
+        return $this->hasMany(PersonalAccessToken::class, 'user_id', 'id');
+    }
+
+    public function getAccessTokens()
+    {
+        return $this->accessTokens()->get()->all();
+    }
+
+    public function deleteAccessTokens()
+    {
+        try {
+            $this->accessTokens()->delete();
+            return true;
+        } catch (QueryException $e) {
+            throw new \App\Exceptions\DBException($e);
+        }
+    }
+
     public function withFullInfo()
     {
         $model = null;
@@ -124,5 +164,95 @@ class User extends Authenticatable
         if ($this->userInfo instanceof BackOfficeUser)
             $this->userInfo->withPermissions();
         return $this;
+    }
+
+    // get related phones
+    public function phones()
+    {
+        return $this->hasMany(Phone::class, 'user_id', 'id');
+    }
+
+    //get primary phone
+    public function getPrimaryPhone()
+    {
+        return $this->phones()->where('is_primary', true)->first();
+    }
+
+    public function getPhones()
+    {
+        return $this->phones()->get()->all();
+    }
+
+    public function withPhones()
+    {
+        $this->phones = $this->getPhones();
+        return $this;
+    }
+
+    public function sendSms(string $message, string $phone=null)
+    {
+        // search for specific phone if provided else get primary phone
+        if ($phone) {
+            $phone = $this->phones()->where('phone', $phone)->first();
+            if (!$phone)
+                throw new \App\Exceptions\NotFoundException(Phone::class, $phone);
+        } else $phone = $this->getPrimaryPhone();
+
+        // send sms to phone
+        $phone->sendSms($message);
+    }
+
+    public function sendMail(Mailable $mail)
+    {
+        try {
+            Mail::to($this->email)->send($mail);
+        } catch (TransportException $e) {
+            throw new \App\Exceptions\InternalError($e);
+        }
+    }
+
+    public function banUser()
+    {
+        $this->is_active = false;
+        $tokens = $this->getAccessTokens();
+        foreach ($tokens as $token)
+            cache()->forget($token->token);
+
+        $this->deleteAccessTokens();
+
+        try {
+            $this->save();
+            event(new UserHasBeenBanned($this));
+            return true;
+        } catch (QueryException $e) {
+            throw new \App\Exceptions\DBException($e);
+        }
+    }
+
+    public function reactivateUser()
+    {
+        $this->is_active = true;
+        try {
+            $this->save();
+            event(new UserHasBeenReactivated($this));
+            return true;
+        } catch (QueryException $e) {
+            throw new \App\Exceptions\DBException($e);
+        }
+    }
+
+    public function approve(bool $approved=true)
+    {
+        $this->is_approved = $approved;
+        $this->approved_by = auth()->user()->userData->id;
+        $this->approved_at = now();
+        
+        try {
+            $this->save();
+            event(new UserHasBeenApproved($this));
+            return true;
+        } catch (QueryException $e) {
+            throw new \App\Exceptions\DBException($e);
+        }
     }
 }

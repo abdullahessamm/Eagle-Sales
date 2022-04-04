@@ -24,8 +24,8 @@ return new class extends Migration
             $table->boolean('is_discount')->default(true);
             $table->boolean('has_promocodes')->default(false);
             $table->tinyInteger('conditional_quantity');
-            $table->tinyInteger('number_of free_elements')->nullable();
-            $table->smallInteger('amount_of_discount')->nullable();
+            $table->tinyInteger('number_of_free_elements')->nullable();
+            $table->float('amount_of_discount', 10, 2)->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

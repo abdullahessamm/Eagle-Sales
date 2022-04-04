@@ -10,33 +10,6 @@ use Illuminate\Support\Facades\Validator;
 class PhoneController extends Controller
 {
 
-    public static function sendCode(Phone $phone)
-    {
-        $sid = env('TWILIO_SID') ?? false;
-        $token = env('TWILIO_TOKEN') ?? false;
-        $twilioPhone = env('TWILIO_PHONE') ?? false;
-
-        if (! $sid || ! $token || ! $phone)
-            return;
-
-        $client = new \Twilio\Rest\Client($sid, $token);
-        
-        try {
-            $msg = $client->messages->create($phone->phone, [
-                'from' => $twilioPhone,
-                'body' => 'Your activate code is ' . $phone->verify_code,
-            ]);
-        } catch (\Twilio\Exceptions\RestException $e) {
-            InternalError::create([
-                'platform' => 0,
-                'device_name' => 'server',
-                'type' => get_class($e),
-                'code' => $e->getCode(),
-                'message' => $e->getMessage()
-            ]);
-        }
-    }
-
     public function confirm(Request $request)
     {
         $validation = Validator::make($request->all(), [
@@ -77,16 +50,13 @@ class PhoneController extends Controller
 
         $phone = Phone::where('phone', $request->get('phone'))->first();
 
-        if (! $phone)
-            return response()->json(['success' => false], 404);
-
         if ($phone->verified_at)
             return response()->json(['success' => false], 400);
 
         if ((int) $phone->user_id !== (int) auth()->user()->userData->id)
             throw new \App\Exceptions\ForbiddenException;
 
-        $this->sendCode($phone);
+        $phone->sendVerifyCode();
 
         return response()->json(['success'=>true]);
     }

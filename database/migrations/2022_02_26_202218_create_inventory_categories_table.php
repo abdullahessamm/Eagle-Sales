@@ -14,14 +14,17 @@ return new class extends Migration
     public function up()
     {
         Schema::create('inventory_categories', function (Blueprint $table) {
-            $table->tinyInteger('id', true, true);
-            $table->string('uri_prefix', 50);
+            $table->smallInteger('id', true, true);
+            $table->string('uri_prefix', 50)->nullable();
             $table->string('category_name', 20)->unique();
+            $table->string('category_name_ar', 20)->unique();
             $table->string('description')->nullable();
             $table->string('description_ar')->nullable();
+            $table->smallInteger('parent_category_id')->unsigned()->nullable();
+            $table->foreign('parent_category_id')->references('id')->on('inventory_categories')->onDelete('cascade');
             $table->bigInteger('created_by')->unsigned();
             $table->foreign('created_by')->references('id')->on('users');
-            $table->bigInteger('updated_by')->unsigned();
+            $table->bigInteger('updated_by')->unsigned()->nullable();
             $table->foreign('updated_by')->references('id')->on('users');
             $table->timestamps();
         });

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('set null');
             $table->integer('customer_id')->unsigned()->nullable();
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('set null');
-            $table->enum('state', [0, 1, 2, 3, 4])->default(0);
+            $table->enum('state', [0, 1, 2, 3, 4, 5])->default(1);
             $table->float('required', 12, 2)->unsigned();
             $table->float('tax', 3, 1)->unsigned()->default(0);
             $table->float('discount', 3, 1)->unsigned()->default(0);
@@ -28,8 +28,8 @@ return new class extends Migration
             $table->timestamp('credit_limit')->nullable();
             $table->float('deposit', 12, 2)->nullable();
             $table->float('remaining', 12, 2)->nullable();
-            $table->bigInteger('created_by')->unsigned()->nullable();
-            $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
+            $table->Integer('created_by')->unsigned()->nullable();
+            $table->foreign('created_by')->references('id')->on('sellers')->onDelete('set null');
             $table->bigInteger('updated_by')->unsigned()->nullable();
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('set null');
             $table->timestamps();

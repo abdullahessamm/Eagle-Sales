@@ -9,8 +9,9 @@ class TokenObserver
     
     private function cacheUserInfo(PersonalAccessToken $personalAccessToken)
     {
-        $personalAccessToken->userData = $personalAccessToken->getUser()->withFullInfo();
-        cache()->put($personalAccessToken->token, $personalAccessToken, now()->addDays(2));
+        $clonedToken = clone $personalAccessToken;
+        $clonedToken->userData = $clonedToken->getUser()->withFullInfo();
+        cache()->put($clonedToken->token, $clonedToken, now()->addDays(2));
     }
 
     /**
