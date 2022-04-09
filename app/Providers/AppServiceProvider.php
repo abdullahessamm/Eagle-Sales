@@ -30,13 +30,7 @@ class AppServiceProvider extends ServiceProvider
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     *
-     * @return void
-     */
-    public function boot()
-    {
+    private function registerObservers() {
         PersonalAccessToken::observe(TokenObserver::class);
         User::observe(UserObserver::class);
         BackOfficeUser::observe(BackofficeUserObserver::class);
@@ -44,5 +38,15 @@ class AppServiceProvider extends ServiceProvider
         AttackAttempt::observe(AttackObserver::class);
         BlockedIp::observe(BlockedIpObserver::class);
         Phone::observe(PhoneObserver::class);
+    }
+
+    /**
+     * Bootstrap any application services.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        $this->registerObservers();
     }
 }

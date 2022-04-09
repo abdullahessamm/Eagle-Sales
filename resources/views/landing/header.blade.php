@@ -11,21 +11,29 @@
           <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav m-auto">
+          <ul class="navbar-nav m-auto" dir="{{app()->currentLocale() == 'en' ? 'ltr' : 'rtl'}}">
               <li class="nav-item active mr-3 ml-3">
-                  <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                  <a class="nav-link under-line" href="#">{{__('landing.header.links.home')}} <span class="sr-only">(current)</span></a>
               </li>
               <li class="nav-item mr-3 ml-3">
-                  <a class="nav-link" href="#">Services</a>
+                  <a class="nav-link under-line" href="#">{{__('landing.header.links.services')}}</a>
               </li>
               <li class="nav-item mr-3 ml-3">
-                  <a class="nav-link" href="#">How app works</a>
+                  <a class="nav-link under-line" href="#">{{__('landing.header.links.how_app_works')}}</a>
               </li>
               <li class="nav-item mr-3 ml-3">
-                  <a class="nav-link" href="#">Contact</a>
+                <a class="nav-link under-line" href="#">{{__('landing.header.links.store')}}</a>
               </li>
-              <li class="nav-item mr-3 ml-3">
-                  <a class="nav-link" href="#">Store</a>
+              <li class="nav-item position-relative mr-3 ml-3" id="lang">
+                  <a class="nav-link" href="#">{{__('landing.header.links.language')}}</a>
+                  <div class="drop-down">
+                      @if (app()->currentLocale() == 'ar')
+                        <a href="{{ url('/lang/en') }}">English</a>
+                      @endif
+                      @if (app()->currentLocale() == 'en')
+                        <a href="{{ url('/lang/ar') }}">العربية</a>
+                      @endif
+                  </div>
               </li>
           </ul>
           <form class="form-inline position-absolute">
@@ -46,11 +54,11 @@
         <div class="row h-100">
             <!-- Header left side -->
             <div class="col-12 col-md-6">
-                <div class="left-side d-flex flex-column justify-content-center align-items-center h-100">
+                <div class="left-side d-flex flex-column justify-content-center align-items-center h-100"  dir="{{ app()->currentLocale() == 'en' ? 'ltr' : 'rtl'}}">
                     <p class="title pr-4 pl-4 pb-3 text-center mb-5">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere quibusdam veniam, inventore aperiam, placeat minus nihil libero assumenda voluptatibus eos voluptatum! Possimus alias, esse doloremque dolorem ad expedita! Deserunt, vero?
+                        {{__('landing.header.short_discription')}}
                     </p>
-                    <a class="button" href="#"> <span>GET STARTED</span> </a>
+                    <a class="button {{app()->currentLocale() == 'ar' ? 'arabic' : ''}}" href="#"> <span>{{__('landing.header.get_started')}}</span> </a>
                 </div>
             </div>
             <!-- Header Right side -->
@@ -543,7 +551,6 @@
                     <path class="k" d="M422.94,319.88a4.77,4.77,0,1,1-4.77-4.62A4.69,4.69,0,0,1,422.94,319.88Z" />
                     <path class="c" d="M441.93,319.88a4.77,4.77,0,1,1-4.77-4.62A4.7,4.7,0,0,1,441.93,319.88Z" />
                     <path class="c" d="M460.05,319.88a4.77,4.77,0,1,1-4.76-4.62A4.69,4.69,0,0,1,460.05,319.88Z" />
-                    <rect class="c" x="219.73" y="306.16" width="140.32" height="14.07" />
                     <rect class="d" x="231.05" y="356.16" width="81.09" height="70.74" />
                     <rect class="d" x="405.75" y="354.89" width="68.37" height="68.37" />
                     <rect class="d" x="562.55" y="352.79" width="72.58" height="72.58" />
@@ -598,7 +605,7 @@
                     <path class="c" d="M566.25,293a2.76,2.76,0,0,1-3.47-1.52l-20.52-48.07a2.78,2.78,0,0,1,1.46-3.64,2.67,2.67,0,0,1,3.64,1.46l20.52,48.07a2.78,2.78,0,0,1-1.46,3.64A.58.58,0,0,1,566.25,293Z" />
                     <path class="c" d="M593.79,283.19l-.15.05a2.77,2.77,0,0,1-3.43-1.89L575.5,231.22a2.67,2.67,0,0,1,1.88-3.44,2.76,2.76,0,0,1,3.43,1.88l14.71,50.14A2.77,2.77,0,0,1,593.79,283.19Z" />
                     <path class="c" d="M530,278.16a2.77,2.77,0,0,1-1.87-5.21l83.82-30.68h0a2.77,2.77,0,0,1,1.88,5.22L530,278.16Z" />
-                    <text class="u" transform="translate(219.73 290.55) scale(1.22 1)">S A L E</text>
+                    <text class="u" transform="translate(189.73 290.55) scale(1.22 1)">Eagle Sales</text>
                     <path class="f" d="M771.52,640.68s-8.65.5-9.34,2c0,0-.12,6.37,6,12.78l-1.21,2.6v4.25c2.84-5.52,6-14,6-14S773.13,642.43,771.52,640.68Z" />
                     <g class="n">
                       <path d="M771.21,641.24s-3,7.84-1.17,13.48C770,654.72,774.19,647.8,771.21,641.24Z" />

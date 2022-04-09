@@ -8,12 +8,14 @@
             </div>
 
             <div class="col-12 col-md-8">
-                <div class="text-center right-side">
-                    <h3 class="section-title mb-5 mt-3"> About us </h3>
+                <div class="text-center right-side" dir="{{ app()->currentLocale() == 'en' ? 'ltr' : 'rtl'}}">
+                    <h3 class="section-title mb-5 mt-3"> {{__('landing.about.about_us')}} </h3>
                     <p class="section-paragraph">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Cumque esse ullam ratione laboriosam possimus alias, ducimus voluptatibus nulla eum iste at. Iste sequi quas itaque. Impedit aliquid reprehenderit eum ratione!
+                        {{__('landing.about.about_us_text')}}
                     </p>
-                    <div class="button">See More</div>
+                    <div class="button">
+                        {{__('landing.about.see_more')}}
+                    </div>
                 </div>
             </div>
         </div>

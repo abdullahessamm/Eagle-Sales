@@ -14,6 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// set default language
+if (!session()->has('lang')) {
+    session()->put('lang', 'en');
+}
+
 // Route::get('/{params?}', function () {
 //     $view = view('errors.503');
 //     return response($view, 503);
@@ -26,8 +31,14 @@ if (env('APP_MAINTENANCE')) {
     })->where('params', '.*');
 } else {
     Route::get('/', function () {
+        app()->setLocale(session()->get('lang'));
         return view('welcome');
-    });
+    })->name('welcome');
+
+    Route::get('/lang/{lang}', function ($lang) {
+        session()->put('lang', $lang);
+        return redirect()->back();
+    })->where('lang', 'en|ar|in');
 
     // Route::get('/test/{id}', [UserUpdater::class, 'changePassword']);
 

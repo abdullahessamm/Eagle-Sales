@@ -3,17 +3,22 @@
         <div class="row">
             <div class="col-12">
                 <div class="title mb-5">
-                    <h3 class="section-title text-center">How App Works</h3>
+                    <h3 class="section-title text-center">{{__('landing.how_app_works.title')}}</h3>
                 </div>
             </div>
         </div>
         <div class="row mt-5 mb-5">
             <div class="col-6">
-                <h4 class="section-subtitle mb-4"> If you are <span> supplier </span> </h4>
-                <p>
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Beatae, ullam voluptas. Natus minus nisi vel quasi, sapiente voluptates accusamus reprehenderit unde, cumque fugit at dolorum itaque asperiores reiciendis tenetur maxime.
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Beatae, ullam voluptas. Natus minus nisi vel quasi, sapiente voluptates accusamus reprehenderit unde, cumque fugit at dolorum itaque asperiores reiciendis tenetur maxime.
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Beatae, ullam voluptas. Natus minus nisi vel quasi, sapiente voluptates accusamus reprehenderit unde, cumque fugit at dolorum itaque asperiores reiciendis tenetur maxime.
+                <h4
+                    class="section-subtitle mb-4 {{app()->currentLocale() == 'en' ? 'text-left' : 'text-right'}}"
+                >
+                    {{__('landing.how_app_works.cond')}} <span> {{__('landing.how_app_works.supplier.title')}} </span>
+                </h4>
+                <p 
+                    dir="{{app()->currentLocale() == 'en' ? 'ltr' : 'rtl'}}"
+                    class="{{app()->currentLocale() == 'en' ? 'text-left' : 'text-right'}}"
+                >
+                    {{__('landing.how_app_works.supplier.text')}}
                 </p>
             </div>
             <div class="col-6 text-right">
@@ -25,21 +30,31 @@
                 <img src="{{ url('assets/images/landing/avatar/seller.svg') }}" alt="Avatar">
             </div>
             <div class="col-6">
-                <h4 class="section-subtitle mb-4"> If you are <span> seller </span> </h4>
-                <p>
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Beatae, ullam voluptas. Natus minus nisi vel quasi, sapiente voluptates accusamus reprehenderit unde, cumque fugit at dolorum itaque asperiores reiciendis tenetur maxime.
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Beatae, ullam voluptas. Natus minus nisi vel quasi, sapiente voluptates accusamus reprehenderit unde, cumque fugit at dolorum itaque asperiores reiciendis tenetur maxime.
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Beatae, ullam voluptas. Natus minus nisi vel quasi, sapiente voluptates accusamus reprehenderit unde, cumque fugit at dolorum itaque asperiores reiciendis tenetur maxime.
+                <h4
+                    class="section-subtitle mb-4 {{app()->currentLocale() == 'en' ? 'text-left' : 'text-right'}}"
+                >
+                    {{__('landing.how_app_works.cond')}} <span> {{__('landing.how_app_works.seller.title')}} </span>
+                </h4>
+                <p 
+                    dir="{{app()->currentLocale() == 'en' ? 'ltr' : 'rtl'}}"
+                    class="{{app()->currentLocale() == 'en' ? 'text-left' : 'text-right'}}"
+                >
+                    {{__('landing.how_app_works.seller.text')}}
                 </p>
             </div>
         </div>
         <div class="row mt-5 mb-5">
             <div class="col-6">
-                <h4 class="section-subtitle mb-4"> If you are <span> customer </span> </h4>
-                <p>
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Beatae, ullam voluptas. Natus minus nisi vel quasi, sapiente voluptates accusamus reprehenderit unde, cumque fugit at dolorum itaque asperiores reiciendis tenetur maxime.
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Beatae, ullam voluptas. Natus minus nisi vel quasi, sapiente voluptates accusamus reprehenderit unde, cumque fugit at dolorum itaque asperiores reiciendis tenetur maxime.
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Beatae, ullam voluptas. Natus minus nisi vel quasi, sapiente voluptates accusamus reprehenderit unde, cumque fugit at dolorum itaque asperiores reiciendis tenetur maxime.
+                <h4
+                    class="section-subtitle mb-4 {{app()->currentLocale() == 'en' ? 'text-left' : 'text-right'}}"
+                >
+                    {{__('landing.how_app_works.cond')}} <span> {{__('landing.how_app_works.customer.title')}} </span>
+                </h4>
+                <p 
+                    dir="{{app()->currentLocale() == 'en' ? 'ltr' : 'rtl'}}"
+                    class="{{app()->currentLocale() == 'en' ? 'text-left' : 'text-right'}}"
+                >
+                    {{__('landing.how_app_works.customer.text')}}
                 </p>
             </div>
             <div class="col-6 text-right">
