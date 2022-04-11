@@ -6,8 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{{ env('APP_NAME') }}</title>
     <link rel="icon" href="{{ asset('assets/images/logo/icon.png') }}">
-    <!-- link to bootstrap cdn -->
-    <link rel="stylesheet" href="{{ asset('assets/css/lib/bootstrap.css') }}">
+    <!-- link to bootstrap -->
+    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.css') }}">
+    <!-- link to fontawesome -->
+    <link rel="stylesheet" href="{{ asset('assets/css/fontawesome.css') }}">
     <!-- link to landing page style -->
     <link rel="stylesheet" href="{{ asset('assets/css/landing.css') }}">
 </head>
@@ -17,6 +19,9 @@
 
     <!--- Header -->
     @include('landing.header')
+
+    <!--- Mobile navigator -->
+    @include('landing.mobile_nav')
 
     <!-- About -->
     @include('landing.about')

@@ -1,31 +1,29 @@
-<header>
+<header class="d-flex flex-column">
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg" id="navigation-bar">
-      <a class="navbar-brand position-absolute d-none d-md-block" href="{{ url('/') }}">
+      <a class="navbar-brand position-absolute d-block" href="{{ url('/') }}">
           <img src="{{ asset('assets/images/logo/brand.png') }}" alt="logo" width="160" height="40">
-      </a>
-      <a class="navbar-brand position-absolute d-block d-md-none" href="{{ url('/') }}">
-        <img src="{{ asset('assets/images/logo/white_sm.png') }}" alt="logo" width="50" height="37">
       </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
       </button>
+      <div id="mobile-menu-btn" class="d-flex d-md-none justify-content-center align-items-center"><i class="fa-solid fa-bars"></i></div>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav m-auto" dir="{{app()->currentLocale() == 'en' ? 'ltr' : 'rtl'}}">
-              <li class="nav-item active mr-3 ml-3">
-                  <a class="nav-link under-line" href="#">{{__('landing.header.links.home')}} <span class="sr-only">(current)</span></a>
+              <li class="nav-item active mr-2 ml-2">
+                  <a class="nav-link under-line" href="#"><i class="fa-solid fa-house"></i> {{__('landing.header.links.home')}} <span class="sr-only">(current)</span></a>
               </li>
-              <li class="nav-item mr-3 ml-3">
-                  <a class="nav-link under-line" href="#">{{__('landing.header.links.services')}}</a>
+              <li class="nav-item mr-2 ml-2">
+                  <a class="nav-link under-line" href="#"><i class="fa-solid fa-gears"></i> {{__('landing.header.links.services')}}</a>
               </li>
-              <li class="nav-item mr-3 ml-3">
-                  <a class="nav-link under-line" href="#">{{__('landing.header.links.how_app_works')}}</a>
+              <li class="nav-item mr-2 ml-2">
+                  <a class="nav-link under-line" href="#"><i class="fa-solid fa-mobile-screen-button"></i> {{__('landing.header.links.how_app_works')}}</a>
               </li>
-              <li class="nav-item mr-3 ml-3">
-                <a class="nav-link under-line" href="#">{{__('landing.header.links.store')}}</a>
+              <li class="nav-item mr-2 ml-2">
+                <a class="nav-link under-line" href="#"><i class="fa-solid fa-store"></i> {{__('landing.header.links.store')}}</a>
               </li>
-              <li class="nav-item position-relative mr-3 ml-3" id="lang">
-                  <a class="nav-link" href="#">{{__('landing.header.links.language')}}</a>
+              <li class="nav-item position-relative mr-2 ml-2" id="lang">
+                  <a class="nav-link" href="#" disabled="disabled"><i class="fa-solid fa-earth-americas"></i> {{__('landing.header.links.language')}}</a>
                   <div class="drop-down">
                       @if (app()->currentLocale() == 'ar')
                         <a href="{{ url('/lang/en') }}">English</a>
@@ -37,8 +35,8 @@
               </li>
           </ul>
           <form class="form-inline position-absolute">
-              <button class="btn btn-sm mr-2 login" type="button">LOGIN</button>
-              <button class="btn btn-sm signup" type="button">SIGN UP</button>
+              <button class="btn btn-sm mr-2 login" type="button"><i class="fa-solid fa-arrow-right-to-bracket"></i> {{__('landing.header.links.login')}}</button>
+              <button class="btn btn-sm signup" type="button"><i class="fa-solid fa-user-plus"></i> {{__('landing.header.links.signup')}}</button>
           </form>
       </div>
     </nav>
@@ -53,19 +51,19 @@
     <div class="header-content container-fluid h-73">
         <div class="row h-100">
             <!-- Header left side -->
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-6 order-2 order-md-0">
                 <div class="left-side d-flex flex-column justify-content-center align-items-center h-100"  dir="{{ app()->currentLocale() == 'en' ? 'ltr' : 'rtl'}}">
-                    <p class="title pr-4 pl-4 pb-3 text-center mb-5">
+                    <p class="title pr-4 pl-4 pb-3 text-center mb-5 {{ app()->currentLocale() == 'en' ? 'left-text' : 'right-text'}}">
                         {{__('landing.header.short_discription')}}
                     </p>
                     <a class="button {{app()->currentLocale() == 'ar' ? 'arabic' : ''}}" href="#"> <span>{{__('landing.header.get_started')}}</span> </a>
                 </div>
             </div>
             <!-- Header Right side -->
-            <div class="col-6 d-none d-md-block">
+            <div class="col-12 col-md-6 d-block">
                 <div class="right-side">
                      <!-- start avatars svg -->
-                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-200 -300 1252.5 1000">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-94 -200 1252.5 1000">
                     <defs>
                       <style>
                         .a {

@@ -1,13 +1,13 @@
 <div id="dev-msg" class="d-flex position-fixed w-100 h-100">
     <div id="content" class="content">
         <div class="head">
-            <h5 class="text-center pb-3 pt-1">Message</h5>
+            <h5 class="text-center pb-3 pt-1">{{ __('landing.dev_msg.title') }}</h5>
         </div>
-        <div class="body">
+        <div class="body" dir={{ app()->currentLocale() == 'en' ? 'ltr' : 'rtl'}}>
             <p class="description">
-                "This site is under development, so this view is not final view"
+                {{ __('landing.dev_msg.msg') }}
             </p>
-            <div id="confirm" class="button text-center">Okay! (<span id="timer">20</span>)</div>
+            <div id="confirm" class="button text-center"> {{ __('landing.dev_msg.btn') }} (<span id="timer">20</span>)</div>
         </div>
     </div>
 </div>

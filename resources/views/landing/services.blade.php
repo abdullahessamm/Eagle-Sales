@@ -12,40 +12,40 @@
                         <img src="{{url('assets/images/landing/icons/services/online_sales.png')}}" alt="online sales">
                     </div>
                     <h5 class="title"> {{__('landing.services.online_sales.title')}} </h5>
-                    <p class="mobile-description d-block d-md-none">
+                    <p class="mobile-description d-block d-md-none  {{app()->currentLocale() == 'en' ? 'text-left' : 'text-right'}}">
                         {{__('landing.services.online_sales.text')}}
                     </p>
                 </div>
             </div>
             <div class="col-12 col-md-3">
-                <div class="service text-center h-100">
+                <div class="service text-center h-100  mt-4 mt-md-0">
                     <div class="img-container">
                         <img src="{{url('assets/images/landing/icons/services/direct_sales.png')}}" alt="Direct Sales">
                     </div>
                     <h5 class="title"> {{__('landing.services.direct_sales.title')}} </h5>
-                    <p class="mobile-description d-block d-md-none">
+                    <p class="mobile-description d-block d-md-none  {{app()->currentLocale() == 'en' ? 'text-left' : 'text-right'}}">
                         {{__('landing.services.direct_sales.text')}}
                     </p>
                 </div>
             </div>
             <div class="col-12 col-md-3">
-                <div class="service text-center h-100">
+                <div class="service text-center h-100  mt-4 mt-md-0">
                     <div class="img-container">
                         <img src="{{url('assets/images/landing/icons/services/digital_marketing.png')}}" alt="digital marketing">
                     </div>
                     <h5 class="title"> {{__('landing.services.digital_marketing.title')}} </h5>
-                    <p class="mobile-description d-block d-md-none">
+                    <p class="mobile-description d-block d-md-none  {{app()->currentLocale() == 'en' ? 'text-left' : 'text-right'}}">
                         {{__('landing.services.digital_marketing.text')}}
                     </p>
                 </div>
             </div>
             <div class="col-12 col-md-3">
-                <div class="service text-center h-100">
+                <div class="service text-center h-100  mt-4 mt-md-0">
                     <div class="img-container">
                         <img src="{{url('assets/images/landing/icons/services/analystics.png')}}" alt="Sales & Market Analytics">
                     </div>
                     <h5 class="title"> {{__('landing.services.analystics.title')}} </h5>
-                    <p class="mobile-description d-block d-md-none">
+                    <p class="mobile-description d-block d-md-none  {{app()->currentLocale() == 'en' ? 'text-left' : 'text-right'}}">
                         {{__('landing.services.analystics.text')}}
                     </p>
                 </div>

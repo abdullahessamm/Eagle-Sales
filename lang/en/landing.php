@@ -1,6 +1,11 @@
 <?php
 
 return [
+    'dev_msg' => [
+        'title' => 'Message from developer',
+        'msg' => '"This site is under development, so this view is not final view"',
+        'btn' => 'Close',
+    ],
     'header' => [
         'links' => [
             'home'          => 'Home',
