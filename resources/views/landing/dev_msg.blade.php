@@ -1,13 +1,24 @@
 <div id="dev-msg" class="d-flex position-fixed w-100 h-100">
     <div id="content" class="content">
         <div class="head">
-            <h5 class="text-center pb-3 pt-1">{{ __('landing.dev_msg.title') }}</h5>
+            <h5 class="text-center pb-3 pt-1"> Message from developer </h5>
         </div>
-        <div class="body" dir={{ app()->currentLocale() == 'en' ? 'ltr' : 'rtl'}}>
+        <div class="body">
             <p class="description">
-                {{ __('landing.dev_msg.msg') }}
+                <b> New update arrived: </b>
+                <ul>
+                    <li> Vue applications has been initialized and ready for implementation </li>
+                    <li> Login page is ready to use except change the language </li>
+                </ul>
+                
+                <b> Features under development now: </b>
+                <ul>
+                    <li> Change the language in login page will be available in a few hours </li>
+                    <li> Signup page with google maps to get and search current user location coords with it </li>
+                    <li> Password reset system for users who have forgotten their passwords </li>
+                </ul>
             </p>
-            <div id="confirm" class="button text-center"> {{ __('landing.dev_msg.btn') }} (<span id="timer">20</span>)</div>
+            <div id="confirm" class="button text-center"> Close </div>
         </div>
     </div>
 </div>
@@ -49,32 +60,17 @@
 <script type="text/javascript">
     // on load, collect dev message, content, confirm button and timer
     window.onload = function() {
-        var devMsg = document.getElementById('dev-msg');
         var confirm = document.getElementById('confirm');
-        var timer = document.getElementById('timer');
-
-        var timerCounter = function () {
-            var time = parseInt(timer.innerHTML);
-            time--;
-            timer.innerHTML = time;
-            if (time == 0) {
-                removeElement('dev-msg');
-            }
-        };
 
         function removeElement(elementId) {
             // Removes an element from the document
             var element = document.getElementById(elementId);
             element.parentNode.removeChild(element);
-            clearInterval(timerInterval);
         }
 
         // if confirm button is clicked, remove dev message
         confirm.onclick = function() {
             removeElement('dev-msg')
         }
-
-        // if dev message is not removed, decrease timer
-         var timerInterval = setInterval(timerCounter, 1000);
     }
 </script>

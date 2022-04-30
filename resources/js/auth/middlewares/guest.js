@@ -7,34 +7,23 @@ export default async (to, from, next) => {
     if (user == null) {
         store.commit('TOGGLE_LOADING_STATE')
         next()
-        return;
+        return
     }
 
     const userJob = user.job;
-    switch (userJob) {
-        case 0:
-            window.location.href = window.suppliersDashboardUrl;
-            break;
 
-        case 1:
-            window.location.href = 'sellers-app';
-            break;
+    if (userJob === '0')
+        window.location.href = window.suppliersDashboardUrl;
 
-        case 2:
-            window.location.href = 'sellers-app';
-            break;
+    if (userJob === '1' || userJob === '2') 
+        window.location.href = 'sellers-app';
+        
+    if (userJob === '3' || userJob === '5')
+    window.location.href = window.customersDashboardUrl;
 
-        case 3:
-            window.location.href = window.customersDashboardUrl;
-            break;
+    if (userJob === '4')
+        window.location.href = window.adminsDashboardUrl;
 
-        case 4:
-            window.location.href = window.adminsDashboardUrl;
-            break;
-
-        case 5:
-            window.location.href = window.customersDashboardUrl;
-            break;
-    }
+    next();
     return;
 }

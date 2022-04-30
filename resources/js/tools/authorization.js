@@ -20,6 +20,7 @@ export async function user()
           .get(`/accounts/me?token=${accessInfo.token}&serial=${accessInfo.serial}`, { baseURL: window.location.apiUrl })
           .then(res => {
               user = res.data.user;
+              user.job = user.job.toString();
           })
           .catch(err => {
               // if response state code is 401, remove access info and return null
