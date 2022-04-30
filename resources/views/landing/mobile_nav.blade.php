@@ -53,12 +53,12 @@
             <div class="row">
                 <div class="col-6">
                     <div class="login {{app()->currentLocale() == 'en' ? 'text-right' : 'text-left'}}">
-                        <a class="d-inline-block" href="#"><i class="fa-solid fa-user"></i> {{__('landing.header.links.login')}}</a>
+                        <a class="d-inline-block" href="{{ url('/auth#/login') }}"><i class="fa-solid fa-user"></i> {{__('landing.header.links.login')}}</a>
                     </div>
                 </div>
                 <div class="col-6">
                     <div class="signup {{app()->currentLocale() == 'en' ? 'text-left' : 'text-right'}}">
-                        <a class="d-inline-block" href="#"><i class="fa-solid fa-user-plus"></i> {{__('landing.header.links.signup')}}</a>
+                        <a class="d-inline-block" href="{{ url('/auth#/signup') }}"><i class="fa-solid fa-user-plus"></i> {{__('landing.header.links.signup')}}</a>
                     </div>
                 </div>
             </div>
