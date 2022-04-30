@@ -44,7 +44,6 @@
     <!-- footer -->
     @include('landing.footer')
 
-    <!-- bootstrap script cdn -->
     <script src="{{ asset('assets/js/jQuery.js') }}"></script>
     <script src="{{ asset('assets/js/popper.js') }}"></script>
     <script src="{{ asset('assets/js/bootstrap.js') }}"></script>

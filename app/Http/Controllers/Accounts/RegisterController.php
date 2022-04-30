@@ -38,7 +38,7 @@ class RegisterController extends Controller
             'l_name_ar' => ['required', 'min:2', 'max:20', new ArabicLetters],
             'email'     => 'required|email|max:50|unique:users,email',
             'phone'     => 'required|regex:/^\+[0-9]{11,14}$/|unique:phones,phone',
-            'username'  => 'required|regex:/^\w[\w\.]+$/|min:4|max:50|unique:users,username',
+            'username'  => 'required|regex:/^[A-Za-z0-9]{4,50}$/|unique:users,username',
             'password'  => 'required|min:8|max:80|regex:/^[\w\d\D\W]+$/',
             'country'   => 'required|regex:/^[A-Z]{2}$/',
             'city'      => 'required|string|min:3|max:10'

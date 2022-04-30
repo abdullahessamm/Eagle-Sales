@@ -35,8 +35,16 @@
               </li>
           </ul>
           <form class="form-inline position-absolute">
-              <button class="btn btn-sm mr-2 login" type="button"><i class="fa-solid fa-arrow-right-to-bracket"></i> {{__('landing.header.links.login')}}</button>
-              <button class="btn btn-sm signup" type="button"><i class="fa-solid fa-user-plus"></i> {{__('landing.header.links.signup')}}</button>
+              <button class="btn btn-sm mr-2 login" type="button" onclick="gotoLogin()"><i class="fa-solid fa-arrow-right-to-bracket"></i> {{__('landing.header.links.login')}}</button>
+              <button class="btn btn-sm signup" type="button" onclick="gotoSignup()"><i class="fa-solid fa-user-plus"></i> {{__('landing.header.links.signup')}}</button>
+              <script type="text/javascript">
+                  function gotoLogin() {
+                      window.location.href = "{{ url('/auth#/login') }}";
+                  }
+                  function gotoSignup() {
+                      window.location.href = "{{ url('/auth#/signup') }}";
+                  }
+              </script>
           </form>
       </div>
     </nav>

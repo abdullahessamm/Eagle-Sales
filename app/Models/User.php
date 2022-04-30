@@ -22,6 +22,7 @@ class User extends Authenticatable
     const FREELANCER_SELLER_JOB_NUMBER = 2;
     const CUSTOMER_JOB_NUMBER = 3;
     const ADMIN_JOB_NUMBER = 4;
+    const ONLINE_CLIENT_JOB_NUMBER = 5;
 
     /**
      * The attributes that are mass assignable.
@@ -30,7 +31,9 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'f_name',
+        'f_name_ar',
         'l_name',
+        'l_name_ar',
         'avatar_uri',
         'personal_id_uri',
         'email',
@@ -100,6 +103,10 @@ class User extends Authenticatable
             case 4:
                 $userLetter = 'A';
                 break;
+
+            case 5:
+                $userLetter = 'OC';
+                break;
         }
         
         $serialFirstPart = $userLetter . (string) $this->id . '_';
@@ -158,11 +165,41 @@ class User extends Authenticatable
             case '4':
                 $model = BackOfficeUser::class;
                 break;
+
+            case '5':
+                $model = OnlineClient::class;
+                break;
         }
 
+        $this->withPaymentCards();
         $this->userInfo = $model ? $this->hasOne($model, 'user_id', 'id')->first() : null;
         if ($this->userInfo instanceof BackOfficeUser)
             $this->userInfo->withPermissions();
+        return $this;
+    }
+
+    // get related payment cards
+    public function paymentCards()
+    {
+        return $this->hasMany(PaymentCard::class, 'user_id', 'id');
+    }
+
+    // add new payment card
+    public function addPaymentCard(PaymentCard $card)
+    {
+        $card->user_id = $this->id;
+        try {
+            $card->save();
+            return true;
+        } catch (QueryException $e) {
+            throw new \App\Exceptions\DBException($e);
+        }
+    }
+
+    // with related payment cards
+    public function withPaymentCards()
+    {
+        $this->paymentCards = $this->paymentCards()->get()->all();
         return $this;
     }
 

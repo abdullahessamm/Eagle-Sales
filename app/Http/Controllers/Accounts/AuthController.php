@@ -20,9 +20,9 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $rules = [
-            'username' => 'min:3|max:80|regex:/^[a-zA-z0-9\.]+$/|required_without:email',
+            'username' => 'regex:/^[A-Za-z0-9]{4,50}$/|required_without:email',
             'email'    => 'email|required_without:username',
-            'password' => 'required|string|min:8|max:50'
+            'password' => 'required|string|min:8|max:80'
         ];
         $reqValidate = Validator::make($request->all(), $rules);
 
@@ -49,7 +49,7 @@ class AuthController extends Controller
 
             $generatedToken = $this->generateToken($request);
 
-            // response with authorization token 
+            // response with serial access token 
             return response()->json([
                 "success" => true,
                 "token"   => $generatedToken->serial_access_token
