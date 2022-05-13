@@ -7,26 +7,35 @@ use Illuminate\Database\QueryException;
 
 class InternalError extends Exception
 {
-    private $exception;
+    private array $error;
 
     public function __construct($exception)
     {
-        $this->exception = $exception;
+        $this->error = [
+            'platform' => 0,
+            'device_name' => 'server',
+            'type' => get_class($exception),
+            'code' => $exception->getCode(),
+            'message' => $exception->getMessage()
+        ];
     }
 
     public function report()
     {
-        \App\Models\Errors\InternalError::create([
-            'platform' => 0,
-            'device_name' => 'server',
-            'type' => get_class($this->exception),
-            'code' => $this->exception->getCode(),
-            'message' => $this->exception->getMessage()
-        ]);
+        \App\Models\Errors\InternalError::create($this->error);
     }
 
     public function render()
     {
-        return response()->json(['success' => false], 500);
+        $message = $this->error;
+        unset($message['platform']);
+        unset($message['device_name']);
+        
+        if (! env('App_DEBUG'))
+            $message = 'Server error';
+
+        return response()->json([
+            'message' => $message
+        ], 500);
     }
 }

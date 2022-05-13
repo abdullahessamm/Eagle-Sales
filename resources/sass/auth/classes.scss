@@ -5,3 +5,155 @@
 .text-left {
     text-align: left;
 }
+
+.form-check-input:checked {
+    background-color: $second-color !important;
+    border-color: $second-color !important;
+}
+
+// text box
+.eagle-sales-input {
+    width: 100%;
+    height: 40px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 0 40px 0 20px;
+    font-size: 16px;
+    color: #333;
+    outline: none;
+    transition: border 0.3s ease-in-out;
+
+    &:focus {
+        border-color: $second-color;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+        background-color: #aaa;
+    }
+}
+
+// signup step form
+.signup-step {
+    margin-top: 10px;
+    text-align: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    .input-container {
+        position: relative;
+        width: 40%;
+        margin-left: 5px;
+        margin-right: 5px;
+        margin-top: 30px;
+        display: inline-block;
+
+        &.with-loading {
+            .loading {
+                position: absolute;
+                height: 100%;
+                right: 15px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+
+        &.text-before-input {
+            input {
+                padding-left: 70px;
+            }
+
+            span {
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                width: 56px;
+                background-color: transparent;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-right: 1px solid #ccc;
+            }
+
+            &.right {
+                input {
+                    padding-right: 70px;
+                }
+
+                span { right: 0 }
+            }
+        }
+
+        .form-select {
+            border-radius: 10px;
+
+            &:focus {
+                border-color: $second-color !important;
+                outline: 0;
+                box-shadow: none;
+            }
+        }
+
+        .with-popover {
+            display: flex;
+            position: relative;
+            justify-content: center;
+            align-items: center;
+
+            .popover-element {
+                position: absolute;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                max-width: 100%;
+                border: 1px solid #ddd;
+                background-color: #fff;
+                padding: 15px 10px;
+                box-shadow: 0 0 10px;
+                border-radius: 18px;
+                color: #888;
+                z-index: 99;
+
+                &::after {
+                    content: '';
+                    position: absolute;
+                    right: -20px;
+                    border: 3px solid transparent;
+                    border-top-color: $second-color;
+                    border-right-color: $second-color;
+                    width: 20px;
+                    height: 20px;
+                    transform: rotate(45deg);
+                    
+                }
+
+                &.left {
+                    left: calc(-100% - 35px);
+                }
+            }
+        }
+        
+        .error-msg {
+            position: absolute;
+            color: #f00;
+            margin-left: 7px;
+            opacity: 0;
+        }
+
+        &.error {
+            .error-msg {
+                opacity: 1;
+            }
+
+            input {
+                border-color: #f00 !important;
+            }
+        }
+
+        &.gender-container {
+            width: 80%;
+        }
+    }
+}

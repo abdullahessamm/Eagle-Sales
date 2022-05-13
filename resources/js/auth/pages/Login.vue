@@ -1,25 +1,9 @@
 <template>
     <div id="login-page">
-        <div class="container">
-            <div class="header">
-                <div class="row">
-                    <div class="col-6 left-side">
-                        <img src="assets/images/logo/h_colored_logo.png" alt="logo" draggable="false">
-                    </div>
-                    <div class="col-6">
-                        <div class="right-side h-100">
-                            <div class="h-100 d-flex align-items-center justify-content-end">
-                                <div class="animated-btn">
-                                    <span>العربية</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="container-fluid h-100">
             <div class="body">
                 <div class="row h-100">
-                    <div class="col-md-4 d-none d-md-block">
+                    <div :class="`col-md-4 d-none d-md-block animate ${$store.state.lang === 'ar' ? 'ar-right' : ''}`" style="z-index: 5">
                         <div class="left-side h-100">
                             <div class="bg-circles">
                                 <div class="circle circle-1"></div>
@@ -28,12 +12,12 @@
                             </div>
                             <div class="overlay w-100 h-100 d-flex justify-content-center align-items-center flex-column">
                                 <div class="logo mb-4">
-                                    <img src="assets/images/logo/white_300.png" alt="white logo" width="150px">
+                                    <img :src="`${window.location.protocol}//${window.location.host}/assets/images/logo/white_300.png`" alt="white logo" style="width:150px" :class="`animate ${$store.state.lang === 'ar' ? 'flip' : ''}`">
                                 </div>
-                                <h4 class="pb-3"> Welcome Back! </h4>
+                                <h4 class="pb-3"> {{ __.login.welcome }} </h4>
                                 <p class="text-center pt-2">
-                                    To keep connected with us, <br>
-                                    please login with your personal info
+                                    {{ __.login.description_l1 }} <br>
+                                    {{ __.login.description_l2 }}
                                 </p>
                                 
                                 <div class="container-fluid">
@@ -41,7 +25,7 @@
                                         <div class="col-5 d-flex justify-content-center align-content-center flex-column">
                                             <div class="line"></div>
                                         </div>
-                                        <div class="col-2 text-center" style="color: #eee; font-size: 20px;">OR</div>
+                                        <div class="col-2 text-center" style="color: #eee; font-size: 20px;"> {{ __.login.or }} </div>
                                         <div class="col-5 d-flex justify-content-center align-content-center flex-column">
                                             <div class="line"></div>
                                         </div>
@@ -49,40 +33,51 @@
                                 </div>
 
                                 <div class="animated-btn left white mt-4" @click="$router.push('/signup')">
-                                    <span> Sign up </span>
+                                    <span> {{ __.login.signup }} </span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-md-8">
-                        <div class="right-side text-center w-100 h-100">
+                    <div :class="`col-12 col-md-8 animate ${$store.state.lang === 'ar' ? 'ar-left' : ''}`">
+                        <div class="right-side text-center w-100 h-100 position-relative">
+                            <div 
+                                :class="`animated-btn green right mt-4 position-absolute animate ${$store.state.lang === 'ar' ? 'left' : ''}`"
+                                style="right: 10px; top: -10px"
+                                :dir="$store.state.lang == 'en' ? 'rtl' : 'ltr'"
+                                @click="switchLang"
+                            >
+                                <span>
+                                    <i class="fa-solid fa-earth-asia"></i>
+                                    {{ $store.state.lang == 'en' ? 'العربية' : 'English' }}
+                                </span>
+                            </div>
                             <form @submit.prevent="login" class="d-flex flex-column justify-content-center align-items-center">
-                                <h3 class="mb-5"> <i class="fa-solid fa-right-to-bracket"></i> Login </h3>
+                                <h3 class="mb-5" :style="$store.state.lang === 'ar' ? 'letter-spacing: 0 !important' : ''"> <i class="fa-solid fa-right-to-bracket"></i> {{ __.login.title }} </h3>
                                 <div class="input-g mb-3">
-                                    <div :class="usernameError ? 'error position-relative' : 'position-relative'">
-                                        <i class="fa-solid fa-user" v-if="isUsername"></i>
-                                        <i class="fa-solid fa-at" v-if="! isUsername"></i>
-                                        <input type="text" name="username-email" v-model="usernameOrEmail" id="username-email" placeholder="Username or email...">
+                                    <div :class="`${usernameError ? 'error position-relative' : 'position-relative'} ${$store.state.lang === 'ar' ? 'flip' : ''}`">
+                                        <i class="fa-solid fa-user" v-if="isUsername" style="z-index: 3"></i>
+                                        <i :class="`fa-solid fa-at ${$store.state.lang === 'ar' ? 'flip' : ''}`" v-if="! isUsername" style="z-index: 3"></i>
+                                        <input :class="$store.state.lang === 'ar' ? 'flip' : ''" type="text" name="username-email" v-model="usernameOrEmail" id="username-email" :placeholder="`${__.login.placeholders.username}`" :style="$store.state.lang === 'ar' ? 'direction: rtl !important' : ''">
                                     </div>
-                                    <div class="error-msg text-left" v-if="usernameError"> <i class="fa-solid fa-circle-exclamation"></i> {{ usernameError }} </div>
+                                    <div :class="`error-msg ${$store.state.lang === 'ar' ? 'text-right' : 'text-left'}`" v-if="usernameError"> <i class="fa-solid fa-circle-exclamation"></i> {{ usernameError }} </div>
                                 </div>
                                 <div class="input-g mb-3">
-                                    <div :class="passwordError ? 'error position-relative' : 'position-relative'">
-                                        <i class="fa-solid fa-lock"></i>
-                                        <input :type="showPassword ? 'text' : 'password'" name="password" id="password" v-model="password" placeholder="Password...">
-                                        <i class="fa-solid fa-eye" v-if="!showPassword" style="cursor:pointer" @click="showPassword = !showPassword"></i>
-                                        <i class="fa-solid fa-eye-slash" v-if="showPassword" style="cursor:pointer" @click="showPassword = !showPassword"></i>
+                                    <div :class="`${passwordError ? 'error position-relative' : 'position-relative'} ${$store.state.lang === 'ar' ? 'flip' : ''}`">
+                                        <i class="fa-solid fa-lock" style="z-index: 3;"></i>
+                                        <input :class="$store.state.lang === 'ar' ? 'flip' : ''" :type="showPassword ? 'text' : 'password'" name="password" id="password" v-model="password" :placeholder="`${__.login.placeholders.password}`" :style="$store.state.lang === 'ar' ? 'direction: rtl !important' : ''">
+                                        <i class="fa-solid fa-eye" v-if="!showPassword" style="cursor:pointer" @click="togglePasswordVisibility"></i>
+                                        <i class="fa-solid fa-eye-slash" v-if="showPassword" style="cursor:pointer" @click="togglePasswordVisibility"></i>
                                     </div>
-                                    <div class="error-msg text-left" v-if="passwordError"> <i class="fa-solid fa-circle-exclamation"></i> {{ passwordError }} </div>
+                                    <div :class="`error-msg ${$store.state.lang === 'ar' ? 'text-right' : 'text-left'}`" v-if="passwordError"> <i class="fa-solid fa-circle-exclamation"></i> {{ passwordError }} </div>
                                 </div>
                                 <div class="input-g mb-3">
                                     <div class="forgot-password">
-                                        <a href="#"> Forgot password? </a>
+                                        <a href="#"> {{ __.login.forgot }} </a>
                                     </div>
                                 </div>
                                 <div class="input-g">
                                     <button type="submit" :class="isLoading ? 'disabled' : ''">
-                                        <LoadingAnimation v-if="isLoading"></LoadingAnimation> Login
+                                        <LoadingAnimation v-if="isLoading"></LoadingAnimation> {{ __.login.submit }}
                                     </button>
                                 </div>
                             </form>
@@ -108,26 +103,45 @@
         overflow-x: hidden;
         overflow-y: auto;
 
-        .header {
-            margin: 20px 0 30px 0;
-            height: 51.42px;
+        input[type="text"], input[type="password"] {
+            direction: ltr !important;
 
-            .left-side {
-                img {
-                    width: 100%;
-                    max-width: 200px;
-                }
+            &.flip {
+                direction: rtl !important;
             }
         }
+
+        .container-fluid {padding-right: 0 !important; padding-left: 0 !important}
         
         .body {
-            height: 660px;
-            border: 1px solid $second-color;
-            border-radius: 20px;
+            height: 100%;
             overflow: hidden;
+            overflow-y: auto;
 
             .row {
                 --bs-gutter-x: 0;
+
+                .flip {
+                        transform: scaleX(-1);
+                }
+
+                .animate {
+                    transition: all .7s ease-in-out;
+
+                    &.ar-left {
+                        transform: translateX(-50%);
+                        direction: rtl;
+                    }
+
+                    &.ar-right {
+                        transform: translateX(200%);
+                        direction: rtl;
+                    }
+
+                    &.left {
+                        right: calc(100% - 125px) !important;
+                    }
+                }
             }
 
             .left-side {
@@ -226,7 +240,7 @@
                             font-size: 16px;
                             color: #333;
                             outline: none;
-                            transition: all 0.3s ease-in-out;
+                            transition: border 0.3s ease-in-out;
 
                             &:focus {
                                 border-color: $second-color;
@@ -252,7 +266,6 @@
                             background-color: $second-color;
                             color: #fff;
                             font-size: 17px;
-                            letter-spacing: 5px;
                             outline: none;
                             cursor: pointer;
 
@@ -270,6 +283,8 @@
 
 <script>
 import LoadingAnimation from '../components/LoadingAnimation.vue';
+import en from '../../translation/auth/en.json';
+import ar from '../../translation/auth/ar.json';
 
 export default {
     name: 'Login',
@@ -284,12 +299,21 @@ export default {
     }),
 
     computed: {
+        window: () => window,
         isLoading() {
             return this.$store.state.login.isLoading;
         },
 
         serialAccessToken() {
             return this.$store.state.login.serialAccessToken
+        },
+
+        __() {
+            if (this.$store.state.lang === 'en') {
+                return en;
+            } else {
+                return ar;
+            }
         },
     },
 
@@ -304,11 +328,11 @@ export default {
             } else {
                 this.isUsername = true;
                 if (val.length < 4) {
-                    this.usernameError = 'Username must be at least 4 characters long';
+                    this.usernameError = this.__.login.errors.username.minlength;
                 } else if (val.length > 50) {
-                    this.usernameError = 'Username must be less than 50 characters long';
+                    this.usernameError = this.__.login.errors.username.maxlength;
                 } else if (!usernamePattern.test(val)) {
-                    this.usernameError = 'Username must contain only letters and numbers';
+                    this.usernameError = this.__.login.errors.username.pattern;
                 } else {
                     this.usernameError = null;
                 }
@@ -319,11 +343,11 @@ export default {
             let strongPasswordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$!%*?&])[A-Za-z\d@$!%*?&#.]{8,80}$/;
 
             if (val.length < 8) {
-                this.passwordError = 'Password must be at least 8 characters long';
+                this.passwordError = this.__.login.errors.password.minlength;
             } else if (val.length > 80) {
-                this.passwordError = 'Password must be less than 80 characters long';
+                this.passwordError = this.__.login.errors.password.maxlength;
             } else if (!strongPasswordPattern.test(val)) {
-                this.passwordError = 'Password must contain at least one uppercase letter, one lowercase letter, one number and one special character';
+                this.passwordError = this.__.login.errors.password.pattern;
             } else {
                 this.passwordError = null;
             }
@@ -352,10 +376,10 @@ export default {
 
             if (this.usernameOrEmail.length === 0 || this.password.length === 0) {
                 if (this.usernameOrEmail.length === 0)
-                    this.usernameError = 'Username or email is required';
+                    this.usernameError = this.__.login.errors.username.required;
                 
                 if (this.password.length === 0)
-                    this.passwordError = 'Password is required';
+                    this.passwordError = this.__.login.errors.password.required;
                 
                 return;
             }
@@ -374,15 +398,26 @@ export default {
             this.$store.dispatch('login', data).catch(err => {
                 this.$store.commit('TOGGLE_LOGIN_LOADING_STATE');
                 if (err.response.status === 401) {
-                    this.passwordError = 'Invalid password';
+                    this.passwordError = this.__.login.errors.password.invalid;
                 } else {
-                    this.passwordError = 'An error occurred';
+                    this.passwordError = this.__.login.errors.password.unknown;
                 }
             })
         },
 
-        test: function() {
-            this.$router.push('/');
+        togglePasswordVisibility: function() {
+            this.showPassword = !this.showPassword;
+        },
+
+        switchLang: function() {
+            this.usernameError = null;
+            this.passwordError = null;
+            const currentLang = this.$store.state.lang;
+            if (currentLang === 'en') {
+                this.$store.dispatch('changeLanguage', 'ar');
+            } else {
+                this.$store.dispatch('changeLanguage', 'en');
+            }
         },
     },
 

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Phone;
-use App\Models\Errors\InternalError;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -59,5 +58,27 @@ class PhoneController extends Controller
         $phone->sendVerifyCode();
 
         return response()->json(['success'=>true]);
+    }
+
+    /**
+     * check if phone is unique
+     *
+     * @param Request $request
+     */
+    public function checkUnique(Request $request)
+    {
+        $validation = Validator::make($request->all(), [
+            'phone' => 'required|regex:/^\+[0-9]{11,14}$/',
+        ]);
+
+        if ($validation->fails())
+            throw new \App\Exceptions\ValidationError($validation->errors()->all());
+        
+        $phone = Phone::where('phone', $request->get('phone'))->first();
+
+        if ($phone)
+            return response()->json(['success' => false, 'message' => 'Phone already exists'], 422);
+
+        return response()->json(['success' => true]);
     }
 }

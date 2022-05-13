@@ -28,6 +28,7 @@ class UserUpdater extends Controller
             'country'     => 'regex:/^[A-Z]{2}$/',
             'city'        => 'regex:/^[a-zA-Z]{3,10}$/',
             'username'   => 'regex:/^\w[\w\.]+$/|min:4|max:50|unique:users,username',
+            'lang'        => 'in:en,ar,in',
         ];
         $validation = Validator::make($request->all(), $rules);
 

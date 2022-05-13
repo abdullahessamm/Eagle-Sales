@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AppConfig;
 use App\Models\BackOfficeUser;
 use App\Models\Customer;
+use App\Models\OnlineClient;
 use App\Models\Phone;
 use App\Models\Seller;
 use App\Models\SellerRegisterInvitation;
@@ -24,11 +25,6 @@ class RegisterController extends Controller
 {
     private int $job;
 
-    // supplier  --> 0
-    // hierd seller  --> 1
-    // freelancer seller --> 2
-    // customer  --> 3
-    // admins  --> 4
     private function userCreator(Request $request, bool $createdByAdmin = false)
     {
         $rules = [
@@ -41,7 +37,9 @@ class RegisterController extends Controller
             'username'  => 'required|regex:/^[A-Za-z0-9]{4,50}$/|unique:users,username',
             'password'  => 'required|min:8|max:80|regex:/^[\w\d\D\W]+$/',
             'country'   => 'required|regex:/^[A-Z]{2}$/',
-            'city'      => 'required|string|min:3|max:10'
+            'city'      => 'required|string|min:3|max:10',
+            'gender'    => 'required|in:male,female',
+            'lang'      => 'in:en,ar'
         ];
         $validation = Validator::make($request->all(), $rules);
         if ($validation->fails())
@@ -59,6 +57,8 @@ class RegisterController extends Controller
         $createdUser->country = $request->get('country');
         $createdUser->city = $request->get('city');
         $createdUser->job = $this->job;
+        $createdUser->gender = $request->get('gender');
+        $createdUser->lang = $request->get('lang') ?? 'en';
 
         if ($createdByAdmin) {
             $createdUser->is_approved = true;
@@ -77,6 +77,35 @@ class RegisterController extends Controller
         } catch (QueryException $e) {
             throw new DBException($e);
         }
+    }
+
+    /**
+     * check unique fields in users table
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function checkUniqueFieldInUsers(Request $request)
+    {
+        $rules = [
+            'email' => 'required:username|email|max:50',
+            'username' => 'required|string|max:50',
+        ];
+
+        $validation = Validator::make($request->all(), $rules);
+        if ($validation->fails())
+            throw new \App\Exceptions\ValidationError($validation->errors()->all());
+
+        $responseMsg = [];
+        $emailCheck = User::where('email', $request->get('email'))->first();
+        $usernameCheck = User::where('username', $request->get('username'))->first();
+
+        if ($emailCheck)
+            $responseMsg['email'] = 'email already exists';
+        if ($usernameCheck)
+            $responseMsg['username'] = 'username already exists';
+
+        return count($responseMsg) > 0 ? response()->json(['status' => 'error', 'message' => $responseMsg], 422) : response()->json(['status' => 'success']);
     }
 
     /**
@@ -123,13 +152,13 @@ class RegisterController extends Controller
             'vat_no'           => 'required|regex:/^[A-Za-z]{2}\d{3,18}$/|unique:suppliers,vat_no',
             'shop_name'        => 'required|string|min:3|max:50',
             'whatsapp_no'      => 'required|regex:/^\+966[0-9]{8,11}$/|unique:suppliers,whatsapp_no',
-            'fb_page'          => 'regex:/^(https?:\/\/)?(www\.)?(m\.)?(fb)?(facebook)?(\.com)(\/[\w\D]+\/?)+$/|unique:suppliers,fb_page',
+            'fb_page'          => 'regex:/^(https?:\/\/)?(www\.)?(m\.)?(fb)?(facebook)?(\.com)(\/[\w\D]+\/?)+$/|unique:suppliers,fb_page|max:100',
             'website_domain'   => 'regex:/^(https?:\/\/)?(([\da-z])+\.)?[\d\w\-]+\.[a-z]{2,3}$/|unique:suppliers,website_domain',
-            'location_coords'  => 'regex:/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/|unique:suppliers,location_coords',
-            'l1_address'       => 'required|regex:/^[a-zA-Z\d]+[\w\d\ \-]+$/|min:4|max:255|unique:suppliers,l1_address',
-            'l1_address_ar'    => ['required', new ArabicLettersWithSpaces, 'min:4', 'max:255', 'unique:suppliers,l1_address_ar'],
-            'l2_address'       => 'regex:/^[a-zA-Z\d]+[\w\d\ \-]+$/|min:4|max:255|unique:suppliers,l2_address',
-            'l2_address_ar'    => [new ArabicLettersWithSpaces, 'min:4', 'max:255', 'unique:suppliers,l2_address_ar'],
+            'location_coords'  => ['regex:/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/', 'unique:suppliers,location_coords'],
+            'l1_address'       => 'required|regex:/^[a-zA-Z\d]+[\w\d\ \-]+$/|min:4|max:100|unique:suppliers,l1_address',
+            'l1_address_ar'    => ['required', new ArabicLettersWithSpaces, 'min:4', 'max:100', 'unique:suppliers,l1_address_ar'],
+            'l2_address'       => 'regex:/^[a-zA-Z\d]+[\w\d\ \-]+$/|min:4|max:100|unique:suppliers,l2_address',
+            'l2_address_ar'    => [new ArabicLettersWithSpaces, 'min:4', 'max:100', 'unique:suppliers,l2_address_ar'],
         ];
 
         $validation = Validator::make($request->all(), $rules);
@@ -169,6 +198,58 @@ class RegisterController extends Controller
         return response()->json(['success' => true], 200);
     }
 
+    // check unique fields in suppliers
+    public function checkUniqueFieldInSuppliers(Request $request)
+    {
+        $rules = [
+            'vat_no' => 'required|string',
+            'phone' => 'required|string',
+            'whatsapp_no' => 'string',
+            'fb_page' => 'string',
+            'website_domain' => 'string',
+            'l1_address' => 'required|string',
+            'l1_address_ar' => 'required|string',
+            'l2_address' => 'string',
+            'l2_address_ar' => 'string',
+        ];
+
+        $validation = Validator::make($request->all(), $rules);
+        if ($validation->fails())
+            throw new \App\Exceptions\ValidationError($validation->errors()->all());
+
+        $responseMsg = [];
+        $vatCheck = Supplier::where('vat_no', $request->get('vat_no'))->exists() || Customer::where('vat_no', $request->get('vat_no'))->exists();
+        $phoneCheck = Phone::where('phone', $request->get('phone'))->exists();
+        $whatsappCheck = $request->has('whatsapp_no') ? Supplier::where('whatsapp_no', $request->get('whatsapp_no'))->exists() : null;
+        $fbPageCheck = $request->has('fb_page') ? Supplier::where('fb_page', $request->get('fb_page'))->exists() : null;
+        $websiteDomainCheck = $request->has('website_domain') ? Supplier::where('website_domain', $request->get('website_domain'))->exists() : null;
+        $l1AddressCheck = Supplier::where('l1_address', $request->get('l1_address'))->exists();
+        $l1AddressArCheck = Supplier::where('l1_address_ar', $request->get('l1_address_ar'))->exists();
+        $l2AddressCheck = $request->has('l2_address') ? Supplier::where('l2_address', $request->get('l2_address'))->exists() : null;
+        $l2AddressArCheck = $request->has('l2_address_ar') ? Supplier::where('l2_address_ar', $request->get('l2_address_ar'))->exists() : null;
+
+        if ($vatCheck)
+            $responseMsg['vat_no'] = 'VAT No. already exists';
+        if ($phoneCheck)
+            $responseMsg['phone'] = 'Phone already exists';
+        if ($whatsappCheck)
+            $responseMsg['whatsapp_no'] = 'Whatsapp No. already exists';
+        if ($fbPageCheck)
+            $responseMsg['fb_page'] = 'Facebook Page already exists';
+        if ($websiteDomainCheck)
+            $responseMsg['website_domain'] = 'Website Domain already exists';
+        if ($l1AddressCheck)
+            $responseMsg['l1_address'] = 'Address already exists';
+        if ($l1AddressArCheck)
+            $responseMsg['l1_address_ar'] = 'Address already exists';
+        if ($l2AddressCheck)
+            $responseMsg['l2_address'] = 'Address already exists';
+        if ($l2AddressArCheck)
+            $responseMsg['l2_address_ar'] = 'Address already exists';
+
+        return count($responseMsg) > 0 ? response()->json(['success' => false, 'message' => $responseMsg], 422) : response()->json(['success' => true], 200);
+    }
+
     /**
      *
      * @param boolean $isFreelancer
@@ -180,12 +261,12 @@ class RegisterController extends Controller
         $rules = [
             'age'                 => 'required|integer|between:16,100',
             'education'           => 'required|string|min:4|max:255',
-            'l1_address'          => 'required|regex:/^[a-zA-Z\d]+[\w\d\ \-]+$/|min:4|max:255',
-            'l1_address_ar'       => ['required', new ArabicLettersWithSpaces, 'min:4', 'max:255'],
-            'l2_address'          => 'regex:/^[a-zA-Z\d]+[\w\d\ \-]+$/|min:4|max:255',
-            'l2_address_ar'       => [new ArabicLettersWithSpaces, 'min:4', 'max:255'],
-            'location_coords'     => 'regex:/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/',
-            'bank_account_number' => 'required_with:bank_name|regex:/^[A-Za-z0-9]{9,50}$/',
+            'l1_address'          => 'required|regex:/^[a-zA-Z\d]+[\w\d\ \-]+$/|min:4|max:255|unique:sellers,l1_address',
+            'l1_address_ar'       => ['required', new ArabicLettersWithSpaces, 'min:4', 'max:255', 'unique:sellers,l1_address_ar'],
+            'l2_address'          => 'regex:/^[a-zA-Z\d]+[\w\d\ \-]+$/|min:4|max:255|unique:sellers,l2_address',
+            'l2_address_ar'       => [new ArabicLettersWithSpaces, 'min:4', 'max:255', 'unique:sellers,l2_address_ar'],
+            'location_coords'     => ['regex:/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/'],
+            'bank_account_number' => 'required_with:bank_name|regex:/^[A-Za-z0-9]{9,50}$/|unique:sellers,bank_account_number',
             'bank_name'           => 'required_with:bank_account_number,!==,null|string|min:3|max:50'
         ];
 
@@ -224,6 +305,25 @@ class RegisterController extends Controller
         } catch (QueryException $e) {
             throw new \App\Exceptions\DBException($e);
         }
+    }
+
+    // check unique fields in sellers
+    public function checkUniqueFieldInSellers(Request $request)
+    {
+        $rules = [
+            'key' => 'required|string|in:location_coords,l1_address,l1_address_ar,l2_address,l2_address_ar,bank_account_number,bank_name',
+            'value' => 'required|string',
+        ];
+
+        $validation = Validator::make($request->all(), $rules);
+        if ($validation->fails())
+            throw new \App\Exceptions\ValidationError($validation->errors()->all());
+
+        $seller = Seller::where($request->get('key'), $request->get('value'))->first();
+        if ($seller)
+            return response()->json(['status' => 'error', 'message' => $request->get('key') . ' already exists'], 422);
+
+        return response()->json(['status' => 'success']);
     }
 
     /**
@@ -296,12 +396,12 @@ class RegisterController extends Controller
 
         $rules = [
             'shop_name'           => "required|string|min:3|max:50",
-            'l1_address'          => 'required|regex:/^[a-zA-Z\d]+[\w\d\ \-]+$/|min:4|max:255',
-            'l1_address_ar'       => ['required', new ArabicLettersWithSpaces, 'min:4', 'max:255'],
-            'l2_address'          => 'regex:/^[a-zA-Z\d]+[\w\d\ \-]+$/|min:4|max:255',
-            'l2_address_ar'       => [new ArabicLettersWithSpaces, 'min:4', 'max:255'],
-            'location_coords'     => 'regex:/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/',
-            'vat_no'              => 'required|regex:/^[A-Za-z]{2}\d{3,18}$/|unique:suppliers,vat_no',
+            'l1_address'          => 'required|regex:/^[a-zA-Z\d]+[\w\d\ \-]+$/|min:4|max:255|unique:customers,l1_address',
+            'l1_address_ar'       => ['required', new ArabicLettersWithSpaces, 'min:4', 'max:255', 'unique:customers,l1_address_ar'],
+            'l2_address'          => 'regex:/^[a-zA-Z\d]+[\w\d\ \-]+$/|min:4|max:255|unique:customers,l2_address',
+            'l2_address_ar'       => [new ArabicLettersWithSpaces, 'min:4', 'max:255', 'unique:customers,l2_address_ar'],
+            'location_coords'     => ['regex:/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/'],
+            'vat_no'              => 'required|regex:/^[A-Za-z]{2}\d{3,18}$/|unique:customers,vat_no|unique:suppliers,vat_no',
             'category_id'         => 'required|integer|between:1,255',
             'shop_space'          => 'numeric|between:1,9999.99',
         ];
@@ -327,6 +427,79 @@ class RegisterController extends Controller
 
         try {
             $customer->save();
+        } catch (QueryException $e) {
+            throw new \App\Exceptions\DBException($e);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function checkUniqueFieldInCustomers(Request $request)
+    {
+        $rules = [
+            'vat_no' => 'required|string',
+            'phone'  => 'required|string',
+            'l1_address' => 'required|string',
+            'l1_address_ar' => 'required|string',
+            'l2_address' => 'string',
+            'l2_address_ar' => 'string',
+        ];
+
+        $validation = Validator::make($request->all(), $rules);
+
+        if ($validation->fails())
+            throw new \App\Exceptions\ValidationError($validation->errors()->all());
+
+        $responseMsg = [];
+
+        $vatExists = Customer::where('vat_no', $request->get('vat_no'))->exists() || Supplier::where('vat_no', $request->get('vat_no'))->exists();
+        $phoneExists = Phone::where('phone', $request->get('phone'))->exists();
+        $l1AddressExists = Customer::where('l1_address', $request->get('l1_address'))->exists();
+        $l1AddressArExists = Customer::where('l1_address_ar', $request->get('l1_address_ar'))->exists();
+        $l2AddressExists = Customer::where('l2_address', $request->get('l2_address'))->exists();
+        $l2AddressArExists = Customer::where('l2_address_ar', $request->get('l2_address_ar'))->exists();
+
+        if ($vatExists)
+            $responseMsg['vat_no'] = 'VAT No. already exists';
+        if ($phoneExists)
+            $responseMsg['phone'] = 'Phone already exists';
+        if ($l1AddressExists)
+            $responseMsg['l1_address'] = 'L1 Address already exists';
+        if ($l1AddressArExists)
+            $responseMsg['l1_address_ar'] = 'L1 Address (AR) already exists';
+        if ($l2AddressExists)
+            $responseMsg['l2_address'] = 'L2 Address already exists';
+        if ($l2AddressArExists)
+            $responseMsg['l2_address_ar'] = 'L2 Address (AR) already exists';
+
+            return count($responseMsg) > 0 ? response()->json(['success' => false, 'message' => $responseMsg], 422) : response()->json(['success' => true], 200);
+    }
+
+    public function registerOnlineClient(Request $request)
+    {
+        $rules = [
+            'l1_address' => 'required|regex:/^[a-zA-Z\d]+[\w\d\ \-]+[a-zA-Z]$/|min:4|max:50',
+            'l2_address' => 'regex:/^[a-zA-Z\d]+[\w\d\ \-]+[a-zA-Z]$/|min:4|max:50',
+            'location_coords' => ['required','regex:/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/','max:50'],
+        ];
+
+        
+        $validation = Validator::make($request->all(), $rules);
+        
+        if ($validation->fails())
+            throw new \App\Exceptions\ValidationError($validation->errors()->all());
+        
+        $this->job = User::ONLINE_CLIENT_JOB_NUMBER;
+        $createdUser = $this->userCreator($request, false);
+
+        $onlineClient = new OnlineClient;
+        $onlineClient->l1_address      = $request->get('l1_address');
+        $onlineClient->l2_address      = $request->has('l2_address') ?? null;
+        $onlineClient->location_coords = $request->get('location_coords');
+        $onlineClient->user_id         = $createdUser->id;
+
+        try {
+            $onlineClient->save();
         } catch (QueryException $e) {
             throw new \App\Exceptions\DBException($e);
         }

@@ -99,7 +99,7 @@ class CustomerCategoryController extends Controller
     public function getAll()
     {
         $categories = CustomerCategory::get()->all();
-        return response()->json(['success' =>true, 'data'=>$categories]);
+        return response()->json(['success' => true, 'data'=> $categories]);
     }
 
     /**

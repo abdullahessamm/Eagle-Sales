@@ -18,7 +18,6 @@ Route::prefix('/backoffice')
 ->group(__DIR__ . '/backoffice/index.php');
 
 Route::prefix('/customers')
-->middleware(['auth'])
 ->group(__DIR__ . '/customers/index.php');
 
 Route::prefix('/sellers')

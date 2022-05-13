@@ -1,0 +1,33 @@
+{
+    "login": {
+        "title": "Login",
+        "placeholders": {
+            "username": "Username or email",
+            "password": "Password"
+        },
+        "errors": {
+            "username": {
+                "required": "Username is required",
+                "minlength": "Username must be at least 4 characters long",
+                "maxlength": "Username cannot be more than 50 characters long",
+                "pattern": "Username must contain only letters and numbers",
+                "invalid": "Username is invalid"
+            },
+            "password": {
+                "required": "Password is required",
+                "minlength": "Password must be at least 8 characters long",
+                "maxlength": "Password cannot be more than 80 characters long",
+                "pattern": "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character",
+                "invalid": "Password is invalid",
+                "unknown": "An error occurred while logging in"
+            }
+        },
+        "submit": "Login",
+        "forgot": "Forgot password?",
+        "welcome": "Welcome Back",
+        "description_l1": "To keep connected with us,",
+        "description_l2": "please login with your personal info",
+        "or": "OR",
+        "signup": "Sign Up"
+    }
+}

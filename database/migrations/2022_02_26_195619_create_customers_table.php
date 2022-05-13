@@ -17,12 +17,12 @@ return new class extends Migration
             $table->integer('id', true, true);
             $table->bigInteger('user_id')->unsigned()->unique();
             $table->foreign('user_id')->references('id')->on('users');
-            $table->string('shop_name')->unique();
+            $table->string('shop_name');
             $table->string('l1_address')->unique();
             $table->string('l1_address_ar')->unique();
             $table->string('l2_address')->unique()->nullable();
             $table->string('l2_address_ar')->unique()->nullable();
-            $table->string('location_coords', 50)->unique()->nullable();
+            $table->string('location_coords', 50)->nullable();
             $table->string('vat_no', 20)->unique();
             $table->float('credit_limit', 12, 2)->nullable();
             $table->tinyInteger('category_id')->unsigned();

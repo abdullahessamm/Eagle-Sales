@@ -1,4 +1,5 @@
 const mix = require('laravel-mix');
+require('laravel-mix-svg-vue');
 
 /*
  |--------------------------------------------------------------------------
@@ -18,7 +19,12 @@ const mix = require('laravel-mix');
 
 // Authenticatation app
 mix.js('resources/js/auth.js', 'public/assets/js')
-    .vue();
+    .svgVue()
+    .options({
+        svgVue: {
+            svgPath: 'resources/svg',
+        }
+    });
 
 mix.sass('resources/sass/auth.scss', 'public/assets/css');
 

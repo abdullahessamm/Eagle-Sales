@@ -38,6 +38,8 @@ return new class extends Migration
             $table->bigInteger('approved_by')->nullable()->unsigned();
             $table->foreign('approved_by')->references('id')->on('users');
             $table->timestamp('approved_at')->nullable();
+            $table->enum('lang', ['en', 'ar', 'in'])->default('en');
+            $table->enum('gender', ['male', 'female']);
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('last_seen')->nullable();
             $table->timestamps();

@@ -1,6 +1,6 @@
 <template>
     <section id="loading-page" @mousewheel="e => preventZoom(e)">
-        <img src="/assets/images/logo/full_logo_colored.png" alt="logo">
+        <img :src="`${window.location.protocol}//${window.location.host}/assets/images/logo/full_logo_colored.png`" alt="logo">
         <LoadingAnimation :style="animationStyle"></LoadingAnimation>
         <transition name="fade">
             <p v-if="showHint"> slow connection, please wait... </p>
@@ -62,6 +62,12 @@ export default {
 
         showHint: false
     }),
+
+    computed: {
+        window() {
+            return window;
+        }
+    },
 
     methods: {
         preventZoom(e) {

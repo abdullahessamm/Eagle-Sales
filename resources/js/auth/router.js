@@ -1,4 +1,4 @@
-import {createRouter, createWebHashHistory} from 'vue-router';
+import {createRouter, createWebHistory} from 'vue-router';
 import guestMiddleware from './middlewares/guest';
 
 window.jsCookie = require('js-cookie');
@@ -31,7 +31,7 @@ const routes = [
 
 export default createRouter({
     routes,
-    history: createWebHashHistory('/auth/'),
+    history: createWebHistory('/auth/'),
     linkActiveClass: 'active-link',
     linkExactActiveClass: 'exact-active-link',
 })

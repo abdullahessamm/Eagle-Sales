@@ -39,10 +39,10 @@
               <button class="btn btn-sm signup" type="button" onclick="gotoSignup()"><i class="fa-solid fa-user-plus"></i> {{__('landing.header.links.signup')}}</button>
               <script type="text/javascript">
                   function gotoLogin() {
-                      window.location.href = "{{ url('/auth#/login') }}";
+                      window.location.href = "{{ url('/auth/login') }}";
                   }
                   function gotoSignup() {
-                      window.location.href = "{{ url('/auth#/signup') }}";
+                      window.location.href = "{{ url('/auth/signup') }}";
                   }
               </script>
           </form>
@@ -64,7 +64,7 @@
                     <p class="title pr-4 pl-4 pb-3 text-center mb-5 {{ app()->currentLocale() == 'en' ? 'left-text' : 'right-text'}}">
                         {{__('landing.header.short_discription')}}
                     </p>
-                    <a class="button {{app()->currentLocale() == 'ar' ? 'arabic' : ''}}" href="#"> <span>{{__('landing.header.get_started')}}</span> </a>
+                    <a class="button {{app()->currentLocale() == 'ar' ? 'arabic' : ''}}" href="/auth/signup"> <span>{{__('landing.header.get_started')}}</span> </a>
                 </div>
             </div>
             <!-- Header Right side -->

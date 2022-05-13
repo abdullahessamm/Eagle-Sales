@@ -81,8 +81,8 @@ class UserSeeder extends Seeder
                 'f_name_ar'         => $namesAr[$i],
                 'l_name'            => $reversedNames[$i],
                 'l_name_ar'         => $reversedArNames[$i],
-                'email'             => "user_" . $i + 1 . "@gmail.com",
-                'username'          => "user_" . $i + 1,
+                'email'             => "user" . $i + 1 . "@gmail.com",
+                'username'          => "user" . $i + 1,
                 'password'          => \Hash::make('password'),
                 'is_active'         => true,
                 'country'           => 'SA',
@@ -90,6 +90,7 @@ class UserSeeder extends Seeder
                 'job'               => $job,
                 'serial_code'       => $userLetter . $i + 1 . '_' . \Str::random(25 - strlen($userLetter . $i + 1 . '_')),
                 'is_approved'       => true,
+                'gender'            => 'male'
             ]);
         }
     }

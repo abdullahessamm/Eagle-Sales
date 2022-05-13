@@ -13,9 +13,7 @@ class OnlineClient extends Model
     protected $fillable = [
         'user_id',
         'l1_address',
-        'l1_address_ar',
         'l2_address',
-        'l2_address_ar',
         'location_coords',
         'created_at',
         'updated_at'
@@ -23,7 +21,6 @@ class OnlineClient extends Model
 
     protected $hidden = [
         'user_id',
-        'last_activity',
         'created_at',
         'updated_at'
     ];
