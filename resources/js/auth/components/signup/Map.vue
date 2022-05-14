@@ -41,6 +41,9 @@ export default {
     data: () => ({
         map: null,
         marker: null,
+        geocoder: null,
+        infoWindow: null,
+        preventSelection: false,
 
         countriesCoords: {
             saudiArabia: {
@@ -94,6 +97,8 @@ export default {
                     this.map.getZoom() < 12 ? this.map.setZoom(12) : null;
                     this.marker.setPosition(this.currentPosition);
                     this.marker.setVisible(true);
+
+                    this.showLocationInfo();
                 }).catch(err => {
                     this.geolocationError = true;
                     if (err.code === 1) {
@@ -108,10 +113,31 @@ export default {
                 });
             }
         },
+
+        showLocationInfo() {
+            this.geocoder.geocode({
+                location: this.currentPosition
+            }, (results, status) => {
+                if (status === 'OK') {
+                    this.preventSelection = false;
+                    if (results[0]) {
+                        this.infoWindow.setContent(results[0].formatted_address);
+                        this.infoWindow.open(this.map, this.marker);
+                    } else {
+                        window.alert('No results found');
+                    }
+                } else {
+                    this.preventSelection = true;
+                }
+            });
+        },
     },
 
     async mounted() {
-        const loader =  new Loader({ apiKey: googleAPI });
+        const loader =  new Loader({
+            apiKey: googleAPI,
+            language: this.$store.state.lang,
+        });
         const mapDiv = document.getElementById('map');
         const timezone = new Date().toString().match(/GMT[\-\+]\d+|UTC[\-\+]\d+/)[0]
         let country = 'saudiArabia';
@@ -120,14 +146,15 @@ export default {
             country = 'egypt';
         }
 
+        // map init
         await loader.load();
         this.map = new google.maps.Map(mapDiv, {
             center: this.center ?? this.countriesCoords[country],
             zoom: this.zoom ? parseInt(this.zoom) : 5,
-            draggableCursor: 'default'
+            draggableCursor: this.preventSelection ? 'not-allowed' : 'pointer',
         })
 
-        // const markerImg = window.location.origin + '/assets/images/map/marker.png';
+        // marker init
         this.marker = new google.maps.Marker({
             position: {
                 lat: 0,
@@ -138,6 +165,12 @@ export default {
         })
         this.marker.setVisible(false);
 
+        // geocoder init
+        this.geocoder = new google.maps.Geocoder();
+
+        // info window init
+        this.infoWindow = new google.maps.InfoWindow();
+        
         this.map.addListener("click", e => {
             this.currentPosition = {
                 lat: e.latLng.lat(),
@@ -145,6 +178,8 @@ export default {
             }
             this.marker.setPosition(this.currentPosition);
             this.marker.setVisible(true);
+
+            this.showLocationInfo();
         })
     },
 }

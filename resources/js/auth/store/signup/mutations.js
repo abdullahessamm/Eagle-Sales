@@ -29,6 +29,10 @@ export default {
         state.userData = userData
     },
 
+    CHANGE_USERDATA_PROPERTY: (state, payload) => {
+        state.userData[payload.property] = payload.value
+    },
+
     SET_SIGNUP_PHONE: (state, phone) => {
         state.userData = {...state.userData, phone}
     },
@@ -39,6 +43,10 @@ export default {
 
     SET_SUPPLIER_LOCATION: (state, location) => {
         state.supplierInfo = {...state.supplierInfo, location_coords: location}
+    },
+
+    SET_SIGNUP_AVAILABLE_PLACES: (state, availablePlaces) => {
+        state.availablePlaces = availablePlaces
     },
 
     SET_SIGNUP_AVAILABLE_CUSTOMER_CATEGORIES: (state, customerCategories) => {

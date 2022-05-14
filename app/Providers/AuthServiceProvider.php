@@ -3,12 +3,15 @@
 namespace App\Providers;
 
 use App\Auth\CacheTokenProvider;
+use App\Models\AvailableCity;
+use App\Models\AvailableCountry;
 use App\Models\BackOfficeUser;
 use App\Models\Customer;
 use App\Models\CustomerCategory;
 use App\Models\Item;
 use App\Models\Seller;
 use App\Models\Supplier;
+use App\Policies\AvailableCountryPolicy;
 use App\Policies\BackOfficeUserPolicy;
 use App\Policies\CustomerCategoryPloicy;
 use App\Policies\CustomerPolicy;
@@ -32,6 +35,8 @@ class AuthServiceProvider extends ServiceProvider
         CustomerCategory::class  => CustomerCategoryPloicy::class,
         Item::class              => ItemPolicy::class,
         InventoryCategory::class => InventoryCategoryPolicy::class,
+        AvailableCountry::class  => AvailableCountryPolicy::class,
+        AvailableCity::class     => AvailableCity::class,
     ];
 
     /**

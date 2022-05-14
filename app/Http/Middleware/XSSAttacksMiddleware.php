@@ -7,6 +7,42 @@ use Illuminate\Http\Request;
 
 class XSSAttacksMiddleware
 {
+    private int $max_deep = 5;
+
+    private function throwAttackExceptionWhenXSSIsDetected($request)
+    {
+        $xssPattern = '/<.+>.*< *\/.+>/';
+        $requestParams = $request->all();
+        $requestParams = $this->getAllNestedParams($requestParams);
+
+        foreach ($requestParams as $param) {
+            if (preg_match($xssPattern, $param)) {
+                throw new \App\Exceptions\XSSAttackAttempt();
+            }
+        }
+
+    }
+
+    // get all the nested parameters with it's deep level of nesting if deep level is more than 5 then return
+    private function getAllNestedParams($params, $deep = 0)
+    {
+        $nestedParams = [];
+        foreach ($params as $key => $value) {
+            if (is_array($value)) {
+                if ($deep < $this->max_deep) {
+                    $nestedParams = array_merge($nestedParams, $this->getAllNestedParams($value, $deep + 1));
+                } else {
+                    throw new \App\Exceptions\ValidationError([
+                        'message' => 'Deep level of nesting is more than 5'
+                    ]);
+                }
+            } else {
+                $nestedParams[] = $value;
+            }
+        }
+        return $nestedParams;
+    }
+
     /**
      * Handle an incoming request.
      *
@@ -16,13 +52,7 @@ class XSSAttacksMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $pattern = '/<.+>.*< *\/.+>/';
-        $data = $request->all();
-        foreach ($data as $key => $val) {
-            if (is_string($val))
-                if (preg_match($pattern, $val))
-                    throw new \App\Exceptions\XSSAttackAttempt();
-        }
+        $this->throwAttackExceptionWhenXSSIsDetected($request);
         return $next($request);
     }
 }

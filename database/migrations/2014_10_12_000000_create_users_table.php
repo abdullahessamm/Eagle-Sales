@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('email', 50)->unique();
             $table->char('country', 2);
             $table->string('city', 10);
+            $table->string('coords', 50)->nullable();
             $table->string('username', 50)->unique();
             $table->char('password', 60);
             $table->boolean('is_active')->default(true);

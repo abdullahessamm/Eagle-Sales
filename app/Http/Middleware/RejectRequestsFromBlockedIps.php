@@ -23,11 +23,11 @@ class RejectRequestsFromBlockedIps
             $blocked_ips = cache()->get('blocked_ips');
             
             if (in_array($requestIP, $blocked_ips))
-                throw new \App\Exceptions\ForbiddenException;
+                throw new \App\Exceptions\ForbiddenException('Your IP has been blocked');
         }
 
         if (BlockedIp::where('ip', $requestIP)->first())
-            throw new \App\Exceptions\ForbiddenException;
+            throw new \App\Exceptions\ForbiddenException('Your IP has been blocked');
         
         return $next($request);
     }

@@ -42,10 +42,10 @@
             <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.repeatPassword }} </div>
         </div>
         <div class="input-container">
-            <input type="text" class="eagle-sales-input" name="country" :value="`Country: ${country}`" disabled>
+            <b-form-select :options="countriesOptions" v-model="country"></b-form-select>
         </div>
         <div :class="`input-container ${errors.city ? 'error' : ''}`">
-            <b-form-select v-model="city" :options="cities"></b-form-select>
+            <b-form-select :options="citiesOptions" v-model="city"></b-form-select>
             <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.city }} </div>
         </div>
         <div class="input-container gender-container text-left d-inline-flex">
@@ -120,7 +120,7 @@ export default {
         username: '',
         password: '',
         repeatPassword: '',
-        country: 'SA',
+        country: '',
         city: '',
         gender: '',
 
@@ -134,6 +134,7 @@ export default {
             password: null,
             repeatPassword: null,
             city: null,
+            country: null,
             gender: null,
         },
 
@@ -155,24 +156,48 @@ export default {
 
     computed: {
         apiUrl: () => window.location.apiUrl,
-        country: function () {
-            return this.$store.state.signup.ipLocation.iso_code;
-        },
-        cities: function () {
-            let cities = [
-                {
-                    text: 'Select city',
-                    value: 0,
-                    disabled: true
-                },
-            ]
 
-            this.$store.state.signup.availableCities.forEach(city => {
-                cities.push({
+        countries: function () {
+            return this.$store.state.signup.availablePlaces;
+        },
+
+        countriesOptions: function () {
+            const countries = this.countries.map(country => {
+                return {
+                    text: country.name,
+                    value: country.iso_code
+                }
+            });
+
+            countries.unshift({
+                text: 'Select country',
+                value: '',
+                disabled: true
+            });
+
+            return countries;
+        },
+
+        cities: function () {
+            const country = this.countries.find(place => place.iso_code === this.country);
+            return country ? country.cities : [];
+        },
+
+        citiesOptions: function () {
+            const cities = this.cities.map(city => {
+                return {
                     text: city.name,
-                    value: city.id,
-                })
-            })
+                    value: city.name
+                }
+            });
+
+            cities.unshift({
+                text: 'Select city',
+                value: '',
+                disabled: true
+            });
+
+            return cities;
         },
     },
 

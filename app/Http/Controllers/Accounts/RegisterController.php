@@ -149,7 +149,7 @@ class RegisterController extends Controller
         }
 
         $rules = [
-            'vat_no'           => 'required|regex:/^[A-Za-z]{2}\d{3,18}$/|unique:suppliers,vat_no',
+            'vat_no'           => 'required|regex:/^[A-Z]{2}\d{3,18}$/|unique:suppliers,vat_no',
             'shop_name'        => 'required|string|min:3|max:50',
             'whatsapp_no'      => 'required|regex:/^\+966[0-9]{8,11}$/|unique:suppliers,whatsapp_no',
             'fb_page'          => 'regex:/^(https?:\/\/)?(www\.)?(m\.)?(fb)?(facebook)?(\.com)(\/[\w\D]+\/?)+$/|unique:suppliers,fb_page|max:100',

@@ -16,7 +16,9 @@ return new class extends Migration
         Schema::create('available_cities', function (Blueprint $table) {
             $table->smallIncrements('id');
             $table->string('name', 50);
+            $table->string('name_ar', 50);
             $table->tinyInteger('country_id')->unsigned();
+            $table->foreign('country_id')->references('id')->on('available_countries')->onDelete('cascade');
             $table->timestamps();
         });
     }

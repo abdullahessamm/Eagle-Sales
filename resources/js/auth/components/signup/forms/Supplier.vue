@@ -5,17 +5,17 @@
             <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.shop_name }} </div>
         </div>
         <div :class="`input-container text-before-input ${errors.vat_no ? 'error' : ''}`">
-            <span>SA</span>
+            <span>{{ country }}</span>
             <input type="text" class="eagle-sales-input" name="vat_no" placeholder="VAT No. (required)" v-model="vat_no">
             <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.vat_no }} </div>
         </div>
         <div :class="`input-container text-before-input ${errors.phone ? 'error' : ''}`">
-            <span>+966</span>
+            <span>{{ phonePrefix }}</span>
             <input type="text" class="eagle-sales-input" name="phone" placeholder="Phone No. (required)" v-model="phone">
             <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.phone }} </div>
         </div>
         <div :class="`input-container text-before-input ${errors.whatsapp_no ? 'error' : ''}`">
-            <span>+966</span>
+            <span>{{ phonePrefix }}</span>
             <input type="text" class="eagle-sales-input" name="whatsapp_no" placeholder="Whatsapp No." v-model="whatsapp_no">
             <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.whatsapp_no }} </div>
         </div>
@@ -112,7 +112,14 @@ export default {
     }),
 
     computed: {
-        apiUrl: () => window.location.apiUrl
+        apiUrl: () => window.location.apiUrl,
+        country: function () {
+            return this.$store.state.signup.userData.country;
+        },
+        phonePrefix: function () {
+            const userCountry = this.$store.state.signup.userData.country;
+            return this.$store.state.signup.availablePlaces.find(place => place.iso_code === userCountry).code;
+        }
     },
 
     watch: {
@@ -309,8 +316,8 @@ export default {
             if (this.readyForNext) {
                 const supplierInfo = {
                     shop_name: this.shop_name,
-                    vat_no: this.vat_no,
-                    whatsapp_no: this.whatsapp_no,
+                    vat_no: this.country + this.vat_no,
+                    whatsapp_no: this.phonePrefix + this.whatsapp_no,
                     fb_page: this.fb_page,
                     website_domain: this.website_domain,
                     l1_address: this.l1_address,
@@ -330,13 +337,13 @@ export default {
             const url = `${this.apiUrl}/accounts/register/check-unique/suppliers`;
 
             let data = {
-                vat_no: 'SA' + this.vat_no,
-                phone: '+966' + this.phone,
+                vat_no: this.country + this.vat_no,
+                phone: this.phonePrefix + this.phone,
                 l1_address: this.l1_address,
                 l1_address_ar: this.l1_address_ar,
             };
 
-            this.whatsapp_no ? data.whatsapp_no = '+966' + this.whatsapp_no : null;
+            this.whatsapp_no ? data.whatsapp_no = this.phonePrefix + this.whatsapp_no : null;
             this.fb_page ? data.fb_page = this.fb_page : null;
             this.website_domain ? data.website_domain = this.website_domain : null;
             this.l2_address ? data.l2_address = this.l2_address : null;

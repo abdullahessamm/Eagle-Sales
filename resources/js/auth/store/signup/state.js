@@ -1,11 +1,11 @@
 export const initState = {
     isLoading: false,
     job: '0',
-    step: 3,
+    step: 1,
     isErrors: false,
     errors: [],
     ipLocation: null,
-    availableCities: [],
+    availablePlaces: [],
     userData: {
         f_name: '',
         f_name_ar: '',
@@ -15,7 +15,7 @@ export const initState = {
         username: '',
         phone: '',
         password: '',
-        country: 'SA',
+        country: '',
         city: '',
         gender: '',
         lang: '',
