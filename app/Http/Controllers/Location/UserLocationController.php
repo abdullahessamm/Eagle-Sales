@@ -7,6 +7,13 @@ use Illuminate\Http\Request;
 
 class UserLocationController extends Controller
 {
+    
+    /**
+     * get user location by ip address
+     *
+     * @param Request $request
+     * @return void
+     */
     public function getIpLocation(Request $request)
     {
         $ip = $request->ip();

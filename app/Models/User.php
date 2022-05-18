@@ -31,25 +31,21 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'f_name',
-        'f_name_ar',
         'l_name',
-        'l_name_ar',
         'avatar_uri',
-        'personal_id_uri',
         'email',
-        'country',
-        'city',
         'username',
         'password',
         'is_active',
         'job',
         'serial_code',
-        'remember_token',
         'created_by',
         'updated_by',
         'is_approved',
         'approved_by',
         'approved_at',
+        'lang',
+        'gender',
         'email_verified_at',
         'last_seen',
         'updated_at'
@@ -78,6 +74,15 @@ class User extends Authenticatable
     {
         $this->makeVisible(['created_by', 'updated_by', 'approved_by', 'personal_id_uri']);
         return $this;
+    }
+
+    public function generateUniqueUsername()
+    {
+        $this->username = 'user_' . now()->timestamp;
+
+        while ($this->where('username', $this->username)->exists()) {
+            $this->username = 'user_' . now()->timestamp;
+        }
     }
 
     public function generateSerialCode(): bool
@@ -176,6 +181,38 @@ class User extends Authenticatable
         if ($this->userInfo instanceof BackOfficeUser)
             $this->userInfo->withPermissions();
         return $this;
+    }
+
+    // related places
+    public function places()
+    {
+        return $this->hasMany(UsersPlace::class, 'user_id', 'id');
+    }
+
+    public function getPlaces()
+    {
+        return $this->places()->get()->all();
+    }
+
+    public function deletePlace($placeId)
+    {
+        try {
+            $this->places()->where('place_id', $placeId)->delete();
+            return true;
+        } catch (QueryException $e) {
+            throw new \App\Exceptions\DBException($e);
+        }
+    }
+
+    public function addPlace(UsersPlace $place)
+    {
+        try {
+            $place->user_id = $this->id;
+            $place->save();
+            return true;
+        } catch (QueryException $e) {
+            throw new \App\Exceptions\DBException($e);
+        }
     }
 
     // get related payment cards

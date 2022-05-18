@@ -21,9 +21,7 @@ if (env('APP_MAINTENANCE')) {
 } else {
     Route::view('/', 'landing')->name('landing');
 
-    Route::view('/auth/{params?}', 'auth')->where('params', '.*');
-
-    Route::view('/store/{params?}', 'store')->where('params', '.*')->name('store');
+    Route::view('/auth/{params?}', 'auth')->where('params', '.*')->middleware('availableCountry');
 
     Route::get('/lang/{lang}', function ($lang) {
         $cookie = cookie('lang', $lang, 60 * 24 * 30 * 12 * 80, null, '.' . env('APP_URL'), false, false);

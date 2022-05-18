@@ -44,14 +44,16 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/api/index.php'));
 
             Route::domain('suppliers.' . env('APP_URL'))
-            ->group(function () {
-                Route::view('/' , 'supplier-dashboard');
-            });
+                ->middleware('availableCountry')
+                ->group(function () {
+                    Route::view('/' , 'supplier-dashboard');
+                });
 
             Route::domain('store.' . env('APP_URL'))
-            ->group(function () {
-                Route::view('/' , 'store');
-            });
+                ->middleware('availableCountry')
+                ->group(function () {
+                    Route::view('/' , 'store');
+                });
 
             Route::middleware('web')
                 ->namespace($this->namespace)

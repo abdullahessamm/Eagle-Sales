@@ -14,11 +14,6 @@ class Seller extends Model
         'user_id',
         'age',
         'education',
-        'l1_address',
-        "l1_address_ar",
-        "l2_address",
-        "l2_address_ar",
-        "location_coords",
         "salary",
         "tax",
         "bank_account_number",
@@ -27,11 +22,6 @@ class Seller extends Model
 
     protected $hidden = [
         'education',
-        'l1_address',
-        "l1_address_ar",
-        "l2_address",
-        "l2_address_ar",
-        "location_coords",
         "salary",
         "tax",
         "bank_account_number",

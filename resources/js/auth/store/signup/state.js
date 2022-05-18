@@ -1,7 +1,7 @@
 export const initState = {
     isLoading: false,
     job: '0',
-    step: 1,
+    step: 3,
     isErrors: false,
     errors: [],
     ipLocation: null,

@@ -43,7 +43,7 @@ class AvailablePlacesController extends Controller
             throw new \App\Exceptions\ForbiddenException;
 
         $validation = Validator::make($request->all(), [
-            'name' => 'required|regex:/^[A-Za-z\s]+$/|max:255|unique:available_countries',
+            'name' => 'required|regex:/^[A-Za-z\s]+$/|max:50|unique:available_countries',
             'name_ar' => ['required', new ArabicLettersWithSpaces, 'max:50', 'unique:available_countries'],
             'code' => 'required|regex:/^\+[0-9]{1,3}$/|unique:available_countries',
             'currency' => 'required|regex:/^[A-Z]{3}$/|unique:available_countries',
@@ -59,7 +59,7 @@ class AvailablePlacesController extends Controller
         $geoCodeRequest = json_decode($geoCode->setParam([ 'address' => $request->get('name') ])->get());
 
         if ($geoCodeRequest->status === 'REQUEST_DENIED')
-            throw new \App\Exceptions\GoogleMapsException('Google Maps API request denied');    
+            throw new \App\Exceptions\GoogleMapsException('Google Maps API request denied');
 
         else if ( $geoCodeRequest->status === 'ZERO_RESULTS' )
             throw new \App\Exceptions\ValidationError(['name' => 'Country name is not valid']);

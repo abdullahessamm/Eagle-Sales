@@ -14,7 +14,7 @@
         display: flex;
         position: absolute;
         bottom: 30px;
-        left: 10px;
+        right: 10px;
         width: 45px;
         height: 45px;
         background: #fff;
@@ -152,6 +152,12 @@ export default {
             center: this.center ?? this.countriesCoords[country],
             zoom: this.zoom ? parseInt(this.zoom) : 5,
             draggableCursor: this.preventSelection ? 'not-allowed' : 'pointer',
+            zoomControl: false,
+            mapTypeControl: false,
+            streetViewControl: false,
+            options: {
+                gestureHandling: 'cooperative',
+            },
         })
 
         // marker init

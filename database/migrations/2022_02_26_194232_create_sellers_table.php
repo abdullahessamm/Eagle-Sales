@@ -19,11 +19,6 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users');
             $table->tinyInteger('age');
             $table->string('education');
-            $table->string('l1_address')->unique();
-            $table->string('l1_address_ar')->unique();
-            $table->string('l2_address')->unique()->nullable();
-            $table->string('l2_address_ar')->unique()->nullable();
-            $table->string('location_coords', 50)->nullable();
             $table->float('salary', 7, 2, true)->nullable();
             $table->float('tax', 6, 2, true)->nullable();
             $table->string('bank_account_number', 50)->nullable();

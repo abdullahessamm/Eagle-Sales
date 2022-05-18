@@ -17,22 +17,12 @@ class Supplier extends Model
         'whatsapp_no',
         'fb_page',
         'website_domain',
-        'location_coords',
-        'l1_address',
-        'l1_address_ar',
-        'l2_address',
-        'l2_address_ar'
     ];
 
     protected $hidden = [
         'vat_no',
         'fb_page',
         'website_domain',
-        'location_coords',
-        'l1_address',
-        'l1_address_ar',
-        'l2_address',
-        'l2_address_ar',
     ];
 
     public function relatedOrders()

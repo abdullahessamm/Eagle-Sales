@@ -46,6 +46,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\RejectRequestsFromBlockedIps::class,
             \App\Http\Middleware\XSSAttacksMiddleware::class,
+            \App\Http\Middleware\RejectNotSupportedCountries::class,
         ],
     ];
 
@@ -61,6 +62,7 @@ class Kernel extends HttpKernel
         'auth' => \App\Http\Middleware\AuthUser::class,
         'approved' => \App\Http\Middleware\ApprovedUser::class,
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
+        'availableCountry' => \App\Http\Middleware\RejectNotSupportedCountries::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,

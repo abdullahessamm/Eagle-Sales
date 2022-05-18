@@ -83,6 +83,7 @@
             max-width: 65%;
             flex-grow: 4;
             text-align: center;
+            overflow-y: auto;
 
             .z-header {
                 height: 30%;

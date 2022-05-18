@@ -195,6 +195,7 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         'GeoIP' => \Torann\GeoIP\Facades\GeoIP::class,
         'GoogleMaps' => GoogleMaps\Facade\GoogleMapsFacade::class,
+        'GoogleGeocode' => \App\Services\Google\GoogleGeocode::class,
     ])->toArray(),
 
 ];
