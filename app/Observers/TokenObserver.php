@@ -11,6 +11,7 @@ class TokenObserver
     {
         $clonedToken = clone $personalAccessToken;
         $clonedToken->userData = $clonedToken->getUser()->withFullInfo();
+        
         cache()->put($clonedToken->token, $clonedToken, now()->addDays(2));
     }
 

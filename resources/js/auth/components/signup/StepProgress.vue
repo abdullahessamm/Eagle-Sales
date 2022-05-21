@@ -206,12 +206,6 @@ export default {
         },
     },
 
-    watch: {
-        currentStep(val) {
-            this.progressLevelStyle.width = `${(val - 1)/(this.numOfSteps - 1) * 100}%`;
-        }
-    },
-
     methods: {
         changeStep(step) {
             if (step < this.currentStep)
@@ -222,6 +216,11 @@ export default {
     mounted() {
         this.numOfSteps = this.steps.length;
         this.progressLevelStyle.width = `${(this.currentStep - 1)/(this.numOfSteps - 1) * 100}%`;
-    }
+    },
+
+    updated() {
+        this.numOfSteps = this.steps.length;
+        this.progressLevelStyle.width = `${(this.currentStep - 1)/(this.numOfSteps - 1) * 100}%`;
+    },
 }
 </script>

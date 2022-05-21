@@ -6,22 +6,37 @@
         </div>
         <div class="form h-100">
             <div class="z-header">
-            <h3 class="title"> Create Account </h3>
-                <div class="steps w-100">
+            <h3 class="title"> {{ __.title }} </h3>
+                <div class="steps w-100" :style="$store.state.lang === 'ar' ? 'direction:rtl' : ''">
                     <StepProgress :steps="steps"></StepProgress>
                 </div>
             </div>
-            <div class="z-body">
+            <div class="z-body" :style="$store.state.lang === 'ar' ? 'direction:rtl' : 'direction:ltr'">
                 <div class="signup-inputs w-100 h-100" v-if="$store.state.signup.job">
-                    <form class="signup-form h-100 position-relative" @submit.prevent>
+                    <form class="signup-form h-100 position-relative d-flex justify-content-center" @submit.prevent>
                         <transition name="slide">
-                            <Step1 v-if="$store.state.signup.step === 1 && !$store.state.signup.isLoading"></Step1>
+                            <Step1 v-if="$store.state.signup.step === 1 && !$store.state.signup.isLoading" :__="__"></Step1>
                         </transition>
                         <transition name="slide">
-                            <Step2 v-if="$store.state.signup.step === 2 && !$store.state.signup.isLoading"></Step2>
+                            <Step2 v-if="$store.state.signup.step === 2 && !$store.state.signup.isLoading" :__="__"></Step2>
                         </transition>
                         <transition name="slide">
-                            <Step3 v-if="$store.state.signup.step === 3 && !$store.state.signup.isLoading"></Step3>
+                            <Step3
+                                v-if="$store.state.signup.step === 3 &&
+                                     !$store.state.signup.isLoading &&
+                                      $store.state.signup.job !== '5'"
+                                :__="__"
+                            ></Step3>
+                        </transition>
+                        <transition name="slide">
+                            <Finish
+                                v-if="!$store.state.signup.isLoading &&
+                                     (
+                                        ($store.state.signup.step === 4) ||
+                                        ($store.state.signup.step === 3 && $store.state.signup.job === '5')
+                                     )"
+                                :__="__"
+                            ></Finish>
                         </transition>
                         <!-- <transition tag="div" class="w-100 h-100 d-flex justify-content-center align-items-center" name="slide" v-if="$store.state.signup.isLoading">
                             <div class="animation-container">
@@ -38,12 +53,12 @@
                     </form>
                 </div>
                 <div class="choose-user-type justify-content-center" v-if="! ($store.state.signup.job || $store.state.signup.isLoading)">
-                    <div class="card-button" v-if="!isCustomer" @click="$store.commit('SET_SIGNUP_JOB_STATE', '0')"> Supplier </div>
-                    <div class="card-button" v-if="!isCustomer" @click="isCustomer=true"> Customer </div>
+                    <div class="card-button" v-if="!isCustomer" @click="$store.commit('SET_SIGNUP_JOB_STATE', '0')"> {{ __.user_types.supplier }} </div>
+                    <div class="card-button" v-if="!isCustomer" @click="isCustomer=true"> {{ __.user_types.customer }} </div>
                     <transition name="fade">
                         <div class="customers-group d-flex" v-if="isCustomer">
-                            <div class="card-button" @click="$store.commit('SET_SIGNUP_JOB_STATE', '5')"> Person </div>
-                            <div class="card-button" @click="$store.commit('SET_SIGNUP_JOB_STATE', '3')"> Corporation </div>
+                            <div class="card-button" @click="$store.commit('SET_SIGNUP_JOB_STATE', '5')"> {{ __.user_types.individual }} </div>
+                            <div class="card-button" @click="$store.commit('SET_SIGNUP_JOB_STATE', '3')"> {{ __.user_types.corporation }} </div>
                         </div>
                     </transition>
                 </div>
@@ -166,17 +181,15 @@ import StepProgress from '../components/signup/StepProgress.vue';
 import Step1 from '../components/signup/Step1.vue';
 import Step2 from '../components/signup/Step2.vue';
 import Step3 from '../components/signup/Step3.vue';
+import Finish from '../components/signup/Finish.vue';
 import LoadingAnimation from '../components/LoadingAnimation.vue';
 
 export default {
     name: 'SignupLayout',
+    props: ['__'],
 
     computed: {
         origin: () => window.location.origin,
-        
-        currentStep () {
-            return this.$store.state.signup.step
-        },
 
         job () {
             return this.$store.state.signup.job
@@ -185,55 +198,47 @@ export default {
 
     data: () => ({
         isCustomer: false,
-        steps: [
-            {
-                num: 1,
-                title: 'Account Info',
-            },
-            {
-                num: 2,
-                title: 'User Info',
-            },
-            {
-                num: 3,
-                title: 'Select Location',
-            },
-            {
-                num: 4,
-                title: 'Finish',
-            }
-        ],
+        steps: [],
     }),
 
     watch: {
-        currentStep (val) {
-            if (
-                val === 2 &&
-                this.$store.state.signup.availableCustomerCategories.length === 0 &&
-                this.job === '3'
-            )
-            this.$store.dispatch('fetchCustomerCategorys')
+        job (val) {
+            if (val !== '5') {
+                this.steps[2].title = this.__.steps.user_info;
+                this.steps.push({
+                    num: 4,
+                    title: this.__.steps.finish,
+                });
+            } else {
+                this.steps[2].title = this.__.steps.finish;
+                this.steps.splice(3, 1);
+            }
         }
     },
 
-    beforeMount() {
-        if (
-            this.$store.state.signup.availableCustomerCategories.length === 0 &&
-            this.currentStep === 2 &&
-            this.job === '3'
-        )
-            this.$store.dispatch('fetchCustomerCategorys')
+    beforeMount () {
+        this.steps = [
+            {
+                num: 1,
+                title: this.__.steps.account_info,
+            },
+            {
+                num: 2,
+                title: this.__.steps.select_location,
+            },
+            {
+                num: 3,
+                title: this.__.steps.finish,
+            },
+        ];
     },
-
-    // unmounted() {
-    //     this.$store.commit('RESET_SIGNUP_ALL_STATE');
-    // },
 
     components: {
         StepProgress,
         Step1,
         Step2,
         Step3,
+        Finish,
         LoadingAnimation,
     },
 }

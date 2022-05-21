@@ -1,43 +1,27 @@
 <template>
     <div id="supplier-info" class="user-info">
-        <div :class="`input-container ${errors.shop_name ? 'error' : ''}`">
-            <input type="text" class="eagle-sales-input" name="shop_name" placeholder="Shop name (required)" v-model="shop_name">
+        <div :class="`input-container full-width ${errors.shop_name ? 'error' : ''}`">
+            <input type="text" class="eagle-sales-input" name="shop_name" :placeholder="__.placeholders.shop_name" v-model="shop_name">
             <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.shop_name }} </div>
+        </div>
+        <div :class="`input-container full-width text-before-input ${errors.phone ? 'error' : ''}`">
+            <span>{{ phonePrefix }}</span>
+            <input type="text" class="eagle-sales-input" name="phone" :placeholder="__.placeholders.phone" v-model="phone">
+            <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.phone }} </div>
         </div>
         <div :class="`input-container ${errors.category ? 'error' : ''}`">
             <b-form-select :options="selectboxOptions" v-model="category"></b-form-select>
             <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.category }} </div>
         </div>
         <div :class="`input-container text-before-input ${errors.vat_no ? 'error' : ''}`">
-            <span>SA</span>
-            <input type="text" class="eagle-sales-input" name="vat_no" placeholder="VAT No. (required)" v-model="vat_no">
+            <span style="direction: ltr">{{ vatPrefix }}</span>
+            <input type="text" class="eagle-sales-input" name="vat_no" :placeholder="__.placeholders.vat" v-model="vat_no">
             <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.vat_no }} </div>
-        </div>
-        <div :class="`input-container text-before-input ${errors.phone ? 'error' : ''}`">
-            <span>+966</span>
-            <input type="text" class="eagle-sales-input" name="phone" placeholder="Phone No. (required)" v-model="phone">
-            <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.phone }} </div>
-        </div>
-        <div :class="`input-container ${errors.l1_address ? 'error' : ''}`">
-            <input type="text" class="eagle-sales-input" name="l1_address" placeholder="Address Line 1 (required)" v-model="l1_address">
-            <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.l1_address }} </div>
-        </div>
-        <div :class="`input-container ${errors.l1_address_ar ? 'error' : ''}`">
-            <input type="text" class="eagle-sales-input" name="l1_address_ar" placeholder="Address Line 1 in Arabic (required)" v-model="l1_address_ar">
-            <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.l1_address_ar }} </div>
-        </div>
-        <div :class="`input-container ${errors.l2_address ? 'error' : ''}`">
-            <input type="text" class="eagle-sales-input" name="l2_address" placeholder="Address Line 2" v-model="l2_address">
-            <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.l2_address }} </div>
-        </div>
-        <div :class="`input-container ${errors.l2_address_ar ? 'error' : ''}`">
-            <input type="text" class="eagle-sales-input" name="l2_address_ar" placeholder="Address Line 2 in Arabic" v-model="l2_address_ar">
-            <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.l2_address_ar }} </div>
         </div>
         <div class="input-container">
             <button :class="`eagle-sales-btn ${readyForNext && !checkingUniques ? '' : 'disabled'}`" @click="goToNext">
                 <LoadingAnimation  :style="{color: '#fff'}" v-if="checkingUniques"/>
-                <span v-else> Next </span>
+                <span v-else> {{__.buttons.next}} </span>
             </button>
         </div>
     </div>
@@ -58,6 +42,7 @@ import axios from 'axios';
 
 export default {
     name: 'Supplier',
+    props: ['__'],
 
     data: () => ({
         checkingUniques: false,
@@ -65,20 +50,12 @@ export default {
         shop_name: '',
         vat_no: '',
         phone: '',
-        l1_address: '',
-        l1_address_ar: '',
-        l2_address: '',
-        l2_address_ar: '',
         category: 0,
 
         errors: {
             shop_name: '',
             vat_no: '',
             phone: '',
-            l1_address: '',
-            l1_address_ar: '',
-            l2_address: '',
-            l2_address_ar: '',
             category: '',
         },
 
@@ -86,11 +63,7 @@ export default {
             false,
             false,
             false,
-            false,
-            false,
-            true,
-            true,
-            false,
+            false
         ],
 
         readyForNext: false,
@@ -99,12 +72,38 @@ export default {
     computed: {
         apiUrl: () => window.location.apiUrl,
 
+        refactoredPhone: function () {
+            const phonePrefix = this.phonePrefix;
+            let phone = this.phone.replace(phonePrefix, '');
+
+            if (phonePrefix === '+20') {
+                phone = phone.replace(/^0/, '');
+            }
+
+
+            return phonePrefix + phone;
+        },
+        
+        phonePrefix: function () {
+            const userCountry = this.$store.state.signup.selectedPlace.country;
+            return this.$store.state.signup.availablePlaces.find(place => place.iso_code === userCountry).code;
+        },
+
+        vatPrefix: function () {
+            const userCountry = this.$store.state.signup.selectedPlace.country;
+            return this.$store.state.signup.availablePlaces.find(place => place.iso_code === userCountry).iso_code;
+        },
+
+        refactoredVat: function () {
+            const vatPrefix = this.vatPrefix;
+            return vatPrefix + this.vat_no;
+        },
+
         selectboxOptions() {
             const categories = this.$store.state.signup.availableCustomerCategories;
-            // console.log(categories)
             const options = [
                 {
-                    text: 'Select Category (required)',
+                    text: this.__.placeholders.category,
                     value: 0,
                     disabled: true,
                 },
@@ -112,7 +111,7 @@ export default {
 
             categories.forEach(category => {
                 options.push({
-                    text: category.category_name,
+                    text: this.$store.state.lang === 'en' ? category.category_name : category.category_name_ar,
                     value: category.id,
                 });
             });
@@ -126,15 +125,15 @@ export default {
             const pattern = /^[a-zA-Z0-9أ-ي\s]+$/;
 
             if (val.match(/^\s/))
-                this.errors.shop_name = 'Shop name must not start with space';
+                this.errors.shop_name = this.__.errors.shop_name.invalid;
             else if (val.length === 0)
-                this.errors.shop_name = 'Shop name is required';
+                this.errors.shop_name = this.__.errors.shop_name.required;
             else if (! pattern.test(val))
-                this.errors.shop_name = 'Shop name must not contain special characters';
+                this.errors.shop_name = this.__.errors.shop_name.regex;
             else if (val.length < 3)
-                this.errors.shop_name = 'Shop name must be at least 3 characters';
+                this.errors.shop_name = this.__.errors.shop_name.minlength;
             else if (val.length > 50)
-                this.errors.shop_name = 'Shop name must be less than 50 characters';
+                this.errors.shop_name = this.__.errors.shop_name.maxlength;
             else
                 this.errors.shop_name = '';
 
@@ -145,10 +144,10 @@ export default {
             // VAT pattern
             const pattern = /^\d{3,18}$/;
 
-            if (val.match(/^\s/))
-                this.errors.vat_no = 'VAT No. must not start with space';
+            if (val.length === 0)
+                this.errors.vat_no = this.__.errors.vat.required;
             else if (! pattern.test(val))
-                this.errors.vat_no = 'Invalid VAT Number';
+                this.errors.vat_no = this.__.errors.vat.regex;
             else
                 this.errors.vat_no = '';
 
@@ -158,99 +157,23 @@ export default {
         phone: function (val) {
             const pattern = /^[0-9]{8,15}$/;
 
-            if (! pattern.test(val))
-                this.errors.phone = 'invalid phone number';
+            if (val.length === 0)
+                this.errors.phone = this.__.errors.phone.required;
+            else if (! pattern.test(val))
+                this.errors.phone = this.__.errors.phone.regex;
             else
                 this.errors.phone = '';
 
             this.allReady[2] = this.errors.phone === '';
         },
 
-        l1_address: function (val) {
-            const pattern = /^[a-zA-Z0-9\s]+$/;
-
-            if (val.match(/^\s/))
-                this.errors.l1_address = 'Address must not start with space';
-            else if (val.length === 0)
-                this.errors.l1_address = 'Address is required';
-            else if (! pattern.test(val))
-                this.errors.l1_address = 'Address must not contain special characters';
-            else if (val.length < 4)
-                this.errors.l1_address = 'Address must be at least 4 characters';
-            else if (val.length > 100)
-                this.errors.l1_address = 'Address must be less than 100 characters';
-            else
-                this.errors.l1_address = '';
-
-            this.allReady[3] = this.errors.l1_address === '';
-        },
-
-        l1_address_ar: function (val) {
-            const pattern = /^[أ-ي0-9\s]+$/;
-
-            if (val.match(/^\s/))
-                this.errors.l1_address_ar = 'Address must not start with space';
-            else if (val.length === 0)
-                this.errors.l1_address_ar = 'Address is required';
-            else if (! pattern.test(val))
-                this.errors.l1_address_ar = 'Address must be in Arabic';
-            else if (val.length < 4)
-                this.errors.l1_address_ar = 'Address must be at least 4 characters';
-            else if (val.length > 100)
-                this.errors.l1_address_ar = 'Address must be less than 100 characters';
-            else
-                this.errors.l1_address_ar = '';
-
-            this.allReady[4] = this.errors.l1_address_ar === '';
-        },
-
-        l2_address: function (val) {
-            const pattern = /^[a-zA-Z0-9\s]+$/;
-
-            if (val.length !== 0) {
-                if (val.match(/^\s/))
-                    this.errors.l2_address = 'Address must not start with space';
-                else if (! pattern.test(val))
-                    this.errors.l2_address = 'Address must not contain special characters';
-                else if (val.length < 4)
-                    this.errors.l2_address = 'Address must be at least 4 characters';
-                else if (val.length > 100)
-                    this.errors.l2_address = 'Address must be less than 100 characters';
-                else
-                    this.errors.l2_address = '';
-            } else
-                this.errors.l2_address = '';
-
-            this.allReady[5] = this.errors.l2_address === '';
-        },
-
-        l2_address_ar: function (val) {
-            const pattern = /^[أ-ي0-9\s]+$/;
-
-            if (val.length !== 0) {
-                if (val.match(/^\s/))
-                    this.errors.l2_address_ar = 'Address must not start with space';
-                else if (! pattern.test(val))
-                    this.errors.l2_address_ar = 'Address must be in Arabic';
-                else if (val.length < 4)
-                    this.errors.l2_address_ar = 'Address must be at least 4 characters';
-                else if (val.length > 100)
-                    this.errors.l2_address_ar = 'Address must be less than 100 characters';
-                else
-                    this.errors.l2_address_ar = '';
-            } else
-                this.errors.l2_address_ar = '';
-
-            this.allReady[6] = this.errors.l2_address_ar === '';
-        },
-
         category: function (val) {
             if (val === 0)
-                this.errors.category = 'Category is required';
+                this.errors.category = this.__.errors.category.required;
             else
                 this.errors.category = '';
 
-            this.allReady[7] = this.errors.category === '';
+            this.allReady[3] = this.errors.category === '';
         },
 
         allReady: {
@@ -277,16 +200,11 @@ export default {
             if (this.readyForNext) {
                 const customerInfo = {
                     shop_name: this.shop_name,
-                    vat_no: this.vat_no,
+                    vat_no: this.refactoredVat,
                     category_id: this.category,
-                    l1_address: this.l1_address,
-                    l1_address_ar: this.l1_address_ar,
-                    l2_address: this.l2_address,
-                    l2_address_ar: this.l2_address_ar,
-                    location_coords: this.$store.state.signup.customerInfo.location_coords,
                 }
                 this.$store.commit('SET_SIGNUP_CUSTOMER_INFO_STATE', customerInfo);
-                this.$store.commit('SET_SIGNUP_PHONE', this.phone);
+                this.$store.commit('SET_SIGNUP_USER_DATA_STATE', {phone: this.refactoredPhone});
                 this.$store.commit('INCREASE_SIGNUP_STEP_STATE')
             }
 
@@ -296,14 +214,9 @@ export default {
             const url = `${this.apiUrl}/accounts/register/check-unique/customers`;
 
             let data = {
-                vat_no: 'SA' + this.vat_no,
-                phone: '+966' + this.phone,
-                l1_address: this.l1_address,
-                l1_address_ar: this.l1_address_ar,
+                vat_no: this.refactoredVat,
+                phone: this.refactoredPhone,
             };
-
-            this.l2_address ? data.l2_address = this.l2_address : null;
-            this.l2_address_ar ? data.l2_address_ar = this.l2_address_ar : null;
 
             await axios.post(url, data)
             .catch(err => {
@@ -311,33 +224,13 @@ export default {
                     if (err.response.status === 422) {
                         
                         if (err.response.data.message.vat_no) {
-                            this.errors.vat_no = 'VAT number is already taken';
+                            this.errors.vat_no = this.__.errors.vat.duplicate;
                             this.allReady[1] = false;
                         }
 
                         if (err.response.data.message.phone) {
-                            this.errors.phone = 'Phone number is already taken';
+                            this.errors.phone = this.__.errors.phone.duplicate;
                             this.allReady[2] = false;
-                        }
-
-                        if (err.response.data.message.l1_address) {
-                            this.errors.l1_address = 'Address is already taken';
-                            this.allReady[3] = false;
-                        }
-
-                        if (err.response.data.message.l1_address_ar) {
-                            this.errors.l1_address_ar = 'Address is already taken';
-                            this.allReady[4] = false;
-                        }
-
-                        if (err.response.data.message.l2_address) {
-                            this.errors.l2_address = 'Address is already taken';
-                            this.allReady[5] = false;
-                        }
-
-                        if (err.response.data.message.l2_address_ar) {
-                            this.errors.l2_address_ar = 'Address is already taken';
-                            this.allReady[6] = false;
                         }
                     }
                 }
@@ -349,10 +242,6 @@ export default {
         this.shop_name = this.$store.state.signup.customerInfo.shop_name;
         this.vat_no = this.$store.state.signup.customerInfo.vat_no;
         this.phone = this.$store.state.signup.userData.phone;
-        this.l1_address = this.$store.state.signup.customerInfo.l1_address;
-        this.l1_address_ar = this.$store.state.signup.customerInfo.l1_address_ar;
-        this.l2_address = this.$store.state.signup.customerInfo.l2_address;
-        this.l2_address_ar = this.$store.state.signup.customerInfo.l2_address_ar;
     },
 
     components: {

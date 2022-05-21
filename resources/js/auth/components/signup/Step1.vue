@@ -1,70 +1,59 @@
 <template>
     <div id="step-1" class="signup-step">
         <div :class="`input-container ${errors.f_name ? 'error' : ''}`">
-            <input type="text" class="eagle-sales-input" name="f_name" placeholder="First name in English (required)" v-model="f_name">
+            <input type="text" class="eagle-sales-input" name="f_name" :placeholder="__.placeholders.f_name" v-model="f_name">
             <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.f_name }} </div>
         </div>
-        <div :class="`input-container ${errors.f_name_ar ? 'error' : ''}`">
-            <input type="text" class="eagle-sales-input" name="f_name_ar" placeholder="First name in Arabic (required)" v-model="f_name_ar">
-            <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{errors.f_name_ar}} </div>
-        </div>
         <div :class="`input-container ${errors.l_name ? 'error' : ''}`">
-            <input type="text" class="eagle-sales-input" name="l_name" placeholder="Last name in English (required)" v-model="l_name">
+            <input type="text" class="eagle-sales-input" name="l_name" :placeholder="__.placeholders.l_name" v-model="l_name">
             <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.l_name }} </div>
         </div>
-        <div :class="`input-container ${errors.l_name_ar ? 'error' : ''}`">
-            <input type="text" class="eagle-sales-input" name="l_name_ar" placeholder="Last name in Arabic (required)" v-model="l_name_ar">
-            <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.l_name_ar }} </div>
-        </div>
-        <div :class="`input-container ${errors.email ? 'error' : ''}`">
-            <input type="text" class="eagle-sales-input" name="email" placeholder="Email (required)" v-model="email">
+        <div :class="`input-container full-width ${errors.email ? 'error' : ''}`">
+            <input type="text" class="eagle-sales-input" name="email" :placeholder="__.placeholders.email" v-model="email">
             <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.email }} </div>
         </div>
-        <div :class="`input-container ${errors.username ? 'error' : ''}`">
-            <input type="text" class="eagle-sales-input" name="username" placeholder="Username (required)" v-model="username">
-            <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.username }} </div>
-        </div>
-        <div :class="`input-container ${errors.password ? 'error' : ''}`">
+        <div :class="`input-container full-width ${errors.password ? 'error' : ''}`">
             <div class="with-popover">
                 <transition name="slide">
-                    <div class="popover-element left" v-if="showPasswordIndicator">
+                    <div class="popover-element bottom" v-if="showPasswordIndicator">
                         <span class="popover-content">
-                            Password must be at least 8 characters long and contain at least one number, one uppercase letter, one lowercase letter and one special character.
+                            {{ __.errors.password.pattern }}
                         </span>
                     </div>
                 </transition>
-                <input type="password" class="eagle-sales-input" name="password" placeholder="Password (required)" v-model="password">
+                <input id ="password" type="password" class="eagle-sales-input" name="password" :placeholder="__.placeholders.password" v-model="password">
             </div>
-            <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.password }} </div>
-        </div>
-        <div :class="`input-container ${errors.repeatPassword ? 'error' : ''}`">
-            <input type="password" class="eagle-sales-input" name="repeat-password" placeholder="Repeat password (required)" v-model="repeatPassword">
-            <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.repeatPassword }} </div>
-        </div>
-        <div class="input-container">
-            <b-form-select :options="countriesOptions" v-model="country"></b-form-select>
-        </div>
-        <div :class="`input-container ${errors.city ? 'error' : ''}`">
-            <b-form-select :options="citiesOptions" v-model="city"></b-form-select>
-            <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.city }} </div>
         </div>
         <div class="input-container gender-container text-left d-inline-flex">
-            <label class="d-inline-block me-2"> Gender: </label>
+            <label class="d-inline-block me-2"> {{ __.placeholders.gender.title }}: </label>
             <b-form-group>
                 <b-form-radio-group
                     v-model="gender"
-                    :options="[{text: 'Male', value: 'male'}, {text: 'Female', value: 'female'}]"
+                    :options="[{value: 'male', text: __.placeholders.gender.male}, {value: 'female', text: __.placeholders.gender.female}]"
                     name="gender"
                 ></b-form-radio-group>
             </b-form-group>
-            <label class="d-inline-block me-2" style="color: #888"> (required) </label>
+            <label class="d-inline-block me-2" style="color: #888"> ({{__.placeholders.gender.required}}) </label>
         </div>
         
         <div class="input-container">
-            <button :class="`eagle-sales-btn ${readyForNext && !checkingUniques ? '' : 'disabled'}`" @click="gotoNextStep">
+            <button :class="`eagle-sales-btn circle ${readyForNext && !checkingUniques ? '' : 'disabled'}`" @click="gotoNextStep">
                 <LoadingAnimation  :style="{color: '#fff'}" v-if="checkingUniques"/>
-                <span v-else> Next </span>
+                <span v-else> {{ __.buttons.next }} </span>
             </button>
+        </div>
+
+        <div class="quick-fill-social" v-if="true">
+            <div class="text-center mt-3 mb-3">
+                <span class="text-muted">
+                    {{ __.or}}
+                </span>
+            </div>
+            <div class="text-center">
+                <div class="d-inline-block m-auto">
+                    <div id="google-btn"></div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -73,22 +62,22 @@
     /* animation */
     .slide-enter-from {
         opacity: 0;
-        transform: translateX(-20px);
+        transform: translateY(20px);
     }
     .slide-enter-to {
         opacity: 1;
-        transform: translateX(0);
+        transform: translateY(0);
     }
     .slide-enter-active {
         transition: all .4s ease-in-out;
     }
     .slide-leave-from {
         opacity: 1;
-        transform: translateX(0);
+        transform: translateY(0);
     }
     .slide-leave-to {
         opacity: 0;
-        transform: translateX(-20px);
+        transform: translateY(20px);
     }
     .slide-leave-active {
         transition: all .4s ease-in-out;
@@ -108,33 +97,23 @@ import LoadingAnimation from '../LoadingAnimation.vue';
 export default {
     name: 'Step1',
 
+    props: ['__'],
+
     data: () => ({
         checkingUniques: false,
         showPasswordIndicator: false,
 
         f_name: '',
-        f_name_ar: '',
         l_name: '',
-        l_name_ar: '',
         email: '',
-        username: '',
         password: '',
-        repeatPassword: '',
-        country: '',
-        city: '',
         gender: '',
 
         errors: {
             f_name: null,
-            f_name_ar: null,
             l_name: null,
-            l_name_ar: null,
             email: null,
-            username: null,
             password: null,
-            repeatPassword: null,
-            city: null,
-            country: null,
             gender: null,
         },
 
@@ -144,11 +123,6 @@ export default {
             false,
             false,
             false,
-            false,
-            false,
-            false,
-            false,
-            false
         ],
 
         readyForNext: false,
@@ -156,69 +130,26 @@ export default {
 
     computed: {
         apiUrl: () => window.location.apiUrl,
-
-        countries: function () {
-            return this.$store.state.signup.availablePlaces;
-        },
-
-        countriesOptions: function () {
-            const countries = this.countries.map(country => {
-                return {
-                    text: country.name,
-                    value: country.iso_code
-                }
-            });
-
-            countries.unshift({
-                text: 'Select country',
-                value: '',
-                disabled: true
-            });
-
-            return countries;
-        },
-
-        cities: function () {
-            const country = this.countries.find(place => place.iso_code === this.country);
-            return country ? country.cities : [];
-        },
-
-        citiesOptions: function () {
-            const cities = this.cities.map(city => {
-                return {
-                    text: city.name,
-                    value: city.name
-                }
-            });
-
-            cities.unshift({
-                text: 'Select city',
-                value: '',
-                disabled: true
-            });
-
-            return cities;
-        },
     },
 
     watch: {
         f_name: function (val) {
-            const pattern = /^[a-z]+$/i
+            const pattern = /^[a-zأ-ي]+$/i
             
             if (val === '') {
-                this.errors.f_name = 'First name is required'
+                this.errors.f_name = this.__.errors.f_name.required;
                 this.allReady[0] = false
             }
             else if (! pattern.test(val)) {
-                this.errors.f_name = 'First name must be only letters'
+                this.errors.f_name = this.__.errors.f_name.regex;
                 this.allReady[0] = false
             }
             else if (val.length < 2) {
-                this.errors.f_name = 'First name must be at least 2 characters'
+                this.errors.f_name = this.__.errors.f_name.minlength;
                 this.allReady[0] = false
             }
             else if (val.length > 20) {
-                this.errors.f_name = 'First name must be less than 20 characters'
+                this.errors.f_name = this.__.errors.f_name.maxlength;
                 this.allReady[0] = false
             }
             else {
@@ -227,78 +158,28 @@ export default {
             }
         },
 
-        f_name_ar: function (val) {
-            const pattern = /^[أ-ي]+$/i
-
-            if (val === '') {
-                this.errors.f_name_ar = 'First name is required'
-                this.allReady[1] = false
-            }
-            else if (! pattern.test(val)) {
-                this.errors.f_name_ar = 'First name must be only Arabic letters'
-                this.allReady[1] = false
-            }
-            else if (val.length < 2) {
-                this.errors.f_name_ar = 'First name must be at least 2 characters'
-                this.allReady[1] = false
-            }
-            else if (val.length > 20) {
-                this.errors.f_name_ar = 'First name must be less than 20 characters'
-                this.allReady[1] = false
-            }
-            else {
-                this.errors.f_name_ar = null
-                this.allReady[1] = true
-            }
-        },
-
         l_name: function (val) {
-            const pattern = /^[a-z]+$/i
+            const pattern = /^[a-zأ-ي]+$/i
 
             if (val === '') {
-                this.errors.l_name = 'Last name is required'
-                this.allReady[2] = false
+                this.errors.l_name = this.__.errors.l_name.required;
+                this.allReady[1] = false
             }
             else if (! pattern.test(val)) {
-                this.errors.l_name = 'Last name must be only letters'
-                this.allReady[2] = false
+                this.errors.l_name = this.__.errors.l_name.regex;
+                this.allReady[1] = false
             }
             else if (val.length < 2) {
-                this.errors.l_name = 'Last name must be at least 2 characters'
-                this.allReady[2] = false
+                this.errors.l_name = this.__.errors.l_name.minlength;
+                this.allReady[1] = false
             }
             else if (val.length > 20) {
-                this.errors.l_name = 'Last name must be less than 20 characters'
-                this.allReady[2] = false
+                this.errors.l_name = this.__.errors.l_name.maxlength;
+                this.allReady[1] = false
             }
             else {
                 this.errors.l_name = null
-                this.allReady[2] = true
-            }
-        },
-
-        l_name_ar: function (val) {
-            const pattern = /^[أ-ي]+$/i
-
-            if (val === '') {
-                this.errors.l_name_ar = 'Last name is required'
-                this.allReady[3] = false
-            }
-            else if (! pattern.test(val)) {
-                this.errors.l_name_ar = 'Last name must be only Arabic letters'
-                this.allReady[3] = false
-            }
-            else if (val.length < 2) {
-                this.errors.l_name_ar = 'Last name must be at least 2 characters'
-                this.allReady[3] = false
-            }
-            else if (val.length > 20) {
-                this.errors.l_name_ar = 'Last name must be less than 20 characters'
-                this.allReady[3] = false
-            }
-            else {
-                this.errors.l_name_ar = null
-                this.allReady[3] = true
+                this.allReady[1] = true
             }
         },
 
@@ -306,41 +187,16 @@ export default {
             const pattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
             if (val === '') {
-                this.errors.email = 'Email is required'
-                this.allReady[4] = false
+                this.errors.email = this.__.errors.email.required;
+                this.allReady[2] = false
             }
             else if (! pattern.test(val)) {
-                this.errors.email = 'Email is not valid'
-                this.allReady[4] = false
+                this.errors.email = this.__.errors.email.regex;
+                this.allReady[2] = false
             }
             else {
                 this.errors.email = null
-                this.allReady[4] = true
-            }
-        },
-
-        username: function (val) {
-            const pattern = /^[a-zA-Z0-9]+$/
-
-            if (val === '') {
-                this.errors.username = 'Username is required'
-                this.allReady[5] = false
-            }
-            else if (! pattern.test(val)) {
-                this.errors.username = 'Username must be only letters and numbers'
-                this.allReady[5] = false
-            }
-            else if (val.length < 4) {
-                this.errors.username = 'Username must be at least 4 characters'
-                this.allReady[5] = false
-            }
-            else if (val.length > 50) {
-                this.errors.username = 'Username must be less than 50 characters'
-                this.allReady[5] = false
-            }
-            else {
-                this.errors.username = null
-                this.allReady[5] = true
+                this.allReady[2] = true
             }
         },
 
@@ -348,74 +204,29 @@ export default {
             const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$!%*?&])[A-Za-z\d@$!%*?&#.]{8,80}$/
 
             if (val === '') {
-                this.errors.password = 'Password is required'
-                this.allReady[6] = false
+                this.errors.password = this.__.errors.password.required;
+                this.allReady[3] = false
                 this.showPasswordIndicator = false
             }
             else if (! pattern.test(val)) {
-                this.errors.password = 'Invalid password'
-                this.allReady[6] = false
+                this.errors.password = this.__.errors.password.regex;
+                this.allReady[3] = false
                 this.showPasswordIndicator = true
             }
             else {
                 this.errors.password = null
-                this.allReady[6] = true
+                this.allReady[3] = true
                 this.showPasswordIndicator = false
-            }
-
-            if (this.repeatPassword !== '' && this.repeatPassword !== val)
-                this.errors.repeatPassword = 'Passwords do not match'
-            else
-                this.errors.repeatPassword = null
-        },
-
-        repeatPassword: function (val) {
-            if (val === '') {
-                this.errors.repeatPassword = 'Repeat password is required';
-                this.allReady[7] = false;
-            }
-            else if (val !== this.password) {
-                this.errors.repeatPassword = 'Passwords do not match';
-                this.allReady[7] = false;
-            }
-            else {
-                this.errors.repeatPassword = null;
-                this.allReady[7] = true;
-            }
-        },
-
-        city: function (val) {
-            const pattern = /^[a-z]+$/i
-
-            if (val === '') {
-                this.errors.city = 'City is required'
-                this.allReady[8] = false
-            }
-            else if (! pattern.test(val)) {
-                this.errors.city = 'City must be only letters'
-                this.allReady[8] = false
-            }
-            else if (val.length < 3) {
-                this.errors.city = 'City must be at least 3 characters'
-                this.allReady[8] = false
-            }
-            else if (val.length > 20) {
-                this.errors.city = 'City must be less than 20 characters'
-                this.allReady[8] = false
-            }
-            else {
-                this.errors.city = null
-                this.allReady[8] = true
             }
         },
 
         gender: function (val) {
             if (val === '') {
                 this.errors.gender = true
-                this.allReady[9] = false
+                this.allReady[4] = false
             } else {
                 this.errors.gender = false
-                this.allReady[9] = true
+                this.allReady[4] = true
             }
         },
 
@@ -443,16 +254,10 @@ export default {
             if (this.readyForNext) {
                 const userData = {
                     f_name: this.f_name,
-                    f_name_ar: this.f_name_ar,
                     l_name: this.l_name,
-                    l_name_ar: this.l_name_ar,
                     email: this.email,
-                    username: this.username,
                     password: this.password,
-                    country: this.country,
-                    city: this.city,
                     gender: this.gender,
-                    phone: this.$store.state.signup.userData.phone
                 }
                 this.$store.commit('SET_SIGNUP_USER_DATA_STATE', userData)
                 this.$store.commit('INCREASE_SIGNUP_STEP_STATE')
@@ -464,38 +269,57 @@ export default {
 
             await axios.post(url, {
                 email: this.email,
-                username: this.username
             })
             .catch(err => {
                 if (err.response) {
                     if (err.response.status === 422) {
                         if (err.response.data.message.email) {
-                            this.errors.email = 'Email is already taken'
-                            this.allReady[4] = false
-                        }
-
-                        if (err.response.data.message.username) {
-                            this.errors.username = 'Username is already taken'
-                            this.allReady[5] = false
+                            this.errors.email = this.__.errors.email.duplicate;
+                            this.allReady[2] = false
                         }
                     }
                 }
             })
+        },
+
+        fillWithGoogle: function (response) {
+            const jwt = response.credential;
+            axios.get(`https://oauth2.googleapis.com/tokeninfo?id_token=${jwt}`)
+            .then(res => this.handleGoogleResponse(res.data))
+            .catch(err => console.log(err))
+        },
+
+        handleGoogleResponse: function (response) {
+            this.f_name = response.given_name;
+            this.l_name = response.family_name;
+            this.email = response.email;
+            
+            document.getElementById('password').focus();
         },
     },
 
     mounted() {
         // assign all userData from store to component state
         this.f_name = this.$store.state.signup.userData.f_name;
-        this.f_name_ar = this.$store.state.signup.userData.f_name_ar;
         this.l_name = this.$store.state.signup.userData.l_name;
-        this.l_name_ar = this.$store.state.signup.userData.l_name_ar;
         this.email = this.$store.state.signup.userData.email;
-        this.username = this.$store.state.signup.userData.username;
         this.password = this.$store.state.signup.userData.password;
-        this.country = this.$store.state.signup.userData.country;
-        this.city = this.$store.state.signup.userData.city;
         this.gender = this.$store.state.signup.userData.gender;
+
+        // fill with google
+        google.accounts.id.initialize({
+            client_id: '1027306294925-brhrg0uvdseqoimerpgmo14mmqnahqpj.apps.googleusercontent.com',
+            callback: this.fillWithGoogle
+        })
+
+        const googleBtn = document.getElementById('google-btn');
+        google.accounts.id.renderButton(googleBtn, {
+            theme: 'filled_blue',
+            size: "large",
+            text: 'continue_with',
+            shape: 'circle',
+            width: '200'
+        })
     },
 
     components: {

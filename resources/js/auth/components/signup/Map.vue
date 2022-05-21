@@ -36,7 +36,7 @@ const googleAPI = 'AIzaSyCs1Mnx_DaV9lj-o9XayZ8IGsRSss7NxFA';
 
 export default {
     name: 'Map',
-    props: ['getCoordsCallback', 'center', 'zoom'],
+    props: ['getCoordsCallback', 'getGeoCodeResultCallback', 'center', 'zoom'],
 
     data: () => ({
         map: null,
@@ -120,6 +120,7 @@ export default {
             }, (results, status) => {
                 if (status === 'OK') {
                     this.preventSelection = false;
+                    this.getGeoCodeResultCallback(results);
                     if (results[0]) {
                         this.infoWindow.setContent(results[0].formatted_address);
                         this.infoWindow.open(this.map, this.marker);
@@ -136,7 +137,6 @@ export default {
     async mounted() {
         const loader =  new Loader({
             apiKey: googleAPI,
-            language: this.$store.state.lang,
         });
         const mapDiv = document.getElementById('map');
         const timezone = new Date().toString().match(/GMT[\-\+]\d+|UTC[\-\+]\d+/)[0]
@@ -150,7 +150,7 @@ export default {
         await loader.load();
         this.map = new google.maps.Map(mapDiv, {
             center: this.center ?? this.countriesCoords[country],
-            zoom: this.zoom ? parseInt(this.zoom) : 5,
+            zoom: this.zoom && this.center ? parseInt(this.zoom) : 5,
             draggableCursor: this.preventSelection ? 'not-allowed' : 'pointer',
             zoomControl: false,
             mapTypeControl: false,

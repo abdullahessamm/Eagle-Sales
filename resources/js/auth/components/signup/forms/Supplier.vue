@@ -1,52 +1,31 @@
 <template>
     <div id="supplier-info" class="user-info">
-        <div :class="`input-container ${errors.shop_name ? 'error' : ''}`">
-            <input type="text" class="eagle-sales-input" name="shop_name" placeholder="Shop name (required)" v-model="shop_name">
+        <div :class="`input-container full-width ${errors.shop_name ? 'error' : ''}`">
+            <input type="text" class="eagle-sales-input" name="shop_name" :placeholder="__.placeholders.shop_name" v-model="shop_name">
             <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.shop_name }} </div>
-        </div>
-        <div :class="`input-container text-before-input ${errors.vat_no ? 'error' : ''}`">
-            <span>{{ country }}</span>
-            <input type="text" class="eagle-sales-input" name="vat_no" placeholder="VAT No. (required)" v-model="vat_no">
-            <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.vat_no }} </div>
         </div>
         <div :class="`input-container text-before-input ${errors.phone ? 'error' : ''}`">
             <span>{{ phonePrefix }}</span>
-            <input type="text" class="eagle-sales-input" name="phone" placeholder="Phone No. (required)" v-model="phone">
+            <input type="text" class="eagle-sales-input" name="phone" :placeholder="__.placeholders.phone" v-model="phone">
             <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.phone }} </div>
         </div>
         <div :class="`input-container text-before-input ${errors.whatsapp_no ? 'error' : ''}`">
             <span>{{ phonePrefix }}</span>
-            <input type="text" class="eagle-sales-input" name="whatsapp_no" placeholder="Whatsapp No." v-model="whatsapp_no">
+            <input type="text" class="eagle-sales-input" name="whatsapp_no" :placeholder="__.placeholders.whatsapp" v-model="whatsapp_no">
             <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.whatsapp_no }} </div>
         </div>
         <div :class="`input-container ${errors.fb_page ? 'error' : ''}`">
-            <input type="text" class="eagle-sales-input" name="fb_page" placeholder="Facebook page URL" v-model="fb_page">
+            <input type="text" class="eagle-sales-input" name="fb_page" :placeholder="__.placeholders.facebook" v-model="fb_page">
             <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.fb_page }} </div>
         </div>
         <div :class="`input-container ${errors.website_domain ? 'error' : ''}`">
-            <input type="text" class="eagle-sales-input" name="website_domain" placeholder="Website URL" v-model="website_domain">
+            <input type="text" class="eagle-sales-input" name="website_domain" :placeholder="__.placeholders.website" v-model="website_domain">
             <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.website_domain }} </div>
-        </div>
-        <div :class="`input-container ${errors.l1_address ? 'error' : ''}`">
-            <input type="text" class="eagle-sales-input" name="l1_address" placeholder="Address Line 1 (required)" v-model="l1_address">
-            <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.l1_address }} </div>
-        </div>
-        <div :class="`input-container ${errors.l1_address_ar ? 'error' : ''}`">
-            <input type="text" class="eagle-sales-input" name="l1_address_ar" placeholder="Address Line 1 in Arabic (required)" v-model="l1_address_ar">
-            <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.l1_address_ar }} </div>
-        </div>
-        <div :class="`input-container ${errors.l2_address ? 'error' : ''}`">
-            <input type="text" class="eagle-sales-input" name="l2_address" placeholder="Address Line 2" v-model="l2_address">
-            <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.l2_address }} </div>
-        </div>
-        <div :class="`input-container ${errors.l2_address_ar ? 'error' : ''}`">
-            <input type="text" class="eagle-sales-input" name="l2_address_ar" placeholder="Address Line 2 in Arabic" v-model="l2_address_ar">
-            <div class="error-msg"> <i class="fa-solid fa-circle-exclamation"></i> {{ errors.l2_address_ar }} </div>
         </div>
         <div class="input-container">
             <button :class="`eagle-sales-btn ${readyForNext && !checkingUniques ? '' : 'disabled'}`" @click="goToNext">
                 <LoadingAnimation  :style="{color: '#fff'}" v-if="checkingUniques"/>
-                <span v-else> Next </span>
+                <span v-else> {{ __.buttons.next }} </span>
             </button>
         </div>
     </div>
@@ -66,44 +45,29 @@ import LoadingAnimation from '../../LoadingAnimation.vue'
 
 export default {
     name: 'Supplier',
+    props: ['__'],
 
     data: () => ({
         checkingUniques: false,
 
         shop_name: '',
-        vat_no: '',
         phone: '',
         whatsapp_no: '',
         fb_page: '',
         website_domain: '',
-        l1_address: '',
-        l1_address_ar: '',
-        l2_address: '',
-        l2_address_ar: '',
-        location_coords: '',
 
         errors: {
             shop_name: '',
-            vat_no: '',
             phone: '',
             whatsapp_no: '',
             fb_page: '',
             website_domain: '',
-            l1_address: '',
-            l1_address_ar: '',
-            l2_address: '',
-            l2_address_ar: '',
         },
 
         allReady: [
             false,
             false,
-            false,
             true,
-            true,
-            true,
-            false,
-            false,
             true,
             true,
         ],
@@ -113,58 +77,63 @@ export default {
 
     computed: {
         apiUrl: () => window.location.apiUrl,
-        country: function () {
-            return this.$store.state.signup.userData.country;
-        },
         phonePrefix: function () {
-            const userCountry = this.$store.state.signup.userData.country;
+            const userCountry = this.$store.state.signup.selectedPlace.country;
             return this.$store.state.signup.availablePlaces.find(place => place.iso_code === userCountry).code;
-        }
+        },
+        refactoredPhone: function () {
+            const phonePrefix = this.phonePrefix;
+            let phone = this.phone.replace(phonePrefix, '');
+
+            if (phonePrefix === '+20') {
+                phone = phone.replace(/^0/, '');
+            }
+
+
+            return phonePrefix + phone;
+        },
+
+        refactoredWhatsappNo: function () {
+            const phonePrefix = this.phonePrefix;
+            let whatsappNo = this.whatsapp_no.replace(phonePrefix, '');
+
+            if (phonePrefix === '+20') {
+                whatsappNo = whatsappNo.replace(/^0/, '');
+            }
+
+            return phonePrefix + whatsappNo;
+        },
     },
 
     watch: {
         shop_name: function (val) {
-            const pattern = /^[a-zA-Z0-9\s]+$/;
+            const pattern = /^[a-zA-Z0-9أ-ي\s]+$/;
 
             if (val.match(/^\s/))
-                this.errors.shop_name = 'Shop name must not start with space';
+                this.errors.shop_name = this.__.errors.shop_name.invalid;
             else if (val.length === 0)
-                this.errors.shop_name = 'Shop name is required';
+                this.errors.shop_name = this.__.errors.shop_name.required;
             else if (! pattern.test(val))
-                this.errors.shop_name = 'Shop name must not contain special characters';
+                this.errors.shop_name = this.__.errors.shop_name.regex;
             else if (val.length < 3)
-                this.errors.shop_name = 'Shop name must be at least 3 characters';
+                this.errors.shop_name = this.__.errors.shop_name.minlength;
             else if (val.length > 50)
-                this.errors.shop_name = 'Shop name must be less than 50 characters';
+                this.errors.shop_name = this.__.errors.shop_name.maxlength;
             else
                 this.errors.shop_name = '';
 
             this.allReady[0] = this.errors.shop_name === '';
         },
 
-        vat_no: function (val) {
-            // VAT pattern
-            const pattern = /^\d{3,18}$/;
-
-            if (val.match(/^\s/))
-                this.errors.vat_no = 'VAT No. must not start with space';
-            else if (! pattern.test(val))
-                this.errors.vat_no = 'Invalid VAT Number';
-            else
-                this.errors.vat_no = '';
-
-            this.allReady[1] = this.errors.vat_no === '';
-        },
-
         phone: function (val) {
             const pattern = /^[0-9]{8,15}$/;
 
             if (! pattern.test(val))
-                this.errors.phone = 'invalid phone number';
+                this.errors.phone = this.__.errors.phone.regex;
             else
                 this.errors.phone = '';
 
-            this.allReady[2] = this.errors.phone === '';
+            this.allReady[1] = this.errors.phone === '';
         },
 
         whatsapp_no: function (val) {
@@ -172,13 +141,13 @@ export default {
 
             if (val.length !== 0) {
                 if (! pattern.test(val))
-                    this.errors.whatsapp_no = 'invalid phone number';
+                    this.errors.whatsapp_no = this.__.errors.whatsapp.regex;
                 else
                     this.errors.whatsapp_no = '';
             } else
                 this.errors.whatsapp_no = '';
 
-            this.allReady[3] = this.errors.whatsapp_no === '';
+            this.allReady[2] = this.errors.whatsapp_no === '';
         },
 
         fb_page: function (val) {
@@ -186,15 +155,15 @@ export default {
 
             if (val.length !== 0) {
                 if (! pattern.test(val))
-                    this.errors.fb_page = 'invalid Facebook page URL';
+                    this.errors.fb_page = this.__.errors.facebook.regex;
                 else if (val.length > 100)
-                    this.errors.fb_page = 'Facebook page URL must be less than 100 characters';
+                    this.errors.fb_page = this.__.errors.facebook.regex;
                 else
                     this.errors.fb_page = '';
             } else
                 this.errors.fb_page = '';
 
-            this.allReady[4] = this.errors.fb_page === '';
+            this.allReady[3] = this.errors.fb_page === '';
         },
 
         website_domain: function (val) {
@@ -202,93 +171,15 @@ export default {
 
             if (val.length !== 0) {
                 if (! pattern.test(val))
-                    this.errors.website_domain = 'invalid URL';
+                    this.errors.website_domain = this.__.errors.website.regex;
                 else if (val.length > 100)
-                    this.errors.website_domain = 'website URL must be less than 100 characters';
+                    this.errors.website_domain = this.__.errors.website.regex;
                 else
                     this.errors.website_domain = '';
             } else
                 this.errors.website_domain = '';
 
-            this.allReady[5] = this.errors.website_domain === '';
-        },
-
-        l1_address: function (val) {
-            const pattern = /^[a-zA-Z0-9\s]+$/;
-
-            if (val.match(/^\s/))
-                this.errors.l1_address = 'Address must not start with space';
-            else if (val.length === 0)
-                this.errors.l1_address = 'Address is required';
-            else if (! pattern.test(val))
-                this.errors.l1_address = 'Address must not contain special characters';
-            else if (val.length < 4)
-                this.errors.l1_address = 'Address must be at least 4 characters';
-            else if (val.length > 100)
-                this.errors.l1_address = 'Address must be less than 100 characters';
-            else
-                this.errors.l1_address = '';
-
-            this.allReady[6] = this.errors.l1_address === '';
-        },
-
-        l1_address_ar: function (val) {
-            const pattern = /^[أ-ي0-9\s]+$/;
-
-            if (val.match(/^\s/))
-                this.errors.l1_address_ar = 'Address must not start with space';
-            else if (val.length === 0)
-                this.errors.l1_address_ar = 'Address is required';
-            else if (! pattern.test(val))
-                this.errors.l1_address_ar = 'Address must be in Arabic';
-            else if (val.length < 4)
-                this.errors.l1_address_ar = 'Address must be at least 4 characters';
-            else if (val.length > 100)
-                this.errors.l1_address_ar = 'Address must be less than 100 characters';
-            else
-                this.errors.l1_address_ar = '';
-
-            this.allReady[7] = this.errors.l1_address_ar === '';
-        },
-
-        l2_address: function (val) {
-            const pattern = /^[a-zA-Z0-9\s]+$/;
-
-            if (val.length !== 0) {
-                if (val.match(/^\s/))
-                    this.errors.l2_address = 'Address must not start with space';
-                else if (! pattern.test(val))
-                    this.errors.l2_address = 'Address must not contain special characters';
-                else if (val.length < 4)
-                    this.errors.l2_address = 'Address must be at least 4 characters';
-                else if (val.length > 100)
-                    this.errors.l2_address = 'Address must be less than 100 characters';
-                else
-                    this.errors.l2_address = '';
-            } else
-                this.errors.l2_address = '';
-
-            this.allReady[8] = this.errors.l2_address === '';
-        },
-
-        l2_address_ar: function (val) {
-            const pattern = /^[أ-ي0-9\s]+$/;
-
-            if (val.length !== 0) {
-                if (val.match(/^\s/))
-                    this.errors.l2_address_ar = 'Address must not start with space';
-                else if (! pattern.test(val))
-                    this.errors.l2_address_ar = 'Address must be in Arabic';
-                else if (val.length < 4)
-                    this.errors.l2_address_ar = 'Address must be at least 4 characters';
-                else if (val.length > 100)
-                    this.errors.l2_address_ar = 'Address must be less than 100 characters';
-                else
-                    this.errors.l2_address_ar = '';
-            } else
-                this.errors.l2_address_ar = '';
-
-            this.allReady[9] = this.errors.l2_address_ar === '';
+            this.allReady[4] = this.errors.website_domain === '';
         },
 
         allReady: {
@@ -316,18 +207,12 @@ export default {
             if (this.readyForNext) {
                 const supplierInfo = {
                     shop_name: this.shop_name,
-                    vat_no: this.country + this.vat_no,
-                    whatsapp_no: this.phonePrefix + this.whatsapp_no,
+                    whatsapp_no: this.whatsapp_no ? this.refactoredWhatsappNo : '',
                     fb_page: this.fb_page,
                     website_domain: this.website_domain,
-                    l1_address: this.l1_address,
-                    l1_address_ar: this.l1_address_ar,
-                    l2_address: this.l2_address,
-                    l2_address_ar: this.l2_address_ar,
-                    location_coords: this.$store.state.signup.supplierInfo.location_coords,
                 }
                 this.$store.commit('SET_SIGNUP_SUPPLIER_INFO_STATE', supplierInfo);
-                this.$store.commit('SET_SIGNUP_PHONE', this.phone);
+                this.$store.commit('SET_SIGNUP_USER_DATA_STATE', {phone: this.refactoredPhone});
                 this.$store.commit('INCREASE_SIGNUP_STEP_STATE')
             }
 
@@ -337,68 +222,36 @@ export default {
             const url = `${this.apiUrl}/accounts/register/check-unique/suppliers`;
 
             let data = {
-                vat_no: this.country + this.vat_no,
-                phone: this.phonePrefix + this.phone,
-                l1_address: this.l1_address,
-                l1_address_ar: this.l1_address_ar,
+                phone: this.refactoredPhone,
             };
 
-            this.whatsapp_no ? data.whatsapp_no = this.phonePrefix + this.whatsapp_no : null;
+            this.whatsapp_no ? data.whatsapp_no = this.refactoredWhatsappNo : null;
             this.fb_page ? data.fb_page = this.fb_page : null;
             this.website_domain ? data.website_domain = this.website_domain : null;
-            this.l2_address ? data.l2_address = this.l2_address : null;
-            this.l2_address_ar ? data.l2_address_ar = this.l2_address_ar : null;
 
             await axios.post(url, data)
             .catch(err => {
-                console.log(err.response.data);
-                this.allReady[1] = false;
                 if (err.response) {
                     if (err.response.status === 422) {
-                        
-                        if (err.response.data.message.vat_no) {
-                            this.errors.vat_no = 'This VAT number already exists';
-                            this.allReady[1] = false;
-                        }
 
                         if (err.response.data.message.phone) {
-                            this.errors.phone = 'This phone number already exists';
-                            this.allReady[2] = false;
+                            this.errors.phone = this.__.errors.phone.duplicate;
+                            this.allReady[1] = false;
                         }
                         
                         if (err.response.data.message.whatsapp_no) {
-                            this.errors.whatsapp_no = 'This WhatsApp number already exists';
-                            this.allReady[3] = false;
+                            this.errors.whatsapp_no = this.__.errors.whatsapp.duplicate;
+                            this.allReady[2] = false;
                         }
 
                         if (err.response.data.message.fb_page) {
-                            this.errors.fb_page = 'This Facebook page already exists';
-                            this.allReady[4] = false;
+                            this.errors.fb_page = this.__.errors.facebook.duplicate;
+                            this.allReady[3] = false;
                         }
 
                         if (err.response.data.message.website_domain) {
-                            this.errors.website_domain = 'This website domain already exists';
-                            this.allReady[5] = false;
-                        }
-
-                        if (err.response.data.message.l1_address) {
-                            this.errors.l1_address = 'This address already exists';
-                            this.allReady[6] = false;
-                        }
-
-                        if (err.response.data.message.l1_address_ar) {
-                            this.errors.l1_address_ar = 'This address already exists';
-                            this.allReady[7] = false;
-                        }
-
-                        if (err.response.data.message.l2_address) {
-                            this.errors.l2_address = 'This address already exists';
-                            this.allReady[8] = false;
-                        }
-
-                        if (err.response.data.message.l2_address_ar) {
-                            this.errors.l2_address_ar = 'This address already exists';
-                            this.allReady[9] = false;
+                            this.errors.website_domain = this.__.errors.website.duplicate;
+                            this.allReady[4] = false;
                         }
                     }
                 }
@@ -408,15 +261,10 @@ export default {
 
     mounted: function () {
         this.shop_name = this.$store.state.signup.supplierInfo.shop_name;
-        this.vat_no = this.$store.state.signup.supplierInfo.vat_no;
         this.phone = this.$store.state.signup.userData.phone;
         this.whatsapp_no = this.$store.state.signup.supplierInfo.whatsapp_no;
         this.fb_page = this.$store.state.signup.supplierInfo.fb_page;
         this.website_domain = this.$store.state.signup.supplierInfo.website_domain;
-        this.l1_address = this.$store.state.signup.supplierInfo.l1_address;
-        this.l1_address_ar = this.$store.state.signup.supplierInfo.l1_address_ar;
-        this.l2_address = this.$store.state.signup.supplierInfo.l2_address;
-        this.l2_address_ar = this.$store.state.signup.supplierInfo.l2_address_ar;
     },
 
     components: {

@@ -29,5 +29,111 @@
         "description_l2": "please login with your personal info",
         "or": "OR",
         "signup": "Sign Up"
+    },
+
+    "signup": {
+        "title": "Create Account",
+        "user_types": {
+            "supplier": "Supplier",
+            "customer": "Customer",
+            "corporation": "Corporation",
+            "individual": "Individual"
+        },
+        "steps": {
+            "account_info": "Account Info",
+            "select_location": "Select Location",
+            "user_info": "User Info",
+            "finish": "Finish"
+        },
+        "placeholders": {
+            "f_name": "First Name (required)",
+            "l_name": "Last Name (required)",
+            "email": "Email (required)",
+            "password": "Password (required)",
+            "gender": {
+                "title": "Gender",
+                "male": "Male",
+                "female": "Female",
+                "required": "required"
+            },
+            "shop_name": "Shop name (required)",
+            "phone": "Phone No. (required)",
+            "whatsapp": "Whatsapp No.",
+            "facebook": "Facebook page URL",
+            "website": "Website URL",
+            "vat": "VAT No. (required)",
+            "category": "Select category (required)"
+        },
+        "errors": {
+            "f_name": {
+                "required": "First name is required",
+                "regex": "First name must be only letters",
+                "minlength": "First name must be at least 2 characters long",
+                "maxlength": "First name must be less than 20 characters"
+            },
+            "l_name": {
+                "required": "Last name is required",
+                "regex": "Last name must be only letters",
+                "minlength": "Last name must be at least 2 characters long",
+                "maxlength": "Last name must be less than 20 characters"
+            },
+            "email": {
+                "required": "Email is required",
+                "regex": "Email is invalid",
+                "duplicate": "Email is already in use"
+            },
+            "password": {
+                "required": "Password is required",
+                "pattern": "Password must be at least 8 characters long and contain at least one number, one uppercase letter, one lowercase letter and one special character."
+            },
+            "shop_name": {
+                "required": "Shop name is required",
+                "regex": "Shop name must not contain special characters",
+                "minlength": "Shop name must be at least 3 characters long",
+                "maxlength": "Shop name must be less than 50 characters",
+                "invalid": "Shop name is invalid"
+            },
+            "phone": {
+                "required": "Phone number is required",
+                "regex": "Phone number is invalid",
+                "duplicate": "Number is already registered"
+            },
+            "whatsapp": {
+                "regex": "Whatsapp number is invalid",
+                "duplicate": "Number is already registered"
+            },
+            "facebook": {
+                "regex": "Facebook page URL is invalid",
+                "duplicate": "URL is already registered"
+            },
+            "website": {
+                "regex": "Website URL is invalid",
+                "duplicate": "URL is already registered"
+            },
+            "vat": {
+                "required": "VAT number is required",
+                "regex": "VAT number is invalid",
+                "duplicate": "VAT number is already registered"
+            },
+            "category": {
+                "required": "Category is required"
+            }
+        },
+
+        "buttons": {
+            "next": "Next",
+            "unavailable_location": "Unavailable location",
+            "finish": "Finish"
+        },
+
+        "or": "OR",
+
+        "sending": "Sending request...",
+        "hi": "Hi",
+        "welcome": "Welcome to Eagle Sales",
+        "final_msg": "My name is Ali and I am very happy to welcome you on board with Eagle Sales!\nYou joined thousands of Customers and Suppliers who are skyrocketing their sales with us\nThere’s just one more tiny step you need to take to achieve all these amazing things",
+        "redirect_msg": "You will be redirected to the login page in",
+        "login_now": "Login now",
+        "res_err": "Something went wrong"
     }
 }

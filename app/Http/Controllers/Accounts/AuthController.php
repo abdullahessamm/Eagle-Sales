@@ -91,7 +91,7 @@ class AuthController extends Controller
      */
     private function checkIfAccountIsActive(): bool
     {
-        return $this->user->is_active && $this->user->is_approved;
+        return $this->user->is_active;
     }
 
     /**
@@ -103,9 +103,6 @@ class AuthController extends Controller
     private function responseToNotActiveUser()
     {
         $errorCode = null;
-        
-        if ($this->user->is_approved === 0) //account denied
-            $errorCode = 0;
         
         if (! $this->user->is_active) //account banned
             $errorCode = 1;

@@ -85,7 +85,8 @@ class RegisterController extends Controller
     public function checkUniqueFieldInUsers(Request $request)
     {
         $rules = [
-            'email' => 'required:username|email|max:50',
+            'email' => 'required_without:phone|email|max:50',
+            'phone' => 'required_without:email|regex:/^\+[0-9]{11,14}$/',
         ];
 
         $validation = Validator::make($request->all(), $rules);
@@ -93,10 +94,21 @@ class RegisterController extends Controller
             throw new \App\Exceptions\ValidationError($validation->errors()->all());
 
         $responseMsg = [];
-        $emailCheck = User::where('email', $request->get('email'))->first();
+        
+        if ($request->has('email')) {
+            $emailCheck = User::where('email', $request->get('email'))->exists();
 
-        if ($emailCheck)
-            $responseMsg['email'] = 'email already exists';
+            if ($emailCheck)
+                $responseMsg['email'] = 'email already exists';
+        }
+        
+        if ($request->has('phone')) {
+            $phoneCheck = Phone::where('phone', $request->get('phone'))->exists();
+
+            if ($phoneCheck)
+                $responseMsg['phone'] = 'phone already exists';
+        }
+
 
         return count($responseMsg) > 0 ? response()->json(['status' => 'error', 'message' => $responseMsg], 422) : response()->json(['status' => 'success']);
     }
@@ -120,7 +132,7 @@ class RegisterController extends Controller
         $availableCountries = AvailableCountry::get('iso_code')->pluck('iso_code')->toArray();
         $availableCities = AvailableCity::get('name')->pluck('name')->toArray();
         $country = $geocode_en->getCountry()['short_name'];
-        $governorate = explode(' ', $geocode_en->getGovernorate()['short_name'])[0];
+        $governorate = $geocode_en->getGovernorate()['short_name'];
 
         if (! in_array($country, $availableCountries)) {
             $user->delete();
@@ -196,9 +208,9 @@ class RegisterController extends Controller
         }
 
         $rules = [
-            'vat_no'           => 'required|regex:/^[A-Z]{2}\d{3,18}$/|unique:suppliers,vat_no',
             'shop_name'        => 'required|string|min:3|max:50',
-            'whatsapp_no'      => 'regex:/^\+966[0-9]{8,11}$/|unique:suppliers,whatsapp_no',
+            'vat_no'           => 'regex:/^[A-Z]{2}\d{3,18}$/|unique:suppliers,vat_no',
+            'whatsapp_no'      => 'regex:/^\+[0-9]{11,14}$/|unique:suppliers,whatsapp_no',
             'fb_page'          => 'regex:/^(https?:\/\/)?(www\.)?(m\.)?(fb)?(facebook)?(\.com)(\/[\w\D]+\/?)+$/|unique:suppliers,fb_page|max:100',
             'website_domain'   => 'regex:/^(https?:\/\/)?(([\da-z])+\.)?[\d\w\-]+\.[a-z]{2,3}$/|unique:suppliers,website_domain',
         ];
@@ -236,7 +248,6 @@ class RegisterController extends Controller
     public function checkUniqueFieldInSuppliers(Request $request)
     {
         $rules = [
-            'vat_no' => 'required|string',
             'phone' => 'required|string',
             'whatsapp_no' => 'string',
             'fb_page' => 'string',
@@ -524,5 +535,15 @@ class RegisterController extends Controller
         $regInvitation->save();
 
         return response()->json(["success" => true]);
+    }
+
+    public function registerOnlineClient(Request $request)
+    {
+        $this->job = User::ONLINE_CLIENT_JOB_NUMBER;
+        $this->userCreator($request);
+
+        return response()->json([
+            'success' => true
+        ]);
     }
 }

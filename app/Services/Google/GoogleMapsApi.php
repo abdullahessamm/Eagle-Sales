@@ -29,7 +29,7 @@ class GoogleMapsApi
     {
         $response = $this->decodedResponseToJson();
         
-        if ($response->state === 'REQUEST_DENIED') {
+        if ($response->status === 'REQUEST_DENIED') {
             throw new \Exception('Google Maps API request denied');
         }
     }

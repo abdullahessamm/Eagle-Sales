@@ -40,6 +40,7 @@
     position: absolute;
     width: 100%;
     height: 100%;
+    max-width: 741px;
     .input-container {
         position: relative;
         width: 40%;
@@ -47,6 +48,10 @@
         margin-right: 5px;
         margin-top: 30px;
         display: inline-block;
+
+        &.full-width {
+            width: 81%;
+        }
 
         &.with-loading {
             .loading {
@@ -116,7 +121,7 @@
                 color: #888;
                 z-index: 99;
 
-                &::after {
+                &.with-arrow::after {
                     content: '';
                     position: absolute;
                     right: -20px;
@@ -131,6 +136,14 @@
 
                 &.left {
                     left: calc(-100% - 35px);
+                }
+
+                &.bottom {
+                    top: calc(100% + 5px);
+                }
+
+                &.top {
+                    bottom: calc(-100% - 5px);
                 }
             }
         }

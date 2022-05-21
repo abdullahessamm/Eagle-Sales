@@ -1,11 +1,13 @@
 <template>
     <div id="signup-page">
         <Background></Background>
-        <SignupLayout></SignupLayout>
+        <SignupLayout :__="__"></SignupLayout>
     </div>
 </template>
 
 <script>
+import en from '../../translation/auth/en.json';
+import ar from '../../translation/auth/ar.json';
 import SignupLayout from '../layouts/SignupLayout.vue';
 import Background from '../components/signup/Background.vue';
 
@@ -16,10 +18,40 @@ export default {
         job() {
             return this.$store.state.signup.job
         },
+
+        __() {
+            if (this.$store.state.lang === 'en') {
+                return en.signup;
+            } else {
+                return ar.signup;
+            }
+        }
+    },
+
+    watch: {
+        job: function (val) {
+            if (val === '3')
+                this.$store.dispatch('fetchCustomerCategorys');
+        },
     },
 
     beforeMount() {
+        // add google identity script tag to the body
+        const script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.defer = true;
+        script.id = 'gsi-script';
+        document.body.appendChild(script);
+        // init sign up form
         this.$store.dispatch('initSignup');
+        this.$store.commit('SET_SIGNUP_USER_DATA_STATE', {lang: this.$store.state.lang});
+    },
+
+    beforeDestroy() {
+        // remove script tag from the body
+        const script = document.getElementById('gsi-script');
+        document.body.removeChild(script);
     },
 
     mounted() {

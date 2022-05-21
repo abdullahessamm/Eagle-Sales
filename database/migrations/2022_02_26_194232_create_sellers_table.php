@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('sellers', function (Blueprint $table) {
             $table->integer('id', true, true);
             $table->bigInteger('user_id')->unsigned()->unique();
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->tinyInteger('age');
             $table->string('education');
             $table->float('salary', 7, 2, true)->nullable();

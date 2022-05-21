@@ -170,13 +170,8 @@ class User extends Authenticatable
             case '4':
                 $model = BackOfficeUser::class;
                 break;
-
-            case '5':
-                $model = OnlineClient::class;
-                break;
         }
 
-        $this->withPaymentCards();
         $this->userInfo = $model ? $this->hasOne($model, 'user_id', 'id')->first() : null;
         if ($this->userInfo instanceof BackOfficeUser)
             $this->userInfo->withPermissions();

@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->integer('id', true, true);
             $table->bigInteger('user_id')->unsigned()->unique();
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('shop_name');
             $table->string('vat_no', 20)->unique()->nullable();
             $table->float('credit_limit', 12, 2)->nullable();

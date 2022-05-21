@@ -1,9 +1,6 @@
 import { initState } from './state';
 
 export default {
-    // TOGGLE_SIGNUP_LOADING_STATE: state => {
-    //     state.isLoading = ! state.isLoading
-    // },
 
     SET_SIGNUP_LOADING_STATE: (state, payload) => {
         state.isLoading = payload
@@ -24,25 +21,17 @@ export default {
     CHANGE_SIGNUP_STEP_STATE: (state, step) => {
         state.step = step
     },
+
+    SET_SIGNUP_SELECTED_PLACE: (state, place) => {
+        state.selectedPlace = { ...state.selectedPlace, ...place }
+    },
     
     SET_SIGNUP_USER_DATA_STATE: (state, userData) => {
-        state.userData = userData
-    },
-
-    CHANGE_USERDATA_PROPERTY: (state, payload) => {
-        state.userData[payload.property] = payload.value
-    },
-
-    SET_SIGNUP_PHONE: (state, phone) => {
-        state.userData = {...state.userData, phone}
+        state.userData = { ...state.userData, ...userData }
     },
 
     SET_SIGNUP_SUPPLIER_INFO_STATE: (state, supplierInfo) => {
-        state.supplierInfo = supplierInfo
-    },
-
-    SET_SUPPLIER_LOCATION: (state, location) => {
-        state.supplierInfo = {...state.supplierInfo, location_coords: location}
+        state.supplierInfo = { ...state.supplierInfo, ...supplierInfo }
     },
 
     SET_SIGNUP_AVAILABLE_PLACES: (state, availablePlaces) => {
@@ -54,27 +43,7 @@ export default {
     },
 
     SET_SIGNUP_CUSTOMER_INFO_STATE: (state, customerInfo) => {
-        state.customerInfo = customerInfo
-    },
-
-    SET_CUSTOMER_LOCATION: (state, location) => {
-        state.customerInfo = {...state.customerInfo, location_coords: location}
-    },
-
-    SET_SIGNUP_ONLINE_CLIENT_INFO_STATE: (state, onlineClientInfo) => {
-        state.onlineClientInfo = onlineClientInfo
-    },
-
-    SET_ONLINE_CLIENT_LOCATION: (state, location) => {
-        state.onlineClientInfo = {...state.onlineClientInfo, location_coords: location}
-    },
-
-    TOGGLE_SIGNUP_IS_ERROS_STATE: state => {
-        state.isErrors = ! state.isErrors
-    },
-
-    SET_SIGNUP_IS_ERROS_STATE: (state, isError) => {
-        state.isErrors = isError
+        state.customerInfo = { ...state.customerInfo, ...customerInfo }
     },
 
     ADD_SIGNUP_ERROR: (state, error) => {
