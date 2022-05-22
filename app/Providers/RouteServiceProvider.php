@@ -46,13 +46,28 @@ class RouteServiceProvider extends ServiceProvider
             Route::domain('suppliers.' . env('APP_URL'))
                 ->middleware('availableCountry')
                 ->group(function () {
-                    Route::view('/' , 'supplier-dashboard');
+                    Route::view('/{params?}' , 'supplier-dashboard')
+                    ->where('params', '.*');
                 });
+
+            Route::domain('customers.' . env('APP_URL'))
+            ->middleware('availableCountry')
+            ->group(function () {
+                Route::view('/{params?}' , 'customer-dashboard')
+                ->where('params', '.*');
+            });
+
+            Route::domain('admins.' . env('APP_URL'))
+            ->group(function () {
+                Route::view('/{params?}' , 'admin-dashboard')
+                ->where('params', '.*');
+            });
 
             Route::domain('store.' . env('APP_URL'))
                 ->middleware('availableCountry')
                 ->group(function () {
-                    Route::view('/' , 'store');
+                    Route::view('/{params?}' , 'store')
+                    ->where('params', '.*');
                 });
 
             Route::middleware('web')

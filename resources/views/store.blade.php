@@ -8,7 +8,5 @@
 </head>
 <body>
     <div id="store"></div>
-
-    <script src="{{ asset('assets/js/store.js') }}"></script>
 </body>
 </html>
