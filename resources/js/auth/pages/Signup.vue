@@ -36,6 +36,7 @@ export default {
     },
 
     beforeMount() {
+        this.$store.commit('RESET_SIGNUP_ALL_STATE');
         // add google identity script tag to the body
         const script = document.createElement('script');
         script.src = 'https://accounts.google.com/gsi/client';
