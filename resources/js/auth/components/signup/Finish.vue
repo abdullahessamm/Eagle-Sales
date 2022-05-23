@@ -1,13 +1,13 @@
 <template>
     <div id="finish" class="w-100 h-100 d-flex justify-content-center">
         <div class="w-100 h-100 d-flex align-items-center justify-content-center flex-column" v-if="$store.state.signup.userData.phone">
-            <div class="w-100" v-if="showLoading && !response_error">
+            <div class="w-100" v-if="false">
                 <span class="d-inline-block mb-4"> {{ __.sending }} </span>
                 <div class="bar-container m-auto">
                     <BarAnimation :completed="!sending" />
                 </div>
             </div>
-            <div class="w-100 h-100 d-flex justify-content-center align-items-center" v-if="!showLoading && !response_error">
+            <div class="w-100 h-100 d-flex justify-content-center align-items-center" v-if="true">
                 <FinishSignupAnimation :__="__" />
             </div>
             <div v-if="response_error" class="res-err">

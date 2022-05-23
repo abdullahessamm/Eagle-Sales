@@ -255,7 +255,7 @@ export default {
                     transform: 'rotateY(180deg)',
                     borderRadius: '0',
                 };
-            }, 2500);
+            }, 1200);
 
         }, 1000)
 

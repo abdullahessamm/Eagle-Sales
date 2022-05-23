@@ -1,53 +1,38 @@
 const mix = require('laravel-mix');
 require('laravel-mix-svg-vue');
 
-/*
- |--------------------------------------------------------------------------
- | Mix Asset Management
- |--------------------------------------------------------------------------
- |
- | Mix provides a clean, fluent API for defining some Webpack build steps
- | for your Laravel applications. By default, we are compiling the CSS
- | file for the application as well as bundling up all the JS files.
- |
- */
 
-// mix.js('resources/js/app.js', 'public/js')
-//     .postCss('resources/css/app.css', 'public/css', [
-//         //
-//     ]);
+// Auth app
+// mix.js('resources/js/auth.js', 'public/assets/js')
+//     .svgVue()
+//     .options({
+//         svgVue: {
+//             svgPath: 'resources/svg',
+//         }
+//     });
 
-// Authenticatation app
-mix.js('resources/js/auth.js', 'public/assets/js')
-    .svgVue()
-    .options({
-        svgVue: {
-            svgPath: 'resources/svg',
-        }
-    });
+// mix.sass('resources/sass/auth.scss', 'public/assets/css');
 
-mix.sass('resources/sass/auth.scss', 'public/assets/css');
+// Store UI
+// mix.js('resources/js/store.js', 'public/assets/js')
+//     .vue();
 
-// Store app
-mix.js('resources/js/store.js', 'public/assets/js')
+// mix.sass('resources/sass/store.scss', 'public/assets/css');
+
+// Suppliers dashboard UI
+// mix.js('resources/js/dashboards/supplier.js', 'public/assets/js')
+//     .vue();
+
+// mix.sass('resources/sass/dashboards/supplier.scss', 'public/assets/css');
+
+// Customers dashboard UI
+// mix.js('resources/js/dashboards/customer.js', 'public/assets/js')
+//     .vue();
+
+// mix.sass('resources/sass/dashboards/customer.scss', 'public/assets/css');
+
+// Admins dashboard UI
+mix.js('resources/js/dashboards/admin.js', 'public/assets/js')
     .vue();
 
-mix.sass('resources/sass/store.scss', 'public/assets/css');
-
-// Suppliers app
-mix.js('resources/js/dashboards/suppliers.js', 'public/assets/js')
-    .vue();
-
-mix.sass('resources/sass/dashboards/suppliers.scss', 'public/assets/css');
-
-// Customers app
-mix.js('resources/js/dashboards/customers.js', 'public/assets/js')
-    .vue();
-
-mix.sass('resources/sass/dashboards/customers.scss', 'public/assets/css');
-
-// Backoffice users
-mix.js('resources/js/dashboards/backoffice.js', 'public/assets/js')
-    .vue();
-
-mix.sass('resources/sass/dashboards/backoffice.scss', 'public/assets/css');
+mix.sass('resources/sass/dashboards/admin.scss', 'public/assets/css');

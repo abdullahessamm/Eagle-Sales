@@ -13,7 +13,6 @@
 </head>
 <body>
     <div id="auth-app"></div>
-    
     <script src="{{ asset('assets/js/auth.js') }}"></script>
 </body>
 </html>

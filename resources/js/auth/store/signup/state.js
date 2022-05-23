@@ -8,8 +8,8 @@ export const initState = {
     availablePlaces: [],
 
     selectedPlace: {
-        country: "EG",
-        gov: "Cairo Governorate",
+        country: "",
+        gov: "",
     },
     
     userData: {
