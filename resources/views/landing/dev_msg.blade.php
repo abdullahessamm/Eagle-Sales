@@ -7,15 +7,14 @@
             <p class="description">
                 <b> New update arrived: </b>
                 <ul>
-                    <li> Vue applications has been initialized and ready for implementation </li>
-                    <li> Login page is ready to use except change the language </li>
+                    <li> (login, register) system has been finished and ready to use </li>
                 </ul>
                 
                 <b> Features under development now: </b>
                 <ul>
-                    <li> Change the language in login page will be available in a few hours </li>
-                    <li> Signup page with google maps to get and search current user location coords with it </li>
-                    <li> Password reset system for users who have forgotten their passwords </li>
+                    <li> Admins dashboard </li>
+                    <li> Customers dashboard </li>
+                    <li> Suppliers dashboard </li>
                 </ul>
             </p>
             <div id="confirm" class="button text-center"> Close </div>
