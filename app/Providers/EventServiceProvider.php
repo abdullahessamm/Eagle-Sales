@@ -23,7 +23,6 @@ class EventServiceProvider extends ServiceProvider
         UserHasBeenBanned::class => [
             DeactivateItemsForBannedSupplier::class,
         ],
-
         UserHasBeenReactivated::class => [
             ReactivateItemsForReactivatedSupplier::class
         ],

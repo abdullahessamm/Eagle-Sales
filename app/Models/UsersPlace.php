@@ -115,4 +115,14 @@ class UsersPlace extends Model
         }
         return trim($address, ', ');
     }
+
+    public function setPrimary()
+    {
+        $primaryPlace = $this->where('user_id', $this->user_id)->where('is_primary', 1)->first();
+        if ($primaryPlace) {
+            $primaryPlace->is_primary = false;
+            $primaryPlace->save();
+        }
+        $this->is_primary = true;
+    }
 }

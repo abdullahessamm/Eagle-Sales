@@ -31,6 +31,9 @@ class SendMailToSupplier
             return;
 
         $itemApprovalMailIsEnabled = AppConfig::where('key', 'send_email_to_supplier_when_item_approval_reply')->first();
+        if (! $itemApprovalMailIsEnabled)
+            return;
+
         if ( (bool) $itemApprovalMailIsEnabled->value ) {
             $supplier = $item->supplier()->getUser();
             $supplier->sendMail(new \App\Mail\Items\SendApprovalMailToSupplier($item, $supplier));

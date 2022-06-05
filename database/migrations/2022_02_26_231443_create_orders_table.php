@@ -19,7 +19,12 @@ return new class extends Migration
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('set null');
             $table->integer('customer_id')->unsigned()->nullable();
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('set null');
-            $table->enum('state', [0, 1, 2, 3, 4, 5])->default(1);
+            $table->enum('state', [0, 1, 2, 3, 4, 5, 6])->default(0);
+            $table->boolean('require_shipping')->default(false);
+            $table->bigInteger('shipping_address_id')->unsigned()->nullable();
+            $table->foreign('shipping_address_id')->references('id')->on('users_places')->onDelete('set null');
+            $table->bigInteger('billing_address_id')->unsigned()->nullable();
+            $table->foreign('billing_address_id')->references('id')->on('users_places')->onDelete('set null');
             $table->float('required', 12, 2)->unsigned();
             $table->float('tax', 3, 1)->unsigned()->default(0);
             $table->float('discount', 3, 1)->unsigned()->default(0);
@@ -32,6 +37,8 @@ return new class extends Migration
             $table->foreign('created_by')->references('id')->on('sellers')->onDelete('set null');
             $table->bigInteger('updated_by')->unsigned()->nullable();
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('set null');
+            $table->date('delivery_date')->nullable();
+            $table->timestamp('delivered_at')->nullable();
             $table->timestamps();
         });
     }

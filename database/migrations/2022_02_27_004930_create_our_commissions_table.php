@@ -19,8 +19,11 @@ return new class extends Migration
             $table->foreign('supplier_id')->references('id')->on('suppliers');
             $table->bigInteger('order_id')->unsigned();
             $table->foreign('order_id')->references('id')->on('orders');
-            $table->float('commission')->unsigned();
+            $table->float('amount', 12, 2)->unsigned();
             $table->boolean('obtained')->default(false);
+            $table->timestamp('obtained_at')->nullable();
+            $table->bigInteger('obtained_by')->unsigned()->nullable();
+            $table->foreign('obtained_by')->references('id')->on('users');
             $table->timestamps();
         });
     }

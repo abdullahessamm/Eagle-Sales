@@ -187,7 +187,11 @@ class Item extends Model
         string $arName,
         string $description=null,
         string $arDescription=null,
-        bool $isDefault=false
+        bool $isDefault=false,
+        float $weight=0,
+        float $length=0,
+        float $width=0,
+        float $height=0,
     )
     {
         $defaultUOM = $this->hasMany(Uom::class, 'item_id', 'id')->where('is_default',true)->first();
@@ -202,6 +206,10 @@ class Item extends Model
             $uom->description = $description;
             $uom->ar_description = $arDescription;
             $uom->is_default = $isDefault;
+            $uom->weight = $weight !== 0 ? $weight : null;
+            $uom->length = $length !== 0 ? $length : null;
+            $uom->width = $width !== 0 ? $width : null;
+            $uom->height = $height !== 0 ? $height : null;
             $uom->item_id = $this->id;
             $uom->save();
         } catch (QueryException $e) {

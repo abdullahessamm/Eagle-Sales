@@ -62,6 +62,12 @@ class AppConfigSeeder extends Seeder
             'value' => '0'
         ]);
 
+        // config for enable/disable auto-approve online clients
+        AppConfig::create([
+            'key' => 'auto_approve_online_clients',
+            'value' => '1'
+        ]);
+
         // send email to user after approval reply
         AppConfig::create([
             'key' => 'send_email_to_user_after_approval_reply',

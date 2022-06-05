@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OurCommission extends Model
+class ShippingDue extends Model
 {
     use HasFactory;
 
@@ -13,6 +13,9 @@ class OurCommission extends Model
         'order_id',
         'supplier_id',
         'amount',
+        'tax',
+        'discount',
+        'total_amount',
         'obtained',
         'obtained_at',
         'obtained_by',
@@ -28,33 +31,33 @@ class OurCommission extends Model
         'obtained_at',
     ];
 
-    public function order()
+    public function getOrder()
     {
         return $this->belongsTo(Order::class, 'order_id', 'id')->first();
     }
 
-    public function supplier()
+    public function getOrderAttribute()
+    {
+        return $this->getOrder();
+    }
+
+    public function getSupplier()
     {
         return $this->belongsTo(Supplier::class, 'supplier_id', 'id')->first();
     }
 
-    public function obtainedBy()
+    public function getSupplierAttribute()
+    {
+        return $this->getSupplier();
+    }
+
+    public function getObtainedBy()
     {
         return $this->belongsTo(User::class, 'obtained_by', 'id')->first();
     }
 
-    public function getOrderAttribute()
+    public function getObtainedByAttribute()
     {
-        return $this->order();
-    }
-
-    public function getSupplierAttribute()
-    {
-        return $this->supplier();
-    }
-
-    public function getObtainerAttribute()
-    {
-        return $this->obtainedBy();
+        return $this->getObtainedBy();
     }
 }

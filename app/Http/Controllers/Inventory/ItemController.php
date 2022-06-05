@@ -62,9 +62,11 @@ class ItemController extends Controller
                 $item->$param = $request->get($param);
 
         $item->supplier_id = $authUser->userInfo->id;
+        $item->currency = $authUser->currency;
 
+        // check auto approve configuration
         $autoApprove = AppConfig::where('key', 'auto_approve_items')->first();
-        // if auto approve not found set approved to false
+
         if (! $autoApprove)
             $item->is_approved = false;
         else

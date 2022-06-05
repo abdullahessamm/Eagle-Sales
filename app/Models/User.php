@@ -76,6 +76,36 @@ class User extends Authenticatable
         return $this;
     }
 
+    public function isSupplier()
+    {
+        return $this->job === self::SUPPLIER_JOB_NUMBER;
+    }
+
+    public function isHierdSeller()
+    {
+        return $this->job === self::HIERD_SELLER_JOB_NUMBER;
+    }
+
+    public function isFreelancerSeller()
+    {
+        return $this->job === self::FREELANCER_SELLER_JOB_NUMBER;
+    }
+
+    public function isCustomer()
+    {
+        return $this->job === self::CUSTOMER_JOB_NUMBER;
+    }
+
+    public function isAdmin()
+    {
+        return $this->job === self::ADMIN_JOB_NUMBER;
+    }
+
+    public function isOnlineClient()
+    {
+        return $this->job === self::ONLINE_CLIENT_JOB_NUMBER;
+    }
+
     public function generateUniqueUsername()
     {
         $this->username = 'user_' . now()->timestamp;
@@ -208,6 +238,18 @@ class User extends Authenticatable
         } catch (QueryException $e) {
             throw new \App\Exceptions\DBException($e);
         }
+    }
+
+    public function getPrimaryPlace()
+    {
+        return $this->places()->where('is_primary', true)->first();
+    }
+
+    public function getCurrencyAttribute()
+    {
+        $countryCode = $this->getPrimaryPlace()->country_code;
+        $country = AvailableCountry::where('iso_code', $countryCode)->first();
+        return $country->currency;
     }
 
     // get related payment cards

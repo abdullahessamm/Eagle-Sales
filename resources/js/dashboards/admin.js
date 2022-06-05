@@ -1,11 +1,11 @@
 import { createApp } from "vue";
+import DashboardLayout from "./layouts/DashboardLayout.vue";
 
-document.getElementById("dashboard").innerHTML = `{{ msg }}`;
+document.getElementById("dashboard").innerHTML = `<dashboard-layout></dashboard-layout>`;
 
 const app = createApp({
-    data: () => ({
-        msg: "Hello World!"
-    })
+    components: {
+        DashboardLayout
+    }
 });
-
 app.mount("#dashboard");

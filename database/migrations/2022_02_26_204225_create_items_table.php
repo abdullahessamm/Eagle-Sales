@@ -35,6 +35,7 @@ return new class extends Migration
             $table->mediumInteger('supplier_id')->unsigned();
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
             $table->float('price', 8, 2)->unsigned();
+            $table->char('currency', 3);
             $table->timestamps();
         });
     }

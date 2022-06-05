@@ -31,6 +31,9 @@ class SendSmsToSupplier
             return;
 
         $itemApprovalSmsIsEnabled = AppConfig::where('key', 'send_sms_to_supplier_when_item_approval_reply')->first();
+        if (! $itemApprovalSmsIsEnabled)
+            return;
+
         if ( (bool) $itemApprovalSmsIsEnabled->value ) {
             $supplier = $item->supplier()->getUser();
             $supplier->sendSms("Your item \"$item->name\" has been approved,\nYou can now start selling it on our platform.");

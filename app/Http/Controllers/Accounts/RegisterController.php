@@ -148,6 +148,7 @@ class RegisterController extends Controller
             ]);
         }
 
+        // init place object
         $place = new UsersPlace;
         $place->coords     = $coords;
         $place->country    = $geocode_en->getCountry()['long_name'];
@@ -162,9 +163,10 @@ class RegisterController extends Controller
         $place->street = $geocode_en->getStreet() ? $geocode_en->getStreet()['long_name'] : null;
         $place->street_ar = $geocode_ar->getStreet() ? $geocode_ar->getStreet()['long_name'] : null;
         $place->building_no = $geocode_en->getBuildingNumber() ? $geocode_en->getBuildingNumber()['long_name'] : null;
+        $place->setPrimary();
         
+        // pass object to addPlace user's method
         $user->addPlace($place);
-
     }
 
     /**

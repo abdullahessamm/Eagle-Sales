@@ -15,6 +15,10 @@ class Uom extends Model
         'ar_uom_name',
         'description',
         'ar_description',
+        'weight',
+        'length',
+        'width',
+        'height',
         'item_id',
         'is_default',
     ];
