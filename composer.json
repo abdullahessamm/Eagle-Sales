@@ -10,10 +10,13 @@
         "ayeo/geo": "^1.0",
         "fruitcake/laravel-cors": "^2.0.5",
         "guzzlehttp/guzzle": "^7.2",
+        "intervention/image": "^2.7",
         "laravel/framework": "^9.0",
         "laravel/sanctum": "^2.14",
         "laravel/tinker": "^2.7",
+        "predis/predis": "^2.0",
         "pusher/pusher-php-server": "^7.0",
+        "shuchkin/simplexlsx": "^1.0",
         "torann/geoip": "^3.0",
         "twilio/sdk": "^6.35"
     },

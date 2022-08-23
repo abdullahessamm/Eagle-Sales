@@ -10,8 +10,8 @@ if (env("API_MAINTENANCE")) {
     //Accounts routes
     Route::prefix('/accounts')->group(__DIR__ . '/Accounts/index.php');
     
-    //Items routes
-    Route::prefix('/items')->group(__DIR__ . '/Items/index.php');
+    //Inventory routes
+    Route::prefix('/inventory')->group(__DIR__ . '/Inventory/index.php');
 
     //Location routes
     Route::prefix('/location')->group(__DIR__ . '/Location/index.php');

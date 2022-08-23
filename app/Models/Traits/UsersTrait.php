@@ -35,4 +35,9 @@ trait UsersTrait {
         $user->orders = $user->getRelatedOrders();
         return $user;
     }
+
+    public function getCurrencyAttribute()
+    {
+        return $this->getUser()->currency;
+    }
 }

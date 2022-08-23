@@ -35,8 +35,28 @@ class Supplier extends Model
         return $this->hasMany(Item::class, 'supplier_id', 'id');
     }
 
-    public function getRelatedItems()
+    public function relatedShippingDues()
     {
-        return $this->relatedItems()->get()->all();
+        return $this->hasMany(ShippingDue::class, 'supplier_id', 'id');
+    }
+
+    public function getShippingDuesAttribute()
+    {
+        return $this->relatedShippingDues()->get();
+    }
+
+    public function getOrdersAttribute()
+    {
+        return $this->relatedOrders()->get();
+    }
+
+    public function getItemsAttribute()
+    {
+        return $this->relatedItems()->get();
+    }
+
+    public function addItem(Item $item, Uom $uom)
+    {
+        return $this->relatedItems()->save($item);
     }
 }

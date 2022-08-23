@@ -9,13 +9,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Mail\Mailable;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Mail;
 use Symfony\Component\Mailer\Exception\TransportException;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory;
 
     const SUPPLIER_JOB_NUMBER = 0;
     const HIERD_SELLER_JOB_NUMBER = 1;
@@ -33,6 +32,7 @@ class User extends Authenticatable
         'f_name',
         'l_name',
         'avatar_uri',
+        'avatar_pos',
         'email',
         'username',
         'password',
@@ -74,6 +74,36 @@ class User extends Authenticatable
     {
         $this->makeVisible(['created_by', 'updated_by', 'approved_by', 'personal_id_uri']);
         return $this;
+    }
+
+    /**
+     * set the user's avatar
+     *
+     * @param string $uri
+     * @param integer $x
+     * @param integer $y
+     * @param integer $scale
+     * @return void
+     */
+    public function setAvatar(string $uri, int $x, int $y, int $scale)
+    {
+        $this->avatar_uri = $uri;
+        $this->avatar_pos = [
+            'x' => $x,
+            'y' => $y,
+            'scale' => $scale
+        ];
+    }
+
+    /**
+     * delete the user's avatar
+     *
+     * @return void
+     */
+    public function deleteAvatar()
+    {
+        $this->avatar_uri = null;
+        $this->avatar_pos = null;
     }
 
     public function isSupplier()
@@ -119,27 +149,27 @@ class User extends Authenticatable
     {
         $userLetter = '';
         switch ($this->job) {
-            case 0:
+            case self::SUPPLIER_JOB_NUMBER:
                 $userLetter = 'S';
                 break;
             
-            case 1:
-                $userLetter = 'FS';
-                break;
-            
-            case 2:
+            case self::HIERD_SELLER_JOB_NUMBER:
                 $userLetter = 'HS';
                 break;
             
-            case 3:
+            case self::FREELANCER_SELLER_JOB_NUMBER:
+                $userLetter = 'FS';
+                break;
+            
+            case self::CUSTOMER_JOB_NUMBER:
                 $userLetter = 'C';
                 break;
             
-            case 4:
+            case self::ADMIN_JOB_NUMBER:
                 $userLetter = 'A';
                 break;
 
-            case 5:
+            case self::ONLINE_CLIENT_JOB_NUMBER:
                 $userLetter = 'OC';
                 break;
         }
@@ -365,5 +395,30 @@ class User extends Authenticatable
         } catch (QueryException $e) {
             throw new \App\Exceptions\DBException($e);
         }
+    }
+
+    // Notification section
+
+    public function notifications()
+    {
+        return $this->hasMany(UserNotification::class, 'user_id', 'id');
+    }
+
+    public function getNotifications(array $columns = ['*'])
+    {
+        return $this->notifications()->get($columns);
+    }
+
+    public function getNotification(int $id)
+    {
+        return $this->notifications()->find($id);
+    }
+
+    public function notify(string $eventName, string $body)
+    {
+        $this->notifications()->create([
+            'event' => $eventName,
+            'body' => $body
+        ]);
     }
 }

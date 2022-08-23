@@ -29,6 +29,7 @@ return new class extends Migration
             $table->float('tax', 3, 1)->unsigned()->default(0);
             $table->float('discount', 3, 1)->unsigned()->default(0);
             $table->float('total_required', 12, 2)->unsigned();
+            $table->char('currency', 3);
             $table->boolean('is_credit')->default(false);
             $table->timestamp('credit_limit')->nullable();
             $table->float('deposit', 12, 2)->nullable();

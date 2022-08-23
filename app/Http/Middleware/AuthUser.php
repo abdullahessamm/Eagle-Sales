@@ -46,7 +46,8 @@ class AuthUser
     private function checkSerial(): bool
     {
         if (request()->has('serial'))
-        return request()->get('serial') === $this->tokenRecord['serial'];
+            return request()->get('serial') === $this->tokenRecord['serial'];
+        
         return false;
     }
 

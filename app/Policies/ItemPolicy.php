@@ -21,7 +21,6 @@ class ItemPolicy
             return (bool) substr($userPermissions->items_access_level, 1, 1);
         }
 
-        // if user is supplier return item supplier_id === user info id
         return $item->supplier_id === $user->userInfo->id;
     }
 
@@ -34,8 +33,13 @@ class ItemPolicy
      */
     public function create(User $user)
     {
-        if ($user->job !== User::SUPPLIER_JOB_NUMBER)
+        if (! $user->isSupplier() && ! $user->isAdmin())
             return false;
+
+        if ($user->isAdmin()) {
+            $userPermissions = $user->userInfo->permissions;
+            return (bool) substr($userPermissions->items_access_level, 0, 1);
+        }
 
         return true;
     }
@@ -49,10 +53,10 @@ class ItemPolicy
      */
     public function update(User $user, Item $item)
     {
-        if ($user->job !== User::SUPPLIER_JOB_NUMBER || $user->job !== User::ADMIN_JOB_NUMBER)
+        if (! $user->isSupplier() && ! $user->isAdmin())
             return false;
 
-        if ($user->job === User::ADMIN_JOB_NUMBER) {
+        if ($user->isAdmin()) {
             $userPermissions = $user->userInfo->permissions;
             return (bool) substr($userPermissions->items_access_level, 2, 1);
         }
@@ -69,7 +73,7 @@ class ItemPolicy
      */
     public function deactivate(User $user, Item $item)
     {
-        if ($user->job !== User::SUPPLIER_JOB_NUMBER)
+        if (! $user->isSupplier())
             return false;
 
         return (bool) ((int) $item->supplier_id === (int) $user->userInfo->id);
@@ -77,7 +81,7 @@ class ItemPolicy
 
     public function approve(User $user)
     {
-        if ($user->job !== User::ADMIN_JOB_NUMBER)
+        if (! $user->isAdmin())
             return false;
 
         $userPermissions = $user->userInfo->permissions;
@@ -86,7 +90,7 @@ class ItemPolicy
 
     public function rateOrComment(User $user)
     {
-        if ($user->job === User::CUSTOMER_JOB_NUMBER)
+        if ($user->isCustomer() || $user->isOnlineClient())
             return true;
 
         return false;

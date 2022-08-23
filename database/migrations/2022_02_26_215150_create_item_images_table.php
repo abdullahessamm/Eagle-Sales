@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('uri')->unique();
             $table->boolean('is_cover')->default(false);
+            $table->json('pos')->nullable();
             $table->bigInteger('item_id')->unsigned();
             $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
             $table->timestamp('created_at');

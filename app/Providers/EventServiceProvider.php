@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Events\Accounts\NewUserArrived;
 use App\Events\Accounts\UserHasBeenBanned;
 use App\Events\Accounts\UserHasBeenReactivated;
 use App\Events\Items\ItemApprovalResponse;
+use App\Listeners\Accounts\CommitNewUserArrivedNotification;
 use App\Listeners\Accounts\DeactivateItemsForBannedSupplier;
 use App\Listeners\Accounts\ReactivateItemsForReactivatedSupplier;
 use App\Listeners\Items\SendMailToSupplier;
@@ -20,6 +22,9 @@ class EventServiceProvider extends ServiceProvider
      * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
+        NewUserArrived::class => [
+            CommitNewUserArrivedNotification::class,
+        ],
         UserHasBeenBanned::class => [
             DeactivateItemsForBannedSupplier::class,
         ],

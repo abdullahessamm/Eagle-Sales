@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('f_name', 20);
             $table->string('l_name', 20);
             $table->string('avatar_uri', 255)->nullable();
+            $table->json('avatar_pos')->nullable();
             $table->string('email', 50)->unique();
             $table->string('username', 50)->unique();
             $table->char('password', 60);

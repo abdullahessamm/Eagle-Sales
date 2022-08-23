@@ -7,7 +7,7 @@ use Exception;
 class ForbiddenException extends Exception
 {
 
-    public function __construct($message = null, $code = 0, Exception $previous = null)
+    public function __construct($message = "You don't have permission to access this", $code = 0, Exception $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }

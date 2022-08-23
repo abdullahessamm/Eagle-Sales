@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class XSSAttacksMiddleware
 {
-    private int $max_deep = 5;
+    private int $max_deep = 8;
 
     private function throwAttackExceptionWhenXSSIsDetected($request)
     {
@@ -33,7 +33,7 @@ class XSSAttacksMiddleware
                     $nestedParams = array_merge($nestedParams, $this->getAllNestedParams($value, $deep + 1));
                 } else {
                     throw new \App\Exceptions\ValidationError([
-                        'message' => 'Deep level of nesting is more than 5'
+                        'message' => 'Deep level of nesting is more than ' . $this->max_deep . '.'
                     ]);
                 }
             } else {

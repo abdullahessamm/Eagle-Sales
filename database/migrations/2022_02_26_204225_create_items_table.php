@@ -21,12 +21,13 @@ return new class extends Migration
             $table->foreign('category_id')->references('id')->on('inventory_categories')->onDelete('cascade');
             $table->string('brand', 50);
             $table->string('ar_brand', 50);
-            $table->string('barcode', 64)->unique()->nullable();
-            $table->string('keywards');
+            $table->string('barcode', 64)->nullable();
+            $table->string('keywords');
             $table->mediumText('description');
             $table->mediumText('ar_description');
             $table->boolean('has_promotions')->default(false);
             $table->boolean('is_var')->default(false);
+            $table->json('vars')->nullable();
             $table->boolean('is_available')->default(true);
             $table->smallInteger('total_available_count')->unsigned();
             $table->boolean('is_approved')->nullable();

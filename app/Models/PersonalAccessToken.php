@@ -43,4 +43,9 @@ class PersonalAccessToken extends Model
     {
         return $this->getUser()->withFullInfo();
     }
+
+    public function getAuthIdentifier()
+    {
+        return $this->getUser();
+    }
 }

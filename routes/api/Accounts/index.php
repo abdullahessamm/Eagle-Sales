@@ -5,13 +5,18 @@ use Illuminate\Support\Facades\Route;
 Route::controller(App\Http\Controllers\Accounts\AuthController::class)
 ->group(__DIR__ . '/auth.php');
 
-Route::controller(App\Http\Controllers\Accounts\RegisterController::class)
-->prefix('/register')
-->group(__DIR__ . '/reg.php');
+Route::controller(App\Http\Controllers\Media\Users::class)
+->prefix('/media')
+->middleware('auth')
+->group(__DIR__ . '/media.php');
 
 Route::controller(App\Http\Controllers\PhoneController::class)
 ->prefix('/phone')
 ->group(__DIR__ . '/phone.php');
+
+Route::controller(App\Http\Controllers\Accounts\RegisterController::class)
+->prefix('/register')
+->group(__DIR__ . '/reg.php');
 
 Route::prefix('/backoffice')
 ->middleware(['auth', 'approved', 'admin'])

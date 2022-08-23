@@ -261,14 +261,11 @@ class RegisterController extends Controller
             throw new \App\Exceptions\ValidationError($validation->errors()->all());
 
         $responseMsg = [];
-        $vatCheck = Supplier::where('vat_no', $request->get('vat_no'))->exists() || Customer::where('vat_no', $request->get('vat_no'))->exists();
         $phoneCheck = Phone::where('phone', $request->get('phone'))->exists();
         $whatsappCheck = $request->has('whatsapp_no') ? Supplier::where('whatsapp_no', $request->get('whatsapp_no'))->exists() : null;
         $fbPageCheck = $request->has('fb_page') ? Supplier::where('fb_page', $request->get('fb_page'))->exists() : null;
         $websiteDomainCheck = $request->has('website_domain') ? Supplier::where('website_domain', $request->get('website_domain'))->exists() : null;
 
-        if ($vatCheck)
-            $responseMsg['vat_no'] = 'VAT No. already exists';
         if ($phoneCheck)
             $responseMsg['phone'] = 'Phone already exists';
         if ($whatsappCheck)

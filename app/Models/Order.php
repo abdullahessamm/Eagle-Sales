@@ -28,6 +28,7 @@ class Order extends Model
         'tax',
         'discount',
         'total_required',
+        'currency',
         'is_credit',
         'credit_limit',
         'deposit',

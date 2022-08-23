@@ -9,10 +9,14 @@ class ValidationError extends Exception
     private array $errors;
     private bool $debuggingMode;
 
-    public function __construct(array $errors)
+    public function __construct(array $errors, ?bool $showErrors = null)
     {
         $this->errors = $errors;
-        $this->debuggingMode = env('APP_DEBUG');
+        $this->debuggingMode = $showErrors ?? env('APP_DEBUG');
+    }
+
+    public function getErrors() {
+        return $this->errors;
     }
 
     public function render()

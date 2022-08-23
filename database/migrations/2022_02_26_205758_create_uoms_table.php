@@ -15,10 +15,10 @@ return new class extends Migration
     {
         Schema::create('uoms', function (Blueprint $table) {
             $table->id();
-            $table->string('uom_name', 30);
-            $table->string('ar_uom_name', 30);
-            $table->string('description')->nullable();
-            $table->string('ar_description')->nullable();
+            $table->string('name', 30);
+            $table->string('ar_name', 30);
+            $table->string('description', 255)->nullable();
+            $table->string('ar_description', 255)->nullable();
             $table->float('weight', 8, 2)->nullable();
             $table->float('length', 8, 2)->nullable();
             $table->float('width', 8, 2)->nullable();

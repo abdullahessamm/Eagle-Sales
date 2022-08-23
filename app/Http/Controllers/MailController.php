@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\EmailVerified;
 use App\Models\EmailVerifyToken;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -29,7 +28,8 @@ class MailController extends Controller
         $user->save();
         $token->delete();
 
-        // TODO fire event and broadcast it
+        if ($user->job !== User::CUSTOMER_JOB_NUMBER)
+            event(new \App\Events\Accounts\NewUserArrived($user));
 
         return response('Email Vrified!');
     }

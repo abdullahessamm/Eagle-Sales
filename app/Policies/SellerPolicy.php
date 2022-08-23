@@ -83,8 +83,8 @@ class SellerPolicy
 
         if ($user->job === User::ADMIN_JOB_NUMBER) {
             $userPermissions = $user->userInfo->permissions;
-            $createSellerPermission = (bool) substr($userPermissions->sellers_access_level, 2, 1);
-            return $createSellerPermission;
+            $updateSellerPermission = (bool) substr($userPermissions->sellers_access_level, 2, 1);
+            return $updateSellerPermission;
         }
 
         if ($user->job === User::HIERD_SELLER_JOB_NUMBER ||
@@ -104,8 +104,8 @@ class SellerPolicy
             return false;
         
         $userPermissions = $user->userInfo->permissions;
-        $createSellerPermission = (bool) substr($userPermissions->sellers_access_level, 2, 1);
-        return $createSellerPermission;
+        $updateSellerPermission = (bool) substr($userPermissions->sellers_access_level, 2, 1);
+        return $updateSellerPermission;
     }
 
     public function approve(User $user)

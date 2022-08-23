@@ -175,9 +175,10 @@ return [
          */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
+        App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class,
 
     ],
 
@@ -193,9 +194,11 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
+        'Redis' => Illuminate\Support\Facades\Redis::class,
         'GeoIP' => \Torann\GeoIP\Facades\GeoIP::class,
         'GoogleMaps' => GoogleMaps\Facade\GoogleMapsFacade::class,
         'GoogleGeocode' => \App\Services\Google\GoogleGeocode::class,
+        'Image' => Intervention\Image\Facades\Image::class,
     ])->toArray(),
 
 ];

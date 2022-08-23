@@ -6,50 +6,100 @@ use App\Http\Controllers\Controller;
 use App\Models\AppConfig;
 use Illuminate\Http\Request;
 use App\Models\Item;
-use App\Rules\ArabicLetters;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Validator;
-use App\Models\InventoryCategory;
-use App\Models\Supplier;
 use App\Models\User;
+use App\Services\ItemsExcelParser\ItemsExcelParser;
+use Shuchkin\SimpleXLSX;
 
 class ItemController extends Controller
 {
+    /**
+     * Create new Item.
+     *
+     * @param Request $request
+     * @throws \App\Exceptions\ValidationError
+     * @throws \App\Exceptions\DBException
+     * @return \Illuminate\Http\JsonResponse
+     * @author Abdullah Essam <abdoessam.2010@gmail.com>
+     */
     public function create(Request $request)
     {
         $authUser = auth()->user()->userData;
+
         if (! $authUser->can('create', Item::class))
             throw new \App\Exceptions\ForbiddenException;
 
         $rules = [
-            'name'                          => 'required|regex:/^[A-Za-z\d\W]{3,50}$/',
-            'ar_name'                       => 'required|regex:/^[\x{0621}-\x{064A}\d\W]{3,50}$/u',
-            'category_id'                   => 'required|integer|exists:inventory_categories,id',
-            'brand'                         => 'required|regex:/^[A-Za-z\d\W]{3,50}$/',
-            'ar_brand'                      => 'required|regex:/^[\x{0621}-\x{064A}\d\W]{3,50}$/u',
-            'barcode'                       => 'string|max:64',
-            'keywards'                      => 'required|string|max:255',
-            'description'                   => 'required|regex:/^[\w\W\d]+$/|min:10|max:16777215',
-            'ar_description'                => 'required|regex:/^[\x{0621}-\x{064A}\W\d]+$/u|min:10|max:16777215',
-            'total_available_count'         => 'required|integer|between:1,65535',
-            'supplier_id'                   => 'exists:suppliers,id',
-            'price'                         => 'required|numeric|between:1,999999.99',
-            'default_uom_name'              => 'required|regex:/^\w{3,30}$/',
-            'default_uom_ar_name'           => ['required', new ArabicLetters, 'min:3', 'max:30'],
-            'default_uom_description'       => 'regex:/^\w{3,255}$/',
-            'default_uom_ar_description'    => 'regex:/^[\x{0621}-\x{064A}\W]{3,50}$/u',
+            'name'                                             => 'required|regex:/^[A-Za-z\d\W]{3,50}$/',
+            'ar_name'                                          => 'required|regex:/^[\x{0621}-\x{064A}\d\W]{3,50}$/u',
+            'category_id'                                      => 'required|integer|exists:inventory_categories,id',
+            'brand'                                            => 'required|regex:/^[A-Za-z\d\W]{3,50}$/',
+            'ar_brand'                                         => 'required|regex:/^[\x{0621}-\x{064A}\d\W]{3,50}$/u',
+            'barcode'                                          => 'string|max:64',
+            'keywords'                                         => 'required|string|max:255',
+            'description'                                      => 'required|regex:/^[\w\W\d]+$/|min:10|max:16777215',
+            'ar_description'                                   => 'required|regex:/^[\x{0621}-\x{064A}\W\d]+$/u|min:10|max:16777215',
+            'total_available_count'                            => 'required|integer|between:1,65535',
+            'supplier_id'                                      => $authUser->isAdmin() ? 'required|exists:suppliers,id' : 'exists:suppliers,id',
+            'price'                                            => 'required|numeric|between:1,999999.99',
+            'uoms'                                             => 'required|array|min:1',
+            'uoms.*.name'                                      => 'required|regex:/^[A-Za-z\d\W]{3,30}$/',
+            'uoms.*.ar_name'                                   => 'required|regex:/^[\x{0621}-\x{064A}\d\W]{3,30}$/u',
+            'uoms.*.description'                               => 'regex:/^[A-Za-z\d\W]{10,255}$/',
+            'uoms.*.ar_description'                            => 'regex:/^[\x{0621}-\x{064A}\d\W]{10,255}$/u',
+            'uoms.*.weight'                                    => 'numeric|between:0,999999.99',
+            'uoms.*.length'                                    => 'numeric|between:0,999999.99',
+            'uoms.*.width'                                     => 'numeric|between:0,999999.99',
+            'uoms.*.height'                                    => 'numeric|between:0,999999.99',
+            'uoms.*.is_default'                                => 'required|boolean',
+            'uoms.*.conversion_rule.factor'                    => 'required_if:uoms.*.is_default,false|numeric|between:0,999999.99',
+            'uoms.*.conversion_rule.is_multiply'               => 'required_if:uoms.*.is_default,false|bool',
+            'vars'                                             => 'array|min:1',
+            'vars.*.attribute'                                 => 'required|array|min:2|max:2',
+            'vars.*.attribute.name'                            => 'required|regex:/^[A-Za-z]{2,20}$/',
+            'vars.*.attribute.ar_name'                         => 'required|regex:/^[\x{0621}-\x{064A}]{2,20}$/u',
+            'vars.*.values'                                    => 'required|array|min:1',
+            'vars.*.values.*'                                  => 'array',
+            'vars.*.values.*.name'                             => 'required|regex:/^[A-Za-z\d\W]{2,20}$/',
+            'vars.*.values.*.ar_name'                          => 'required|regex:/^[\x{0621}-\x{064A}\d\W]{2,20}$/u',
+            'vars.*.values.*.is_available'                     => 'required|boolean',
+            'vars.*.values.*.children'                         => 'array|min:1',
+            'vars.*.values.*.children.*.attribute'             => 'required|array|min:2|max:2',
+            'vars.*.values.*.children.*.attribute.name'        => 'required|regex:/^[A-Za-z]{2,20}$/',
+            'vars.*.values.*.children.*.attribute.ar_name'     => 'required|regex:/^[\x{0621}-\x{064A}]{2,20}$/u',
+            'vars.*.values.*.children.*.values'                => 'required|array|min:1',
+            'vars.*.values.*.children.*.values.*'              => 'array',
+            'vars.*.values.*.children.*.values.*.name'         => 'required|regex:/^[A-Za-z\d\W]{2,20}$/',
+            'vars.*.values.*.children.*.values.*.ar_name'      => 'required|regex:/^[\x{0621}-\x{064A}\d\W]{2,20}$/u',
+            'vars.*.values.*.children.*.values.*.is_available' => 'required|boolean'
         ];
 
         $validation = Validator::make($request->all(), $rules);
         if ($validation->fails())
             throw new \App\Exceptions\ValidationError($validation->errors()->all());
+
+        // check if uoms has only one default uom
+        $defaultUom = null;
+        foreach ($request->get('uoms') as $uom) {
+            if ($uom['is_default']) {
+                if ($defaultUom)
+                    throw new \App\Exceptions\ValidationError(['Only one default uom is allowed']);
+                $defaultUom = $uom;
+            }
+        }
+
+        if (! $defaultUom)
+            throw new \App\Exceptions\ValidationError(['Default uom is required']);
         
         $itemParams = [
             'name',
             'ar_name',
             'category_id',
+            'brand',
+            'ar_brand',
             'barcode',
-            'keywards',
+            'keywords',
             'description',
             'ar_description',
             'total_available_count',
@@ -61,32 +111,163 @@ class ItemController extends Controller
             if ($request->has($param))
                 $item->$param = $request->get($param);
 
-        $item->supplier_id = $authUser->userInfo->id;
-        $item->currency = $authUser->currency;
+        // add vars if any
+        if ($request->has('vars')) {
+            $vars = $request->get('vars');
 
-        // check auto approve configuration
-        $autoApprove = AppConfig::where('key', 'auto_approve_items')->first();
+            foreach ($vars as $index => $var) {
+                $attribute = $var['attribute'];
+                $values = $var['values'];
 
-        if (! $autoApprove)
-            $item->is_approved = false;
-        else
-            $item->is_approved = (bool) $autoApprove->value;
-        
+                try {
+                    $item->updateOrCreateVariant($attribute, $values);
+                } catch (\Exception $e) {
+                    throw new \App\Exceptions\ValidationError([$e->getMessage() . " at vars[$index]"]);
+                }
+            }
+        }
+
+        $item->supplier_id = $authUser->isAdmin() ? $request->get('supplier_id') : $authUser->userInfo->id;
+
+        // check auto approve configuration if user not admin
+        if ($authUser->isAdmin())
+            $item->is_approved = true;
+        else {
+            $autoApprove = AppConfig::where('key', 'auto_approve_items')->first();
+
+            if (! $autoApprove)
+                $item->is_approved = null;
+            else
+                $item->is_approved = (bool) $autoApprove->value;
+        }
+
         try {
             $item->save();
         } catch (QueryException $e) {
             throw new \App\Exceptions\DBException($e);
         }
 
-        $item->addUOM(
-            $request->get('default_uom_name'),
-            $request->get('default_uom_ar_name'),
-            $request->get('default_uom_description'),
-            $request->get('default_uom_ar_description'),
-            true
-        );
+        $uoms = $this->sanitizeUoms($request->get('uoms'));
+        $item->addUOMs($uoms);
 
-        return response()->json(['success' => true, 'item' => $item->withFullData()]);
+        return response()->json(['success' => true, 'item' => $item->withFullData()], 201);
+    }
+
+    /**
+     * Sanitize uoms data and return array of uoms
+     *
+     * @param array $uoms
+     * @return array
+     * @author Abdullah Essam <abdoessam.2010@gmail.com>
+     */
+    private function sanitizeUoms(array $uoms): array
+    {
+        $uomParams = [
+            'name',
+            'ar_name',
+            'description',
+            'ar_description',
+            'weight',
+            'length',
+            'width',
+            'height',
+            'is_default',
+            'conversion_rule'
+        ];
+        
+        $handledUoms = [];
+        foreach ($uoms as $uom) {
+            $uom = collect($uom)->only($uomParams)->toArray();
+            
+
+            if (isset($uom['conversion_rule']))
+                $uom['conversion_rule'] = collect($uom['conversion_rule'])->only(['factor', 'is_multiply'])->toArray();
+
+            $handledUoms[] = $uom;
+        }
+            
+        return $handledUoms;
+    }
+
+    /**
+     * Upload items using excel file
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\ValidationError
+     * @throws \App\Exceptions\XSSAttackAttempt
+     * @throws \App\Exceptions\DBException
+     * @author Abdullah Essam <abdoessam.2010@gmail.com>
+     */
+    public function uploadItemsUsingExcel(Request $request)
+    {
+        $authUser = auth()->user()->userData;
+
+        if (! $authUser->can('create', Item::class))
+            throw new \App\Exceptions\ForbiddenException;
+
+        $rules = [
+            'file' => 'required|file|mimes:xlsx'
+        ];
+
+        $validation = Validator::make($request->all(), $rules);
+        if ($validation->fails())
+            throw new \App\Exceptions\ValidationError($validation->errors()->all());
+
+        $file = $request->file('file');
+        $filePath = $file->getRealPath();
+
+        try {
+            $itemParser = new ItemsExcelParser($filePath);
+        } catch (\App\Exceptions\ValidationError $e) {
+            throw new \App\Exceptions\ValidationError($e->getErrors());
+        } catch (\Exception $e) {
+            throw new \App\Exceptions\ValidationError([$e->getMessage()]);
+        }
+        
+        $items = $itemParser->getItems();
+
+        return response()->json(['success' => true, 'items' => $items], 200);
+
+        // $xlsx = SimpleXLSX::parse($filePath);
+
+        // if (! $xlsx)
+        //     throw new \App\Exceptions\ValidationError(['Invalid excel file']);
+
+        // $sheets = $xlsx->sheetNames();
+        // $sheets = array_map('trim', $sheets);
+        // $sheets = array_map('strtolower', $sheets);
+        
+        // if (! in_array('items', $sheets))
+        //     throw new \App\Exceptions\ValidationError(['Excel file must contain sheet named "items"']);
+
+        // $errors = [
+        //     "items" => [],
+        //     "uoms"  => [],
+        //     "vars"  => []
+        // ];
+
+        // // Handle items
+        // $itemsSheetIndex = array_search('items', $sheets);
+        // $itemsRows = $xlsx->rows($itemsSheetIndex);
+
+        // try {
+        //     $items = $this->sanitizeExcelItems($itemsRows);
+        // } catch (\App\Exceptions\ValidationError $e) {
+        //     $errors['items'] = $e->getErrors();
+        // }
+
+        // // Handle uoms
+        // $uomsSheetIndex = array_search('uoms', $sheets);
+        // $uomsRows = $xlsx->rows($uomsSheetIndex);
+        
+        
+        // if (count($errors['items']) > 0 || count($errors['uoms']) > 0 || count($errors['vars']) > 0)
+        //     throw new \App\Exceptions\ValidationError($errors);
+
+        // return response()->json([
+        //     'items' => $items
+        // ]);
     }
 
     /**
@@ -95,86 +276,92 @@ class ItemController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function approve(Request $request)
+    public function approveOrReject(Request $request, int $id)
     {
         $authUser = auth()->user()->userData;
         if (! $authUser->can('approve', Item::class))
             throw new \App\Exceptions\ForbiddenException;
 
-        $rules = [
-            'id' => 'required|integer|exists:items,id',
-        ];
+        $validation = Validator::make($request->all(), [
+            "approved" => "required|integer|in:0,1"
+        ]);
 
-        $validation = Validator::make($request->all(), $rules);
         if ($validation->fails())
             throw new \App\Exceptions\ValidationError($validation->errors()->all());
 
-        $item = Item::find($request->get('id'));
-        $item->approve();
+        try {
+            $item = Item::findOrFail($id);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            throw new \App\Exceptions\NotFoundException(Item::class, "$id");
+        }
+
+        if ($request->get('approved') == 1)
+            $item->approve();
+        else
+            $item->reject();
         
         event(new \App\Events\Items\ItemApprovalResponse($item));
 
-        return response()->json(['success' => true, 'item' => $item->withFullData()]);
+        $response = $request->get('approved') == 1 ? 'approved' : 'rejected';
+        return response()->json(['success' => true, 'message' => "Item $response successfully"]);
     }
 
     /**
-     * reject item
+     * Update item
      *
      * @param Request $request
+     * @param integer $id
      * @return JsonResponse
+     * @throws \App\Exceptions\ForbiddenException
+     * @throws \App\Exceptions\ValidationError
+     * @throws \App\Exceptions\NotFoundException
+     * @author Abdullah Essam <abdoessam.2010@gmail.com>
      */
-    public function reject(Request $request)
-    {
-        $authUser = auth()->user()->userData;
-        if (! $authUser->can('approve', Item::class))
-            throw new \App\Exceptions\ForbiddenException;
-
-        $rules = [
-            'id' => 'required|integer|exists:items,id',
-        ];
-
-        $validation = Validator::make($request->all(), $rules);
-        if ($validation->fails())
-            throw new \App\Exceptions\ValidationError($validation->errors()->all());
-
-        $item = Item::find($request->get('id'));
-        $item->reject();
-
-        event(new \App\Events\Items\ItemApprovalResponse($item));
-
-        return response()->json(['success' => true, 'item' => $item->withFullData()]);
-    }
-
-    // update item
-    public function update(Request $request)
+    public function update(Request $request, int $id)
     {
         // rules of update item
         $rules = [
-            'id'                          => 'required|integer|exists:items,id',
-            'name'                        => 'required|regex:/^[A-Za-z\d\W]{3,50}$/',
-            'ar_name'                     => 'required|regex:/^[\x{0621}-\x{064A}\d\W]{3,50}$/u',
-            'category_id'                 => 'required|integer|exists:inventory_categories,id',
-            'brand'                       => 'required|regex:/^[A-Za-z\d\W]{3,50}$/',
-            'ar_brand'                    => 'required|regex:/^[\x{0621}-\x{064A}\d\W]{3,50}$/u',
-            'barcode'                     => 'string|max:64',
-            'keywards'                    => 'required|string|max:255',
-            'description'                 => 'required|regex:/^[\w\W\d]+$/|min:10|max:16777215',
-            'ar_description'              => 'required|regex:/^[\x{0621}-\x{064A}\W\d]+$/u|min:10|max:16777215',
-            'total_available_count'       => 'required|integer|between:1,65535',
-            'supplier_id'                 => 'exists:suppliers,id',
-            'price'                       => 'required|numeric|between:1,999999.99',
+            'name'                                             => 'required|regex:/^[A-Za-z\d\W]{3,50}$/',
+            'ar_name'                                          => 'required|regex:/^[\x{0621}-\x{064A}\d\W]{3,50}$/u',
+            'category_id'                                      => 'required|integer|exists:inventory_categories,id',
+            'brand'                                            => 'required|regex:/^[A-Za-z\d\W]{3,50}$/',
+            'ar_brand'                                         => 'required|regex:/^[\x{0621}-\x{064A}\d\W]{3,50}$/u',
+            'barcode'                                          => 'string|max:64',
+            'keywords'                                         => 'required|string|max:255',
+            'description'                                      => 'required|regex:/^[\w\W\d]+$/|min:10|max:16777215',
+            'ar_description'                                   => 'required|regex:/^[\x{0621}-\x{064A}\W\d]+$/u|min:10|max:16777215',
+            'total_available_count'                            => 'required|integer|between:1,65535',
+            'price'                                            => 'required|numeric|between:1,999999.99',
+            'vars'                                             => 'array|min:1',
+            'vars.*.attribute'                                 => 'required|array|min:2|max:2',
+            'vars.*.attribute.name'                            => 'required|regex:/^[A-Za-z]{2,20}$/',
+            'vars.*.attribute.ar_name'                         => 'required|regex:/^[\x{0621}-\x{064A}]{2,20}$/u',
+            'vars.*.values'                                    => 'required|array|min:1',
+            'vars.*.values.*'                                  => 'array',
+            'vars.*.values.*.name'                             => 'required|regex:/^[A-Za-z\d\W]{2,20}$/',
+            'vars.*.values.*.ar_name'                          => 'required|regex:/^[\x{0621}-\x{064A}\d\W]{2,20}$/u',
+            'vars.*.values.*.is_available'                     => 'required|boolean',
+            'vars.*.values.*.children'                         => 'array|min:1',
+            'vars.*.values.*.children.*.attribute'             => 'required|array|min:2|max:2',
+            'vars.*.values.*.children.*.attribute.name'        => 'required|regex:/^[A-Za-z]{2,20}$/',
+            'vars.*.values.*.children.*.attribute.ar_name'     => 'required|regex:/^[\x{0621}-\x{064A}]{2,20}$/u',
+            'vars.*.values.*.children.*.values'                => 'required|array|min:1',
+            'vars.*.values.*.children.*.values.*'              => 'array',
+            'vars.*.values.*.children.*.values.*.name'         => 'required|regex:/^[A-Za-z\d\W]{2,20}$/',
+            'vars.*.values.*.children.*.values.*.ar_name'      => 'required|regex:/^[\x{0621}-\x{064A}\d\W]{2,20}$/u',
+            'vars.*.values.*.children.*.values.*.is_available' => 'required|boolean'
         ];
 
         $validation = Validator::make($request->all(), $rules);
         if ($validation->fails())
             throw new \App\Exceptions\ValidationError($validation->errors()->all());
-
+        
         // find item
-        $item = Item::find($request->get('id'));
+        $item = Item::find($id);
 
         // throw not found exception if item not found
         if (! $item)
-            throw new \App\Exceptions\NotFoundException(Item::class, $request->get('id'));
+            throw new \App\Exceptions\NotFoundException(Item::class, "$id");
 
         // throw forbidden exception if user can't update item
         if (! auth()->user()->userData->can('update', $item))
@@ -185,12 +372,27 @@ class ItemController extends Controller
         $item->ar_name = $request->get('ar_name');
         $item->category_id = $request->get('category_id');
         $item->barcode = $request->get('barcode');
-        $item->keywards = $request->get('keywards');
+        $item->keywords = $request->get('keywords');
         $item->description = $request->get('description');
         $item->ar_description = $request->get('ar_description');
         $item->total_available_count = $request->get('total_available_count');
-        $item->supplier_id = $request->get('supplier_id');
         $item->price = $request->get('price');
+
+        // update item vars
+        $item->setItemToNotVariant();
+
+        if ($request->has('vars')) {
+            foreach ($request->get('vars') as $index => $var) {
+                $attribute = $var['attribute'];
+                $values = $var['values'];
+
+                try {
+                    $item->updateOrCreateVariant($attribute, $values);
+                } catch (\Exception $e) {
+                    throw new \App\Exceptions\ValidationError([$e->getMessage() . " at vars[$index]"]);
+                }
+            }
+        }
 
         // save item
         try {
@@ -200,14 +402,25 @@ class ItemController extends Controller
         }
 
         // return updated item
-        return response()->json(['success' => true, 'item' => $item->withFullData()]);
+        return response()->json(['success' => true, 'message' => "Item($id) updated successfully"]);
     }
 
-    // change item status is available or not
-    public function changeStatus(Request $request)
+    /**
+     * Change item status to available or unavailable.
+     *
+     * @param Request $request
+     * @param integer $id
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\NotFoundException
+     * @throws \App\Exceptions\ForbiddenException
+     * @throws \App\Exceptions\DBException
+     * @throws \App\Exceptions\ValidationError
+     * @author Abdullah Essam <abdoessam.2010@gmail.com>
+     */
+    public function changeStatus(Request $request, int $id)
     {
         $rules = [
-            'id' => 'required|integer|exists:items,id',
+            'is_available' => 'required|integer|in:0,1',
         ];
 
         $validation = Validator::make($request->all(), $rules);
@@ -215,18 +428,17 @@ class ItemController extends Controller
             throw new \App\Exceptions\ValidationError($validation->errors()->all());
 
         // find item
-        $item = Item::find($request->get('id'));
+        $item = Item::find($id);
 
-        // throw not found exception if item not found
         if (! $item)
-            throw new \App\Exceptions\NotFoundException(Item::class, $request->get('id'));
+            throw new \App\Exceptions\NotFoundException(Item::class, "$id");
 
         // throw forbidden exception if user can't update item
         if (! auth()->user()->userData->can('update', $item))
             throw new \App\Exceptions\ForbiddenException;
 
         // change item status
-        $item->is_available = ! $item->is_available;
+        $item->is_available = $request->get('is_available');
 
         // save item
         try {
@@ -236,31 +448,33 @@ class ItemController extends Controller
         }
 
         // return updated item
-        return response()->json(['success' => true, 'item' => $item->withFullData()]);
+        return response()->json(['success' => true, 'message' => "Item($id) updated successfully"]);
     }
 
-    // get item by id
-    public function getItemById(Request $request)
+    /**
+     * get item by id.
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function getItemById(Request $request, int $id)
     {
-        $rules = [
-            'id' => 'required|integer',
-        ];
-
-        $validation = Validator::make($request->all(), $rules);
-        if ($validation->fails())
-            throw new \App\Exceptions\ValidationError($validation->errors()->all());
-
-        // find item
-        $item = Item::find($request->get('id'));
+        $item = Item::find($id);
 
         // throw not found exception if item not found
         if (! $item)
-            throw new \App\Exceptions\NotFoundException(Item::class, $request->get('id'));
+            throw new \App\Exceptions\NotFoundException(Item::class, "$id");
 
         // if item is not active or not approved then throw not found exception if user can't view item
-        if (! $item->is_active || ! $item->is_approved)
-            if (! auth()->user()->userData->can('view', $item))
-                throw new \App\Exceptions\NotFoundException(Item::class, $request->get('id'));
+        if (! $item->is_active || ! $item->is_approved) {
+            $authUser = auth()->user();
+            if ($authUser) {
+                if (! $authUser->userData->can('view', $item))
+                    throw new \App\Exceptions\NotFoundException(Item::class, "$id");
+            } else {
+                throw new \App\Exceptions\NotFoundException(Item::class, "$id");
+            }
+        }
 
         // return item
         return response()->json(['success' => true, 'item' => $item->withFullData()]);
@@ -280,15 +494,14 @@ class ItemController extends Controller
             'order_type'        => 'string|in:asc,desc|required_with:order_by',
             'limit'             => 'integer|between:1,100',
             'page'              => 'integer|required_with:limit|min:1',
-            'min_price'         => 'integer|min:0|required_with:max_price',
-            'max_price'         => 'integer|min:0|required_with:min_price',
-            'has_promotions'    => 'boolean',
-            'is_active'         => 'boolean',
-            'is_approved'       => 'boolean',
-            'supplier_id'       => 'integer',
-            'category_id'       => 'integer',
-            'is_search'         => 'boolean',
-            'search'            => 'string|max:255|required_if:is_search',
+            'min_price'         => 'integer|min:0',
+            'max_price'         => 'integer|min:0',
+            'has_promotions'    => 'integer|in:0,1',
+            'is_active'         => 'integer|in:0,1',
+            'is_approved'       => 'integer|in:0,1',
+            'supplier_id'       => 'integer|exists:suppliers,id',
+            'category_id'       => 'integer|exists:inventory_categories,id',
+            'search'            => 'string|max:255',
             'required_fields'   => 'string',
         ];
 
@@ -342,11 +555,17 @@ class ItemController extends Controller
             if ($request->has('min_price') && $request->has('max_price'))
                 $query->whereBetween('price', [$request->get('min_price'), $request->get('max_price')]);
 
+            if ($request->has('min_price'))
+                $query->where('price', '>=', $request->get('min_price'));
+
+            if ($request->has('max_price'))
+                $query->where('price', '<=', $request->get('max_price'));
+
             // if search is set to true
-            if ($request->get('is_search'))
+            if ($request->has('search'))
                 $query->where('name', 'like', '%' . $request->get('search') . '%')
                     ->orWhere('ar_name', 'like', '%' . $request->get('search') . '%')
-                    ->orWhere('keywards', 'like', '%' . $request->get('search') . '%')
+                    ->orWhere('keywords', 'like', '%' . $request->get('search') . '%')
                     ->orWhere('description', 'like', '%' . $request->get('search') . '%')
                     ->orWhere('ar_description', 'like', '%' . $request->get('search') . '%');
         });
@@ -365,6 +584,9 @@ class ItemController extends Controller
             }
         } else
             $fields = ['*'];
+
+        // order items by created_at desc
+        $items = $items->orderBy('created_at', 'desc');
 
         // paginate items
         $items = $items->paginate($request->get('limit'), $fields, 'page', $request->get('page'))->all();

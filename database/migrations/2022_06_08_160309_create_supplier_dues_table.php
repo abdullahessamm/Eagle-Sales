@@ -13,12 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('var_items_attrs', function (Blueprint $table) {
+        Schema::create('supplier_dues', function (Blueprint $table) {
             $table->id();
-            $table->string('attr', 50);
-            $table->string('ar_attr', 50);
-            $table->bigInteger('item_id')->unsigned();
-            $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
+            $table->timestamps();
         });
     }
 
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('var_items_attrs');
+        Schema::dropIfExists('supplier_dues');
     }
 };

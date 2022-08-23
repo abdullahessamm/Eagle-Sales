@@ -15,7 +15,7 @@ class UomController extends Controller
     {
         $rules = [
             'item_id'                       => 'required|integer|exists:items,id',
-            'name'                          => 'required|regex:/^\w{3,30}$/',
+            'name'                          => 'required|regex:/^[a-zA-Z]{3,30}$/',
             'ar_name'                       => ['required', new ArabicLetters, 'min:3', 'max:30'],
             'description'                   => 'regex:/^\w\W{3,255}$/',
             'ar_description'                => 'regex:/^[\x{0621}-\x{064A}\W]{3,255}$/u',
