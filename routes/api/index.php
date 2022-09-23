@@ -25,6 +25,9 @@ if (env("API_MAINTENANCE")) {
     //Statistics routes
     Route::prefix('/statistics')->group(__DIR__ . '/Statistics/index.php');
 
+    //App routes
+    Route::prefix('/app')->group(__DIR__ . '/App/index.php');
+
     //Not found routes
     Route::any('/{params?}', function () {
         return response()->json(['msg' => 'Route not found'], 404);

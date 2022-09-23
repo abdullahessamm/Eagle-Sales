@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Accounts;
 
+use App\Http\Controllers\Controller;
 use App\Models\EmailVerifyToken;
 use App\Models\User;
 use Illuminate\Http\Request;

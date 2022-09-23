@@ -28,6 +28,6 @@ if (env('APP_MAINTENANCE')) {
         return redirect()->back()->withCookie($cookie);
     })->where('lang', 'en|ar|in');
 
-    Route::get('/verify-mail/{userID}', [App\Http\Controllers\MailController::class, 'verifyMail'])
+    Route::get('/verify-mail/{userID}', [App\Http\Controllers\Accounts\MailController::class, 'verifyMail'])
         ->where('userID', '^\d+$')->name('verify mail');
 }

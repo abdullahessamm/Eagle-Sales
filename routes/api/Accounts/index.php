@@ -10,7 +10,7 @@ Route::controller(App\Http\Controllers\Media\Users::class)
 ->middleware('auth')
 ->group(__DIR__ . '/media.php');
 
-Route::controller(App\Http\Controllers\PhoneController::class)
+Route::controller(App\Http\Controllers\Accounts\PhoneController::class)
 ->prefix('/phone')
 ->group(__DIR__ . '/phone.php');
 

@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::controller(\App\Http\Controllers\InvoicesController::class)
+Route::controller(\App\Http\Controllers\Sales\InvoicesController::class)
 ->middleware(['auth', 'approved'])
 ->group(function () {
     Route::get('/', 'get');
@@ -10,7 +10,7 @@ Route::controller(\App\Http\Controllers\InvoicesController::class)
 });
 
 Route::prefix('/orders')
-->controller(\App\Http\Controllers\OrdersController::class)
+->controller(\App\Http\Controllers\Sales\OrdersController::class)
 ->middleware(['auth', 'approved'])
 ->group(function () {
     Route::get('/', 'get');

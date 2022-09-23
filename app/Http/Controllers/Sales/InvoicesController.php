@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Sales;
 
+use App\Http\Controllers\Controller;
 use App\Exceptions\ForbiddenException;
 use App\Exceptions\ValidationError;
 use App\Models\Invoice;

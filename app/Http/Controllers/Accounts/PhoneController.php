@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Accounts;
 
+use App\Http\Controllers\Controller;
 use App\Models\Phone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -52,10 +53,11 @@ class PhoneController extends Controller
         if ($phone->verified_at)
             return response()->json(['success' => false], 400);
 
-        if ((int) $phone->user_id !== (int) auth()->user()->userData->id)
+        if ($phone->updated_at->diffInMinutes(now()) < 5)
             throw new \App\Exceptions\ForbiddenException;
 
         $phone->sendVerifyCode();
+        $phone->touch();
 
         return response()->json(['success'=>true]);
     }
