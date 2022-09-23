@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Inventory;
 
+use App\Events\Items\ItemRated;
 use App\Http\Controllers\Controller;
 use App\Models\Item;
 use App\Models\ItemsRate;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -14,9 +14,8 @@ class RateController extends Controller
     // add rate to item
     public function addRate(Request $request)
     {
-        // if user is not customer throw forbidden exception
         $authUser = auth()->user()->userData;
-        if ($authUser->job !== User::CUSTOMER_JOB_NUMBER)
+        if (! $authUser->isCustomer() && $authUser->isOnlineClient())
             throw new \App\Exceptions\ForbiddenException;
 
         $rules = [
@@ -29,7 +28,7 @@ class RateController extends Controller
             throw new \App\Exceptions\ValidationError($validation->errors()->all());
 
         $customerRate = ItemsRate::where('item_id', $request->get('item_id'))
-            ->where('customer_id', $authUser->userInfo->id)
+            ->where('user_id', $authUser->id)
             ->first();
 
         if ($customerRate)
@@ -42,7 +41,6 @@ class RateController extends Controller
             throw new \App\Exceptions\NotFoundException(Item::class, $request->get('item_id'));
 
         $item->addRate($request->get('rate'));
-
-        return response()->json(['success' => true, 'item' => $item->withFullData()]);
+        return response()->json(['success' => true]);
     }
 }

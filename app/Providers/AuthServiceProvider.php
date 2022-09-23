@@ -9,6 +9,7 @@ use App\Models\BackOfficeUser;
 use App\Models\Customer;
 use App\Models\CustomerCategory;
 use App\Models\Item;
+use App\Models\Order;
 use App\Models\Seller;
 use App\Models\Supplier;
 use App\Policies\AvailableCountryPolicy;
@@ -16,6 +17,7 @@ use App\Policies\BackOfficeUserPolicy;
 use App\Policies\CustomerCategoryPloicy;
 use App\Policies\CustomerPolicy;
 use App\Policies\ItemPolicy;
+use App\Policies\OrdersPolicy;
 use App\Policies\SellerPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
@@ -35,6 +37,7 @@ class AuthServiceProvider extends ServiceProvider
         CustomerCategory::class  => CustomerCategoryPloicy::class,
         Item::class              => ItemPolicy::class,
         InventoryCategory::class => InventoryCategoryPolicy::class,
+        Order::class             => OrdersPolicy::class,
         AvailableCountry::class  => AvailableCountryPolicy::class,
         AvailableCity::class     => AvailableCity::class,
     ];

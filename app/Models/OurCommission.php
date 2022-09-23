@@ -30,31 +30,16 @@ class OurCommission extends Model
 
     public function order()
     {
-        return $this->belongsTo(Order::class, 'order_id', 'id')->first();
+        return $this->belongsTo(Order::class, 'order_id', 'id');
     }
 
     public function supplier()
     {
-        return $this->belongsTo(Supplier::class, 'supplier_id', 'id')->first();
+        return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
     }
 
     public function obtainedBy()
     {
-        return $this->belongsTo(User::class, 'obtained_by', 'id')->first();
-    }
-
-    public function getOrderAttribute()
-    {
-        return $this->order();
-    }
-
-    public function getSupplierAttribute()
-    {
-        return $this->supplier();
-    }
-
-    public function getObtainerAttribute()
-    {
-        return $this->obtainedBy();
+        return $this->belongsTo(User::class, 'obtained_by', 'id');
     }
 }

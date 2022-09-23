@@ -11,8 +11,8 @@ class Uom extends Model
     use HasFactory;
 
     protected $fillable = [
-        'uom_name',
-        'ar_uom_name',
+        'name',
+        'ar_name',
         'description',
         'ar_description',
         'weight',

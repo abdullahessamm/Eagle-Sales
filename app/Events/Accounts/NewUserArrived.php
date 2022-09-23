@@ -2,12 +2,12 @@
 
 namespace App\Events\Accounts;
 
+use App\Events\Interfaces\ShouldNotifyListeners;
 use App\Models\Customer;
 use App\Models\Permission;
 use App\Models\Seller;
 use App\Models\Supplier;
 use App\Models\User;
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -15,7 +15,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 
-class NewUserArrived implements ShouldBroadcast
+class NewUserArrived implements ShouldBroadcast, ShouldNotifyListeners
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -48,7 +48,7 @@ class NewUserArrived implements ShouldBroadcast
         return $channels;
     }
 
-    private function getListeners(): array
+    public function getListeners(): array
     {
         switch ($this->user->job)
         {
@@ -67,8 +67,8 @@ class NewUserArrived implements ShouldBroadcast
         }
     }
 
-    public function __get($prop)
+    public function getNotificationBody(): string
     {
-        return $this->$prop;
+        return json_encode($this->user);
     }
 }

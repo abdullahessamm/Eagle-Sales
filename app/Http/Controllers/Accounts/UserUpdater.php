@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Accounts;
 
+use App\Events\UserHasBeenApproved;
 use App\Http\Controllers\Controller;
 use App\Models\BackOfficeUser;
 use App\Models\Customer;
@@ -125,6 +126,7 @@ class UserUpdater extends Controller
 
         $this->checkUserPermissions($authUser, $user, 'approve');
         $user->approve();
+        event(new UserHasBeenApproved($user));
         return response()->json(['success' => true, 'msg', 'user has been approved']);
     }
 

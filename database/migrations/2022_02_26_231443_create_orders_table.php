@@ -17,9 +17,9 @@ return new class extends Migration
             $table->id();
             $table->mediumInteger('supplier_id')->unsigned()->nullable();
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('set null');
-            $table->integer('customer_id')->unsigned()->nullable();
-            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('set null');
-            $table->enum('state', [0, 1, 2, 3, 4, 5, 6])->default(0);
+            $table->bigInteger('invoice_id')->unsigned();
+            $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
+            $table->tinyInteger('state')->default(0);
             $table->boolean('require_shipping')->default(false);
             $table->bigInteger('shipping_address_id')->unsigned()->nullable();
             $table->foreign('shipping_address_id')->references('id')->on('users_places')->onDelete('set null');
@@ -34,8 +34,10 @@ return new class extends Migration
             $table->timestamp('credit_limit')->nullable();
             $table->float('deposit', 12, 2)->nullable();
             $table->float('remaining', 12, 2)->nullable();
-            $table->Integer('created_by')->unsigned()->nullable();
-            $table->foreign('created_by')->references('id')->on('sellers')->onDelete('set null');
+            $table->bigInteger('buyer_id')->unsigned();
+            $table->foreign('buyer_id')->references('id')->on('users');
+            $table->bigInteger('created_by')->unsigned()->nullable();
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
             $table->bigInteger('updated_by')->unsigned()->nullable();
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('set null');
             $table->date('delivery_date')->nullable();

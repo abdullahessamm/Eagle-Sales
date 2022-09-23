@@ -42,6 +42,12 @@ class UsersPlace extends Model
         'updated_at',
     ];
 
+    public function orders()
+    {
+        $foreign = $this->user()->first()->isSupplier() ? 'shipping_address_id' : 'billing_address_id';
+        return $this->hasMany(Order::class, $foreign, 'id');
+    }
+
     public function showHiddens()
     {
         $this->makeVisible($this->hidden);

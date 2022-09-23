@@ -18,11 +18,12 @@ return new class extends Migration
             $table->bigInteger('user_id')->unsigned()->unique();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('shop_name');
-            $table->string('vat_no', 20)->unique()->nullable();
             $table->float('credit_limit', 12, 2)->nullable();
             $table->tinyInteger('category_id')->unsigned();
             $table->foreign('category_id')->references('id')->on('customer_categories');
+            $table->string('vat_uri', 191)->nullable();
             $table->float('shop_space', 6, 2)->nullable();
+            $table->bigInteger('linked_seller')->unsigned()->nullable();
             $table->timestamps();
         });
     }

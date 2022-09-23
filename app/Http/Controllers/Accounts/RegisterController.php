@@ -10,6 +10,7 @@ use App\Models\AvailableCity;
 use App\Models\AvailableCountry;
 use App\Models\BackOfficeUser;
 use App\Models\Customer;
+use App\Models\Permission;
 use App\Models\Phone;
 use App\Models\Seller;
 use App\Models\SellerRegisterInvitation;
@@ -126,13 +127,17 @@ class RegisterController extends Controller
                 'language' => 'ar',
             ]);
         } catch (Exception $e) {
+            $user->delete();
             throw new GoogleMapsException($e->getMessage());
         }
 
+        $country = $geocode_en->getCountry();
+        $governorate = $geocode_en->getGovernorate();
+
         $availableCountries = AvailableCountry::get('iso_code')->pluck('iso_code')->toArray();
         $availableCities = AvailableCity::get('name')->pluck('name')->toArray();
-        $country = $geocode_en->getCountry()['short_name'];
-        $governorate = $geocode_en->getGovernorate()['short_name'];
+        $country = $country ? $country['short_name'] : null;
+        $governorate = $governorate ? $governorate['short_name'] : null;
 
         if (! in_array($country, $availableCountries)) {
             $user->delete();
@@ -299,6 +304,11 @@ class RegisterController extends Controller
             throw new \App\Exceptions\ValidationError($validation->errors()->all());
 
         $createdUser = $this->userCreator($request);
+
+        if ($isFreelancer)
+            $createdUser->update([
+                'is_approved' => AppConfig::autoApproveFreelancerSellersEnabled() ? true : null
+            ]);
         
         $seller = new Seller;
         $seller->user_id = $createdUser->id;
@@ -420,6 +430,10 @@ class RegisterController extends Controller
             throw new \App\Exceptions\ValidationError($validation->errors()->all());
 
         $createdUser = $this->userCreator($request, $createdByAdmin);
+
+        $createdUser->update([
+            'is_approved' => AppConfig::autoApproveCustomersEnabled() ? true : null
+        ]);
         
         $customer = new Customer;
         $customer->shop_name       = $request->get('shop_name');
@@ -431,6 +445,7 @@ class RegisterController extends Controller
         try {
             $customer->save();
         } catch (QueryException $e) {
+            $createdUser->delete();
             throw new \App\Exceptions\DBException($e);
         }
 
@@ -469,7 +484,20 @@ class RegisterController extends Controller
             throw new \App\Exceptions\ForbiddenException;
 
         $validation = Validator::make($request->all(), [
-            'job_title' => 'required|regex:/^[A-Za-z ]+$/|min:3|max:20'
+            'job_title'                         => 'required|regex:/^[A-Za-z ]+$/|min:3|max:20',
+            'rule.suppliers_access_level'       => 'required|regex:/^[0-1]{4}$/',
+            'rule.customers_access_level'       => 'required|regex:/^[0-1]{4}$/',
+            'rule.sellers_access_level'         => 'required|regex:/^[0-1]{4}$/',
+            'rule.categories_access_level'      => 'required|regex:/^[0-1]{4}$/',
+            'rule.items_access_level'           => 'required|regex:/^[0-1]{4}$/',
+            'rule.backoffice_emps_access_level' => 'required|regex:/^[0-1]{4}$/',
+            'rule.orders_access_level'          => 'required|regex:/^[0-1]{4}$/',
+            'rule.commissions_access_level'     => 'required|regex:/^[0-1]{4}$/',
+            'rule.orders_access_level'          => 'required|regex:/^[0-1]{4}$/',
+            'rule.journey_plan_access_level'    => 'required|regex:/^[0-1]{4}$/',
+            'rule.pricelists_access_level'      => 'required|regex:/^[0-1]{4}$/',
+            'rule.statistics_screen_access'     => 'required|regex:/^[0-1]$/',
+            'rule.app_config_access'            => 'required|regex:/^[0-1]$/'
         ]);
 
         if ($validation->fails())
@@ -485,6 +513,7 @@ class RegisterController extends Controller
 
         try {
             $backofficeUser->save();
+            $backofficeUser->permissions()->save(new Permission($request->get('rule')));
         } catch (QueryException $e) {
             throw new \App\Exceptions\DBException($e);
         }
@@ -539,7 +568,11 @@ class RegisterController extends Controller
     public function registerOnlineClient(Request $request)
     {
         $this->job = User::ONLINE_CLIENT_JOB_NUMBER;
-        $this->userCreator($request);
+        $user = $this->userCreator($request);
+
+        $user->update([
+            'is_approved' => AppConfig::autoApproveOnlineClientsEnabled() ? true : null
+        ]);
 
         return response()->json([
             'success' => true

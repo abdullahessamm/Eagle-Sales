@@ -21,4 +21,20 @@ class DuesOfSeller extends Model
         'was_withdrawn',
         'notes'
     ];
+
+    public function seller()
+    {
+        return $this->belongsTo(Seller::class, 'seller_id', 'id');
+    }
+
+    public static function createCommission(int $sellerId, float $cash, int $order_id, $tax = null)
+    {
+        self::create([
+            'seller_id' => $sellerId,
+            'cash' => $cash,
+            'is_commission' => true,
+            'order_id' => $order_id,
+            'tax' => $tax,
+        ]);
+    }
 }

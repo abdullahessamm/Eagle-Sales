@@ -12,6 +12,22 @@ class ItemsRate extends Model
     protected $fillable = [
         'item_id',
         'rate',
-        'customer_id'
+        'user_id'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function loadUser()
+    {
+        $this->user = $this->user()->get(['id', 'f_name', 'l_name', 'avatar_uri', 'avatar_pos'])->first();
+        return $this;
+    }
+
+    public function item()
+    {
+        return $this->belongsTo(Item::class, 'item_id', 'id');
+    }
 }

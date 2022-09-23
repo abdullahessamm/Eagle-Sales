@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Media;
 
+use App\Events\Accounts\NewUserArrived;
 use App\Exceptions\ForbiddenException;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\ValidationError;
@@ -35,7 +36,7 @@ class Users extends Controller
         if ($user->avatar_uri)
             Storage::disk('public')->delete($user->avatar_uri);
         
-        $imagePath = $request->file('profile_picture')->store('profile_pictures', 'public');
+        $imagePath = $request->file('profile_picture')->store('users/profile_pictures', 'public');
         $image = \Image::make(storage_path('app/public/' . $imagePath));
         $image->save(null, 50);
         $user->setAvatar($imagePath, $request->get('pos_x'), $request->get('pos_y'), $request->get('scale'));
@@ -88,6 +89,31 @@ class Users extends Controller
         
         return response()->json([
             'message' => 'Profile picture deleted'
+        ]);
+    }
+
+    public function uploadVatCertificate(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'file' => 'required|mimes:pdf|max:10000'
+        ]);
+
+        if ($validator->fails())
+            throw new ValidationError($validator->errors()->all(), true);
+
+        $authUser = auth()->user()->userData;
+        if (! $authUser->isCustomer())
+            throw new ForbiddenException;
+
+        $customer = $authUser->userInfo;
+        $customer->vat_uri = $request->file('file')->store('users/vat_certificates', 'public');
+        $customer->save();
+
+        event(new NewUserArrived($authUser));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'vat upload successfully',
         ]);
     }
 }

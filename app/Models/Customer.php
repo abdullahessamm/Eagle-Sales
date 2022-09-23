@@ -13,32 +13,15 @@ class Customer extends Model
     protected $fillable = [
         "user_id",
         "shop_name",
+        "vat_uri",
         "credit_limit",
-        "vat_no",
         "category_id",
-        "shop_space"
-    ];
-
-    protected $hidden = [
-        "credit_limit",
-        "vat_no",
         "shop_space",
     ];
 
-    public function relatedOrders()
-    {
-        return $this->hasMany(Order::class, 'customer_id', 'id');
-    }
-
-    public function getRelatedOrders()
-    {
-        return $this->relatedOrders()->get()->all();
-    }
-
-    public function withRelatedOrders()
-    {
-        $this->orders = $this->getRelatedOrders();
-        return $this;
-    }
-
+    protected $hidden = [
+        "vat_uri",
+        "credit_limit",
+        "shop_space",
+    ];
 }

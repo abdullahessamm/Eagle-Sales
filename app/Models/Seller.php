@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Traits\UsersTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 class Seller extends Model
 {
@@ -28,8 +29,36 @@ class Seller extends Model
         "bank_name",
     ];
 
+    public function dues()
+    {
+        return $this->hasMany(DuesOfSeller::class, 'seller_id', 'id');
+    }
+
     public function relatedOrders()
     {
-        return $this->hasMany(Order::class, 'created_by', 'id');
+        return $this->getUser()->orders();
+    }
+
+    public function ordersAmount(int|null $state = null, Carbon|null $startDate = null, Carbon|null $endDate = null)
+    {
+        if (! $startDate)
+            $startDate = Carbon::create(1990);
+
+        if (! $endDate)
+            $endDate = Carbon::now();
+
+        $rel = $this->relatedOrders();
+        if ($state)
+            $rel->where('state', $state);
+        
+        return $rel
+        ->whereBetween('created_at', [$startDate, $endDate])
+        ->get()
+        ->sum('total_required');
+    }
+
+    public function salesAmount()
+    {
+        return $this->ordersAmount(Order::STATUS_DELIVERED);
     }
 }

@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Events\Accounts\UserHasBeenBanned;
 use App\Events\Accounts\UserHasBeenReactivated;
-use App\Events\UserHasBeenApproved;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -48,6 +47,8 @@ class User extends Authenticatable
         'gender',
         'email_verified_at',
         'last_seen',
+        'linked_seller',
+        'max_commissions_num_for_seller',
         'updated_at'
     ];
 
@@ -119,6 +120,11 @@ class User extends Authenticatable
     public function isFreelancerSeller()
     {
         return $this->job === self::FREELANCER_SELLER_JOB_NUMBER;
+    }
+
+    public function isSeller()
+    {
+        return $this->isHierdSeller() || $this->isFreelancerSeller();
     }
 
     public function isCustomer()
@@ -390,7 +396,6 @@ class User extends Authenticatable
         
         try {
             $this->save();
-            event(new UserHasBeenApproved($this));
             return true;
         } catch (QueryException $e) {
             throw new \App\Exceptions\DBException($e);
@@ -420,5 +425,55 @@ class User extends Authenticatable
             'event' => $eventName,
             'body' => $body
         ]);
+    }
+
+    // invoices
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class, 'buyer_id', 'id');
+    }
+
+    public function createInvoice(Invoice $invoice)
+    {
+        return $this->invoices()->save($invoice);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function linkedSeller()
+    {
+        return $this->belongsTo(User::class, 'linked_seller', 'id');
+    }
+
+    public function hasLinkedSeller()
+    {
+        return (bool) $this->linked_seller;
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function linkedCustomers()
+    {
+        return $this->hasMany(User::class, 'linked_seller', 'id');
+    }
+
+    public function orders()
+    {
+        $foreignCol = $this->isSeller() ? 'created_by' : 'buyer_id';
+        return $this->hasMany(Order::class, $foreignCol, 'id');
+    }
+
+    /**
+     * @return boolean
+     */
+    public function sellerReachedCommissionLimit()
+    {
+        if (! $this->max_commissions_num_for_seller)
+            return true;
+        
+        return (integer) $this->orders()->where('state', Order::STATUS_DELIVERED)->count()
+            >= (integer) $this->max_commissions_num_for_seller;
     }
 }

@@ -26,7 +26,8 @@ return new class extends Migration
             $table->char('commissions_access_level', 4)->default('0000');
             $table->char('journey_plan_access_level', 4)->default('0000');
             $table->char('pricelists_access_level', 4)->default('0000');
-            $table->boolean('app_config_access');
+            $table->boolean('statistics_screen_access')->default(false);
+            $table->boolean('app_config_access')->default(false);
         });
     }
 

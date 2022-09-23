@@ -23,6 +23,7 @@ return new class extends Migration
             $table->foreign('promotion_id')->references('id')->on('promotions')->onDelete('set null');
             $table->bigInteger('uom_id')->unsigned()->nullable();
             $table->foreign('uom_id')->references('id')->on('uoms')->onDelete('set null');
+            $table->json('variant')->nullable();
             $table->smallInteger('quantity')->unsigned();
             $table->float('total_before_discount', 12, 2)->unsigned();
             $table->float('discount', 10, 2)->unsigned()->default(0);

@@ -18,14 +18,11 @@ return new class extends Migration
             $table->integer('seller_id')->unsigned()->nullable();
             $table->foreign('seller_id')->references('id')->on('sellers')->onDelete('set null');
             $table->integer('customer_id')->unsigned()->nullable();
-            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
-            $table->bigInteger('order_id')->unsigned()->nullable();
-            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('set null');
             $table->timestamp('date')->nullable();
             $table->string('location_coords', 50)->nullable();
             $table->string('address')->nullable();
             $table->string('ar_address')->nullable();
-            $table->tinyInteger('distance_to_mark_visit')->unsigned();
             $table->boolean('has_been_visited')->default(false);
             $table->timestamp('visited_at')->nullable();
             $table->bigInteger('created_by')->unsigned()->nullable();

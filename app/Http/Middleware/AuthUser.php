@@ -13,7 +13,10 @@ class AuthUser
 
     public function __construct()
     {
-        $this->unauthRsponse = response()->json(['success'=>false], 401);
+        $this->unauthRsponse = response()->json([
+            'success' => false,
+            'message' => 'Unauthorized'
+        ], 401);
     }
     /**
      * Handle an incoming request.

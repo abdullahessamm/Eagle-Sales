@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 class InventoryCategory extends Model
 {
@@ -106,5 +107,19 @@ class InventoryCategory extends Model
         $this->withChildren();
         $this->withBrands();
         return $this;
+    }
+
+    public function salesAmount(Carbon|null $startDate = null, Carbon|null $endDate = null)
+    {
+        $startDate = $startDate ?? Carbon::create(1990);
+        $endDate   = $endDate ?? now();
+        
+        $amount = 0;
+        $items = $this->items()->get('id');
+        $items->each(function ($item) use (&$amount, $startDate, $endDate) {
+            $amount += $item->salesAmount($startDate, $endDate);
+        });
+
+        return $amount;
     }
 }

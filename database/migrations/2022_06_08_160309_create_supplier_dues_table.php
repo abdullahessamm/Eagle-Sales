@@ -15,6 +15,13 @@ return new class extends Migration
     {
         Schema::create('supplier_dues', function (Blueprint $table) {
             $table->id();
+            $table->mediumInteger('supplier_id')->unsigned();
+            $table->foreign('supplier_id')->references('id')->on('suppliers');
+            $table->bigInteger('order_id')->unsigned();
+            $table->foreign('order_id')->references('id')->on('orders');
+            $table->float('amount')->unsigned();
+            $table->timestamp('withdrawn_at')->nullable();
+            $table->string('notes', 255)->nullable();
             $table->timestamps();
         });
     }

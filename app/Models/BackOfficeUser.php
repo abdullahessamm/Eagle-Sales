@@ -14,9 +14,14 @@ class BackOfficeUser extends Model
         'job_title'
     ];
 
+    public function permissions()
+    {
+        return $this->hasOne(Permission::class, 'backoffice_user_id', 'id');
+    }
+
     public function getPermissions()
     {
-        return $this->hasOne(Permission::class, 'backoffice_user_id', 'id')->first();
+        return $this->permissions()->first();
     }
 
     public function getUser()

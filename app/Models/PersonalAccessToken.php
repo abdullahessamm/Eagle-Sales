@@ -28,9 +28,14 @@ class PersonalAccessToken extends Model
         'serial_access_token_expires_at',
     ];
 
+    public function User()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
     public function getUser()
     {
-        return $this->belongsTo(User::class, 'user_id', 'id')->first();
+        return $this->User()->first();
     }
 
     public function withFullUserData()

@@ -56,6 +56,9 @@ class CustomerPolicy
      */
     public function create(User $user)
     {
+        if (! $user->isAdmin())
+            return false;
+
         $userPermissions = $user->userInfo->permissions;
         $createCustomerPermission = (bool) substr($userPermissions->customers_access_level, 0, 1);
         return $createCustomerPermission;
@@ -93,21 +96,11 @@ class CustomerPolicy
 
     public function ban(User $user)
     {
-        if ($user->job !== User::ADMIN_JOB_NUMBER)
-            return false;
-
-        $customerPermissions = $user->userInfo->permissions->customers_access_level;
-        return (bool) substr($customerPermissions, 2, 1);
+        return $this->create($user);
     }
 
     public function approve(User $user)
     {
-        if ((int) $user->job !== User::ADMIN_JOB_NUMBER)
-            return false;
-
-        $customerPermissions = $user->userInfo->permissions->customers_access_level;
-        $updatePermission = substr($customerPermissions, 2, 1);
-
-        return (bool) $updatePermission;
+        return $this->create($user);
     }
 }

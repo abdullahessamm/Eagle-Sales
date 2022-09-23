@@ -19,8 +19,8 @@ return new class extends Migration
             $table->foreign('seller_id')->references('id')->on('sellers');
             $table->float('cash', 8, 2)->unsigned();
             $table->boolean('is_reward')->default(false);
-            $table->integer('register_invitation_id')->unsigned();
-            $table->foreign('register_invitation_id')->references('id')->on('seller_register_invitations');
+            $table->integer('register_invitation_id')->unsigned()->nullable();
+            $table->foreign('register_invitation_id')->references('id')->on('seller_register_invitations')->onDelete('cascade');
             $table->string('reward_type', 80)->nullable();
             $table->boolean('is_salary')->default(false);
             $table->boolean('is_commission')->default(true);

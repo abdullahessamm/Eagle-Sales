@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Inventory;
 use App\Http\Controllers\Controller;
 use App\Models\Item;
 use App\Models\ItemsComment;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -16,7 +15,7 @@ class CommentController extends Controller
     {
         // if user is not customer throw forbidden exception
         $authUser = auth()->user()->userData;
-        if ($authUser->job !== User::CUSTOMER_JOB_NUMBER)
+        if (! $authUser->isCustomer() || ! $authUser->isOnlineClient())
             throw new \App\Exceptions\ForbiddenException;
 
         $rules = [
@@ -35,9 +34,27 @@ class CommentController extends Controller
         
         $comment = new ItemsComment;
         $comment->comment = $request->get('comment');
+        $comment->user_id = $authUser->id;
 
         $item->addComment($comment);
 
-        return response()->json(['success' => true, 'item' => $item->withFullData()]);
+        return response()->json(['success' => true, 'comment' => $comment]);
+    }
+
+    public function deleteComment(Request $request, int $commentId)
+    {
+        $comment = ItemsComment::find($commentId);
+
+        if (! $comment)
+            throw new \App\Exceptions\NotFoundException(ItemsComment::class, $commentId);
+
+        $authUser = auth()->user()->userData;
+        $item = $comment->item()->first();
+        
+        if ((int) $authUser->id !== (int) $comment->user_id && $authUser->cannot('update-comment', $item))
+            throw new \App\Exceptions\ForbiddenException;
+
+        $comment->delete();
+        return response()->json(['success' => true]);
     }
 }

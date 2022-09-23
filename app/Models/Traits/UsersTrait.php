@@ -12,9 +12,14 @@ trait UsersTrait {
         return $this;
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
     public function getUser()
     {
-        return $this->belongsTo(User::class, 'user_id', 'id')->first();
+        return $this->user()->first();
     }
 
     public function withFullInfo()

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Traits\UsersTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 class Supplier extends Model
 {
@@ -28,6 +29,11 @@ class Supplier extends Model
     public function relatedOrders()
     {
         return $this->hasMany(Order::class, 'supplier_id', 'id');
+    }
+
+    public function dues()
+    {
+        return $this->hasMany(SupplierDue::class, 'supplier_id', 'id');
     }
 
     public function relatedItems()
@@ -55,8 +61,25 @@ class Supplier extends Model
         return $this->relatedItems()->get();
     }
 
-    public function addItem(Item $item, Uom $uom)
+    public function addItem(Item $item)
     {
         return $this->relatedItems()->save($item);
+    }
+
+    public function ordersAmount(int $state, Carbon $startDate, Carbon $endDate)
+    {
+        return $this->relatedOrders()
+        ->whereBetween('created_at', [$startDate, $endDate])
+        ->where('state', $state)
+        ->get()
+        ->sum('total_required');
+    }
+
+    public function salesAmount()
+    {
+        return $this->relatedOrders()
+        ->where('state', Order::STATUS_DELIVERED)
+        ->get()
+        ->sum('total_required');
     }
 }

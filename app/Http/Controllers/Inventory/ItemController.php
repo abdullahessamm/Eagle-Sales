@@ -203,11 +203,12 @@ class ItemController extends Controller
     {
         $authUser = auth()->user()->userData;
 
-        if (! $authUser->can('create', Item::class))
+        if ($authUser->cannot('create-with-excel', Item::class))
             throw new \App\Exceptions\ForbiddenException;
 
         $rules = [
-            'file' => 'required|file|mimes:xlsx'
+            'file' => 'required|file|mimes:xlsx',
+            'category_id' => 'required|integer|exists:inventory_categories,id'
         ];
 
         $validation = Validator::make($request->all(), $rules);
@@ -279,7 +280,7 @@ class ItemController extends Controller
     public function approveOrReject(Request $request, int $id)
     {
         $authUser = auth()->user()->userData;
-        if (! $authUser->can('approve', Item::class))
+        if ($authUser->cannot('approve', Item::class))
             throw new \App\Exceptions\ForbiddenException;
 
         $validation = Validator::make($request->all(), [
@@ -294,6 +295,12 @@ class ItemController extends Controller
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             throw new \App\Exceptions\NotFoundException(Item::class, "$id");
         }
+
+        if ($item->is_approved !== null)
+            return response()->json([
+                "success" => false,
+                "msg"     => "Already replied before"
+            ], 400);
 
         if ($request->get('approved') == 1)
             $item->approve();
@@ -451,6 +458,36 @@ class ItemController extends Controller
         return response()->json(['success' => true, 'message' => "Item($id) updated successfully"]);
     }
 
+    public function activate(Request $request, int $id)
+    {
+        $authUser = auth()->user()->userData;
+        if ($authUser->cannot('activate', Item::class))
+            throw new \App\Exceptions\ForbiddenException();
+
+        $item = Item::find($id);
+        if(! $item)
+            throw new \App\Exceptions\NotFoundException(Item::class, $id);
+
+        $item->activate(true);
+
+        return response()->json(['success' => true, "msg" => "Item activated successfully"]);
+    }
+
+    public function deactivate(Request $request, int $id)
+    {
+        $authUser = auth()->user()->userData;
+        if ($authUser->cannot('activate', Item::class))
+            throw new \App\Exceptions\ForbiddenException();
+
+        $item = Item::find($id);
+        if(! $item)
+            throw new \App\Exceptions\NotFoundException(Item::class, $id);
+
+        $item->activate(false);
+
+        return response()->json(['success' => true, 'msg' => 'Item deactivated successfully']);
+    }
+
     /**
      * get item by id.
      *
@@ -492,10 +529,10 @@ class ItemController extends Controller
             'brand'             => 'string|max:255',
             'order_by'          => 'string|in:name,ar_name,created_at,updated_at|required_with:order_type',
             'order_type'        => 'string|in:asc,desc|required_with:order_by',
-            'limit'             => 'integer|between:1,100',
+            'limit'             => 'integer|min:1',
             'page'              => 'integer|required_with:limit|min:1',
-            'min_price'         => 'integer|min:0',
-            'max_price'         => 'integer|min:0',
+            'min_price'         => 'numeric|min:0',
+            'max_price'         => 'numeric|min:0',
             'has_promotions'    => 'integer|in:0,1',
             'is_active'         => 'integer|in:0,1',
             'is_approved'       => 'integer|in:0,1',
@@ -579,9 +616,11 @@ class ItemController extends Controller
             $fields = [];
             foreach ($required_fields as $field) {
                 $field = trim($field);
-                if (in_array($field, Item::AVAILABLE_COLUMNS))
+                if (in_array($field, Item::AVAILABLE_COLUMNS) || $field === 'id')
                     $fields[] = $field;
             }
+            if (count($fields) === 0)
+                $fields = ['*'];
         } else
             $fields = ['*'];
 

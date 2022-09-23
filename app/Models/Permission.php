@@ -29,6 +29,7 @@ class Permission extends Model
         'commissions_access_level',
         'journey_plan_access_level',
         'pricelists_access_level',
+        'statistics_screen_access',
         'app_config_access'
     ];
 
@@ -99,5 +100,10 @@ class Permission extends Model
         return $users->map(function($user) {
             return $user->id;
         })->toArray();
+    }
+
+    public function hasAccessToStatistics()
+    {
+        return (bool) $this->statistics_screen_access;
     }
 }

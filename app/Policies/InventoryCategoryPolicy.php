@@ -13,7 +13,7 @@ class InventoryCategoryPolicy
     // create policy for create inventory category
     public function manage(User $user)
     {
-        if ($user->job !== User::ADMIN_JOB_NUMBER)
+        if (! $user->isAdmin())
             return false;
 
         // get user permissions

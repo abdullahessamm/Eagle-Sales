@@ -13,11 +13,17 @@ if (env("API_MAINTENANCE")) {
     //Inventory routes
     Route::prefix('/inventory')->group(__DIR__ . '/Inventory/index.php');
 
+    // Invoices routes
+    Route::prefix('/invoices')->group(__DIR__ . '/Invoices/index.php');
+
     //Location routes
     Route::prefix('/location')->group(__DIR__ . '/Location/index.php');
 
     //Places routes
     Route::prefix('/places')->group(__DIR__ . '/Places/index.php');
+
+    //Statistics routes
+    Route::prefix('/statistics')->group(__DIR__ . '/Statistics/index.php');
 
     //Not found routes
     Route::any('/{params?}', function () {

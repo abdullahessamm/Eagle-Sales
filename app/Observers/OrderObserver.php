@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Events\Orders\NewOrderCreated;
 use App\Models\Order;
 
 class OrderObserver
@@ -14,10 +15,23 @@ class OrderObserver
      */
     public function creating(Order $order)
     {
-        $user = auth()->user()->userData;
+        $user = auth()->user();
+        $user = $user->userData;
+        $order->created_by = $user->id;
 
-        if ($user->isHierdSeller() || $user->isFreelancerSeller())
-            $order->created_by = $user->userInfo->id;
+        // hanlde currency
+        $order->currency = $order->supplier()->first()->currency;
+    }
+
+    /**
+     * Handle the Order "created" event.
+     *
+     * @param  \App\Models\Order  $order
+     * @return void
+     */
+    public function created(Order $order)
+    {
+        event(new NewOrderCreated($order));
     }
 
     /**

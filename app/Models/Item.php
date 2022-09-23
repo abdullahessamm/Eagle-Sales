@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Carbon;
 
 class Item extends Model
 {
@@ -71,6 +72,16 @@ class Item extends Model
         'category_id' => 'integer'
     ];
 
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class, 'supplier_id', 'id')->first();
+    }
+
+    public function getSupplierAttribute()
+    {
+        return $this->supplier();
+    }
+
     public function setKeywordsAttribute($value)
     {
         $valToArray = explode(',', $value);
@@ -92,14 +103,14 @@ class Item extends Model
         return $this;
     }
 
-    public function supplier()
+    public function category()
     {
-        return $this->belongsTo(Supplier::class, 'supplier_id', 'id')->first();
+        return $this->belongsTo(InventoryCategory::class, 'category_id', 'id');
     }
 
     public function getCategory()
     {
-        return $this->belongsTo(InventoryCategory::class, 'category_id', 'id')->first();
+        return $this->category()->first();
     }
 
     public function withCategory()
@@ -430,19 +441,19 @@ class Item extends Model
         return $this;
     }
 
+    public function comments()
+    {
+        return $this->hasMany(ItemsComment::class, 'item_id', 'id');
+    }
+
     public function addComment(ItemsComment $comment)
     {
-        $comment->item_id = $this->id;
-        try {
-            $comment->save();
-        } catch (QueryException $e) {
-            throw new \App\Exceptions\DBException($e);
-        }
+        $this->comments()->save($comment);
     }
 
     public function getComments()
     {
-        return $this->hasMany(ItemsComment::class, 'item_id', 'id')->get()->all();
+        return $this->comments()->get()->all();
     }
 
     public function withComments()
@@ -456,10 +467,11 @@ class Item extends Model
         $rate = new ItemsRate;
         $rate->rate = $rate;
         $rate->item_id = $this->id;
-        $rate->customer_id = auth()->user()->userData->userInfo->id;
+        $rate->customer_id = auth()->user()->userData->id;
 
         try {
             $rate->save();
+            return $rate;
         } catch (QueryException $e) {
             throw new \App\Exceptions\DBException($e);
         }
@@ -489,9 +501,14 @@ class Item extends Model
         return $this;
     }
 
+    public function promotions()
+    {
+        return $this->hasMany(Promotion::class, 'item_id', 'id');
+    }
+
     public function getPromotions()
     {
-        return $this->hasMany(Promotion::class, 'item_id', 'id')->get()->all();
+        return $this->promotions()->get()->all();
     }
 
     // add promotion to item
@@ -521,7 +538,7 @@ class Item extends Model
     /**
      * Add units of measurement to item
      *
-     * @param array $uoms array of Uom::class objects
+     * @param array $uoms array of Uoms
      * @return true on success
      * @throws \App\Exceptions\DBException if query fails
      */
@@ -552,9 +569,14 @@ class Item extends Model
         }
     }
 
+    public function uoms()
+    {
+        return $this->hasMany(Uom::class, 'item_id', 'id');
+    }
+
     public function getUOMs()
     {
-        $UOMs = $this->hasMany(Uom::class, 'item_id', 'id')->get()->all();
+        $UOMs = $this->uoms()->get()->all();
         foreach ($UOMs as $UOM)
             $UOM->withPrice();
         return $UOMs;
@@ -631,8 +653,6 @@ class Item extends Model
     }
 
     /**
-     * 
-     *
      * @param Uom $uom
      * @param integer $quantity
      * @return array
@@ -645,7 +665,7 @@ class Item extends Model
         $unitPrice = $uom->calculateUnitPrice($this);
         
         $totalPrice = $unitPrice * $quantity;
-
+        $discount = 0;
         if ($promotion) {
             if ($promotion->start_date->isPast() && $promotion->expire_date->isFuture()):
                 $discount = $promotion->is_discount ?
@@ -658,14 +678,23 @@ class Item extends Model
 
         $totalPriceAfterDiscount = $totalPrice - $discount;
         return [
-            'total' => $totalPrice,
-            'free_elements' => $freeElements,
-            'discount' => $discount,
-            'total_after_discount' => $totalPriceAfterDiscount
+            'item_id' => $this->id,
+            'promotion_id' => $promotion?->id,
+            'uom_id' => $uom->id,
+            'quantity' => $quantity,
+            'total_before_discount' => $totalPrice,
+            'free_elements' => $freeElements ?? 0,
+            'discount' => $discount ?? 0,
+            'total' => $totalPriceAfterDiscount
         ];
     }
 
-    // approve item
+    /**
+     * approve new item
+     *
+     * @return void
+     * @throws \App\Exceptions\DBException
+     */
     public function approve()
     {
         try {
@@ -676,7 +705,12 @@ class Item extends Model
         }
     }
 
-    // reject item
+    /**
+     * reject new item
+     *
+     * @return void
+     * @throws \App\Exceptions\DBException
+     */
     public function reject()
     {
         try {
@@ -687,4 +721,25 @@ class Item extends Model
         }
     }
     
+
+    public function sales()
+    {
+        return $this->hasMany(OrderItem::class, 'item_id', 'id');
+    }
+
+    public function salesAmount(Carbon|null $startDate = null, Carbon|null $endDate = null)
+    {
+        $startDate = $startDate ?? Carbon::create(1990);
+        $endDate   = $endDate ?? now();
+
+        $sales = $this->sales()
+        ->whereBetween('created_at', [$startDate, $endDate])
+        ->with('order')->get();
+        $sales = $sales->map(function ($item) {
+            if ($item->order->isDelivered())
+                return $item;
+        });
+
+        return $sales->sum('total');
+    }
 }

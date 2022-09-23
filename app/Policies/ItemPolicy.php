@@ -45,6 +45,18 @@ class ItemPolicy
     }
 
     /**
+     * Determine whether the user can create with excel.
+     *
+     * @param User $user
+     * @param Item $item
+     * @return void
+     */
+    public function createWithExcel(User $user)
+    {
+        return $this->onlyAdminsUpdates($user);
+    }
+
+    /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
@@ -53,8 +65,7 @@ class ItemPolicy
      */
     public function update(User $user, Item $item)
     {
-        if (! $user->isSupplier() && ! $user->isAdmin())
-            return false;
+        if (! $user->isSupplier() && ! $user->isAdmin()) return false;
 
         if ($user->isAdmin()) {
             $userPermissions = $user->userInfo->permissions;
@@ -62,6 +73,17 @@ class ItemPolicy
         }
 
         return (bool) ((int) $item->supplier_id === (int) $user->userInfo->id);
+    }
+
+    /**
+     * Determine whether the user can activate item.
+     *
+     * @param User $user
+     * @return void
+     */
+    public function activate(User $user)
+    {
+        return $this->onlyAdminsUpdates($user);
     }
 
     /**
@@ -81,11 +103,7 @@ class ItemPolicy
 
     public function approve(User $user)
     {
-        if (! $user->isAdmin())
-            return false;
-
-        $userPermissions = $user->userInfo->permissions;
-        return (bool) substr($userPermissions->items_access_level, 2, 1);
+        return $this->onlyAdminsUpdates($user);
     }
 
     public function rateOrComment(User $user)
@@ -94,5 +112,19 @@ class ItemPolicy
             return true;
 
         return false;
+    }
+
+    public function updateComment(User $user)
+    {
+        return $this->onlyAdminsUpdates($user);
+    }
+
+    private function onlyAdminsUpdates(User $user)
+    {
+        if (! $user->isAdmin())
+            return false;
+
+        $userPermissions = $user->userInfo->permissions;
+        return (bool) substr($userPermissions->items_access_level, 2, 1);
     }
 }

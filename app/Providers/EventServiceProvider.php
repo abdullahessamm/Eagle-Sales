@@ -6,11 +6,16 @@ use App\Events\Accounts\NewUserArrived;
 use App\Events\Accounts\UserHasBeenBanned;
 use App\Events\Accounts\UserHasBeenReactivated;
 use App\Events\Items\ItemApprovalResponse;
-use App\Listeners\Accounts\CommitNewUserArrivedNotification;
+use App\Events\Items\ItemRated;
+use App\Events\Items\NewItemCreated;
+use App\Events\Orders\NewOrderCreated;
+use App\Events\Orders\OrderStateChanged;
 use App\Listeners\Accounts\DeactivateItemsForBannedSupplier;
 use App\Listeners\Accounts\ReactivateItemsForReactivatedSupplier;
 use App\Listeners\Items\SendMailToSupplier;
 use App\Listeners\Items\SendSmsToSupplier;
+use App\Listeners\NotifyUsers;
+use App\Listeners\Orders\CalculateCommissions;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
 
@@ -23,7 +28,7 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         NewUserArrived::class => [
-            CommitNewUserArrivedNotification::class,
+            NotifyUsers::class
         ],
         UserHasBeenBanned::class => [
             DeactivateItemsForBannedSupplier::class,
@@ -31,9 +36,23 @@ class EventServiceProvider extends ServiceProvider
         UserHasBeenReactivated::class => [
             ReactivateItemsForReactivatedSupplier::class
         ],
+        NewItemCreated::class => [
+            NotifyUsers::class
+        ],
         ItemApprovalResponse::class => [
             SendMailToSupplier::class,
-            SendSmsToSupplier::class
+            SendSmsToSupplier::class,
+            NotifyUsers::class
+        ],
+        ItemRated::class => [
+            NotifyUsers::class
+        ],
+        NewOrderCreated::class => [
+            NotifyUsers::class
+        ],
+        OrderStateChanged::class => [
+            NotifyUsers::class,
+            CalculateCommissions::class,
         ],
     ];
 

@@ -100,16 +100,11 @@ class SellerPolicy
 
     public function ban(User $user)
     {
-        if ($user->job !== User::ADMIN_JOB_NUMBER)
-            return false;
-        
-        $userPermissions = $user->userInfo->permissions;
-        $updateSellerPermission = (bool) substr($userPermissions->sellers_access_level, 2, 1);
-        return $updateSellerPermission;
+        return $this->create($user);
     }
 
     public function approve(User $user)
     {
-        return $this->ban($user);
+        return $this->create($user);
     }
 }

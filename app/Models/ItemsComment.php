@@ -12,6 +12,16 @@ class ItemsComment extends Model
     protected $fillable = [
         'item_id',
         'comment',
-        'customer_id'
+        'user_id'
     ];
+
+    public function item()
+    {
+        return $this->belongsTo(Item::class, 'item_id', 'id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 }

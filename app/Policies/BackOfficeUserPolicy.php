@@ -76,11 +76,11 @@ class BackOfficeUserPolicy
 
     public function ban(User $user)
     {
-        return $this->update($user);
+        return $this->create($user);
     }
 
     public function approve(User $user)
     {
-        return $this->update($user);
+        return $this->create($user);
     }
 }

@@ -37,6 +37,9 @@ return new class extends Migration
             $table->enum('gender', ['male', 'female']);
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('last_seen')->nullable();
+            $table->bigInteger('linked_seller')->unsigned()->nullable();
+            $table->foreign('linked_seller')->references('id')->on('users');
+            $table->tinyInteger('max_commissions_num_for_seller')->unsigned()->nullable();
             $table->timestamps();
         });
     }
