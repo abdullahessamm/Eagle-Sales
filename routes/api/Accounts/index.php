@@ -14,6 +14,11 @@ Route::controller(App\Http\Controllers\Accounts\PhoneController::class)
 ->prefix('/phone')
 ->group(__DIR__ . '/phone.php');
 
+Route::controller(App\Http\Controllers\Accounts\PlacesController::class)
+->prefix('/places')
+->middleware(['auth', 'approved'])
+->group(__DIR__ . '/places.php');
+
 Route::controller(App\Http\Controllers\Accounts\RegisterController::class)
 ->prefix('/register')
 ->group(__DIR__ . '/reg.php');
@@ -32,6 +37,11 @@ Route::prefix('/sellers')
 Route::prefix('/suppliers')
 ->middleware(['auth'])
 ->group(__DIR__ . '/suppliers/index.php');
+
+Route::prefix('/linker')
+->controller(App\Http\Controllers\Accounts\AccountsLinkerController::class)
+->middleware(['auth', 'approved'])
+->group(__DIR__ . '/linker.php');
 
 // Other routes for account update
 Route::controller(App\Http\Controllers\Accounts\UserUpdater::class)

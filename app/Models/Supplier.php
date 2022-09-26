@@ -36,6 +36,11 @@ class Supplier extends Model
         return $this->hasMany(SupplierDue::class, 'supplier_id', 'id');
     }
 
+    public function commissions()
+    {
+        return $this->hasMany(OurCommission::class, 'supplier_id', 'id');
+    }
+
     public function relatedItems()
     {
         return $this->hasMany(Item::class, 'supplier_id', 'id');

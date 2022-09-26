@@ -11,6 +11,7 @@ use App\Exceptions\ValidationError;
 use App\Models\AppConfig;
 use App\Models\Order;
 use App\Models\OrderComment;
+use Illuminate\Support\Carbon;
 
 class OrdersController extends Controller
 {
@@ -33,7 +34,9 @@ class OrdersController extends Controller
             'max_price'                         => 'numeric|min:0',
             'limit'                             => 'integer|min:1|required_with:page',
             'page'                              => 'integer|min:1|required_with:limit',
-            'count_only'                        => 'integer|between:0,1'
+            'count_only'                        => 'integer|between:0,1',
+            'start_date'                        => 'date_format:Y-m-d',
+            'end_date'                          => 'date_format:Y-m-d',
         ]);
 
         if ($validator->fails())
@@ -49,6 +52,10 @@ class OrdersController extends Controller
                 $param = $param === 'seller_id' ? 'created_by' : $param;
                 $query->where($param, $value);
             }
+
+            $startDate = $request->has('start_date') ? Carbon::create($request->get('start_date')) : Carbon::create(1990);
+            $endDate = $request->has('end_date') ? Carbon::create($request->get('end_date')) : Carbon::now();
+            $query->whereBetween('created_at', [$startDate, $endDate]);
         });
 
         if ($request->has('min_price'))

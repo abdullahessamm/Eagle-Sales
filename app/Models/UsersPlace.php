@@ -37,7 +37,6 @@ class UsersPlace extends Model
         'street',
         'street_ar',
         'building_no',
-        'is_primary',
         'created_at',
         'updated_at',
     ];

@@ -19,8 +19,8 @@ return new class extends Migration
             $table->foreign('seller_id')->references('id')->on('sellers')->onDelete('set null');
             $table->integer('customer_id')->unsigned()->nullable();
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('set null');
-            $table->timestamp('date')->nullable();
-            $table->string('location_coords', 50)->nullable();
+            $table->timestamp('date');
+            $table->string('location_coords', 50);
             $table->string('address')->nullable();
             $table->string('ar_address')->nullable();
             $table->boolean('has_been_visited')->default(false);

@@ -57,6 +57,11 @@ class Seller extends Model
         ->sum('total_required');
     }
 
+    public function journeyPlans()
+    {
+        return $this->hasMany(JourneyPlan::class, 'seller_id', 'id');
+    }
+
     public function salesAmount()
     {
         return $this->ordersAmount(Order::STATUS_DELIVERED);

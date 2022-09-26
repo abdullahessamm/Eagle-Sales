@@ -28,32 +28,41 @@ class GoogleGeocode extends GoogleMapsApi
 
     public function getCountry()
     {
-        return $this->searchInComponents('country');
+        return (object) $this->searchInComponents('country');
     }
 
     public function getGovernorate()
     {
-        return $this->searchInComponents('administrative_area_level_1');
+        return (object) $this->searchInComponents('administrative_area_level_1');
     }
 
     public function getCity()
     {
-        return $this->searchInComponents('administrative_area_level_2');
+        return (object) $this->searchInComponents('administrative_area_level_2');
     }
 
     public function getZone()
     {
-        return $this->searchInComponents('locality') ?? $this->searchInComponents('administrative_area_level_3');
+        return (object) ($this->searchInComponents('locality') ?? $this->searchInComponents('administrative_area_level_3'));
     }
 
     public function getStreet()
     {
-        return $this->searchInComponents('route');
+        return (object) $this->searchInComponents('route');
     }
 
     public function getBuildingNumber()
     {
-        return $this->searchInComponents('street_number');
+        return (object) $this->searchInComponents('street_number');
     }
 
+    public function getFormattedAddress()
+    {
+        return $this->getBuildingNumber()?->long_name . ', '
+        . $this->getStreet()?->long_name . ' '
+        . $this->getZone()?->long_name . ' '
+        . $this->getCity()?->long_name . ' '
+        . $this->getGovernorate()?->long_name . ' '
+        . $this->getCountry()?->long_name;
+    }
 }
