@@ -13,4 +13,5 @@ Route::controller(StatisticsController::class)
     Route::get('/sales-by-month', 'salesByMonth');
     Route::get('/sales-by-product', 'salesByProduct');
     Route::get('/seller-commission-by-year', 'sellerCommissionByYear');
+    Route::get('/daily-sales', 'dailySales');
 });

@@ -169,6 +169,9 @@ class StatisticsController extends Controller
             $endDate = Carbon::create($request->get('end_date'));
 
         $orders = $authUser->isAdmin() ? new Order : $authUser->orders();
+        if ($authUser->isSupplier())
+            $orders = $authUser->userInfo->relatedOrders();
+
         $orders = $orders
         ->whereBetween('created_at', [$startDate, $endDate])
         ->where(function ($query) {
@@ -177,7 +180,55 @@ class StatisticsController extends Controller
             ->orWhere('state', Order::STATUS_DELIVERED);
         })
         ->get()
-        ->groupBy('state');
+        ->map(function ($order) {
+            $order->date = $order->created_at->format('Y_m_d');
+            $order->stateName = $order->state === Order::STATUS_OPEN ? ('open') : ($order->state === Order::STATUS_APPROVED ? ('approved') : ('delivered'));
+            return $order;
+        })
+        ->groupBy('date');
+
+        $salesAmount = $orders->map(function ($orders) {
+            $orders = $orders->groupBy('stateName');
+            $salesAmount = $orders->map(function ($orders) {
+                return $orders->sum('total_required');
+            });
+            return $salesAmount;
+        });
+
+        return response()->json([
+            'success' => true,
+            'salesAmount' => $salesAmount
+        ]);
+    }
+
+    public function dailySales()
+    {
+        $authUser = auth()->user()->userData;
+        if (! $authUser->isSupplier() && ! $authUser->isAdmin() && ! $authUser->isSeller())
+            throw new ForbiddenException;
+
+        if ($authUser->isAdmin()) {
+            if (! $authUser->userInfo->permissions->hasAccessToStatistics())
+                throw new ForbiddenException;
+        }
+
+        $startDate = now()->startOfWeek();
+        $endDate = now()->endOfWeek();
+
+        $orderModel = $authUser->isAdmin() ? new Order : $authUser->orders();
+        if ($authUser->isSupplier())
+            $orderModel = $authUser->userInfo->relatedOrders();
+
+        $orders = $orderModel
+        ->where('state', Order::STATUS_DELIVERED)
+        // ->whereBetween('created_at', [$startDate, $endDate])
+        ->orderBy('created_at')
+        ->get(['id', 'total_required', 'created_at'])
+        ->map(function ($order) {
+            $order->dayName = $order->created_at->format('l');
+            return $order;
+        })
+        ->groupBy('dayName');
 
         $salesAmount = $orders->map(function ($orders) {
             return $orders->sum('total_required');

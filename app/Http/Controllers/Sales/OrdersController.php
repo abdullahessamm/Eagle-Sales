@@ -30,6 +30,7 @@ class OrdersController extends Controller
             'is_credit'                         => 'integer|between:0,1',
             'load_items'                        => 'integer|between:0,1',
             'load_billing_address'              => 'integer|between:0,1',
+            'load_buyer'                        => 'integer|between:0,1',
             'min_price'                         => 'numeric|min:0',
             'max_price'                         => 'numeric|min:0',
             'limit'                             => 'integer|min:1|required_with:page',
@@ -71,6 +72,9 @@ class OrdersController extends Controller
 
         if ($request->get('load_billing_address'))
             $orders->with(['billingAddress']);
+
+        if ($request->get('load_buyer'))
+        $orders->with(['buyer']);
 
         if ($request->has('limit'))
             $orders->paginate($request->get('limit'), ['*'], 'page', $request->get('page'));

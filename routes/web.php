@@ -24,6 +24,11 @@ if (env('APP_MAINTENANCE')) {
     Route::view('/auth/{params?}', 'auth')->where('params', '.*')->middleware('availableCountry');
 
     Route::get('/lang/{lang}', function ($lang) {
+        if ($authUser = auth()->user()) {
+            $user = $authUser->userData;
+            $user->lang = $lang;
+            $user->save();
+        }
         $cookie = cookie('lang', $lang, 60 * 24 * 30 * 12 * 80, null, '.' . env('APP_URL'), false, false);
         return redirect()->back()->withCookie($cookie);
     })->where('lang', 'en|ar|in');
