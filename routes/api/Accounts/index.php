@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Accounts\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(App\Http\Controllers\Accounts\AuthController::class)
@@ -37,6 +38,11 @@ Route::prefix('/sellers')
 Route::prefix('/suppliers')
 ->middleware(['auth'])
 ->group(__DIR__ . '/suppliers/index.php');
+
+Route::prefix('/notifications')
+->middleware(['auth', 'approved'])
+->controller(NotificationController::class)
+->group(__DIR__ . '/notifications.php');
 
 Route::prefix('/linker')
 ->controller(App\Http\Controllers\Accounts\AccountsLinkerController::class)
