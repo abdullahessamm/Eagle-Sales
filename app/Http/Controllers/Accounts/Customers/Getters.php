@@ -27,7 +27,7 @@ class Getters extends Controller
 
     public function getById(int $id)
     {
-        $customer = Customer::where('id', $id)->first();
+        $customer = Customer::where('user_id', $id)->first();
         if (! $customer)
             return response()->json(['success' => false], 404);
 

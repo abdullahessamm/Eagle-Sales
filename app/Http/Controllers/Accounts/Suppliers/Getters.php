@@ -37,7 +37,7 @@ class Getters extends Controller
      */
     public function getById(int $id)
     {
-        $supplier = Supplier::where('id', $id)->first();
+        $supplier = Supplier::where('user_id', $id)->first();
         if (! $supplier)
             return response()->json(['success' => false, 'msg' => 'user not found'], 404);
 

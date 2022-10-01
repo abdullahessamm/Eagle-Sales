@@ -31,7 +31,7 @@ class Getters extends Controller
      */
     public function getById(int $id)
     {
-        $backofficeUser = BackOfficeUser::where('id', $id)->first();
+        $backofficeUser = BackOfficeUser::where('user_id', $id)->first();
             if (! $backofficeUser)
                 return response()->json(['success' => false], 404);
         

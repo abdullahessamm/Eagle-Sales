@@ -28,7 +28,7 @@ class Getters extends Controller
 
     public function getById(int $id)
     {
-        $seller = Seller::where('id', $id)->first();
+        $seller = Seller::where('user_id', $id)->first();
         if (! $seller)
             return response()->json(['success' => false], 404);
         $authUser = auth()->user()->userData;

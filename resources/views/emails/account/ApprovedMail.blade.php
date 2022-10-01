@@ -1,10 +1,12 @@
 @component('mail::message')
-# Introduction
 
-The body of your message.
+Welcome {{ $name }},
+Congratulations! you have been approved.
 
-@component('mail::button', ['url' => ''])
-Button Text
+Now you can login and start using our services.
+
+@component('mail::button', ['url' => 'https://' . env('APP_URL') . '/auth/login'])
+Login Now!
 @endcomponent
 
 Thanks,<br>
