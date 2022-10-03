@@ -25,7 +25,7 @@ class Updaters extends Controller
         if ($validation->fails())
             throw new \App\Exceptions\ValidationError($validation->errors()->all());
 
-        $seller = Seller::where('id', $request->get('id'))->first();
+        $seller = Seller::where('user_id', $request->get('id'))->first();
 
         if (! $seller)
             return response()->json(['success' => false], 404);
@@ -47,13 +47,8 @@ class Updaters extends Controller
             'id'                  => 'required|integer',
             'age'                 => 'integer|between:16,100',
             'education'           => 'string|min:4|max:255',
-            'l1_address'          => 'regex:/^[a-zA-Z\d]+[\w\d\ \-]+$/|min:4|max:255',
-            'l1_address_ar'       => [new ArabicLettersWithSpaces, 'min:4', 'max:255'],
-            'l2_address'          => 'regex:/^[a-zA-Z\d]+[\w\d\ \-]+$/|min:4|max:255',
-            'l2_address_ar'       => [new ArabicLettersWithSpaces, 'min:4', 'max:255'],
-            'location_coords'     => 'regex:/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/',
             'bank_account_number' => 'required_with:bank_name|regex:/^[A-Za-z0-9]{9,50}$/',
-            'bank_name'           => 'required_with:bank_account_number,!==,null|string|min:3|max:50'
+            'bank_name'           => 'required_with:bank_account_number|string|min:3|max:50'
         ];
 
         $validation = Validator::make($request->all(), $rules);
@@ -64,7 +59,7 @@ class Updaters extends Controller
         if (count($request->all()) <= 2)
             return response()->json(['success' => false, 'msg' => 'No changes to be updated'], 400);
 
-        $seller = Seller::where('id', $request->get('id'))->first();
+        $seller = Seller::where('user_id', $request->get('id'))->first();
 
         if (! $seller)
             return response()->json(['success' => false], 404);

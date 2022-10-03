@@ -32,8 +32,8 @@ class RegisterController extends Controller
     private function userCreator(Request $request, bool $createdByAdmin = false)
     {
         $rules = [
-            'f_name'    => 'required|regex:/^[a-zA-Z]+$/|min:2|max:20',
-            'l_name'    => 'required|regex:/^[a-zA-Z]+$/|min:2|max:20',
+            'f_name'    => 'required|regex:/^[a-zA-Z\x{0621}-\x{064A}]{2,20}$/u',
+            'l_name'    => 'required|regex:/^[a-zA-Z\x{0621}-\x{064A}]{2,20}$/u',
             'email'     => 'required|email|max:50|unique:users,email',
             'phone'     => 'required|regex:/^\+[0-9]{11,14}$/|unique:phones,phone',
             'password'  => 'required|min:8|max:80|regex:/^[\w\d\D\W]+$/',

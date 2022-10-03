@@ -18,9 +18,9 @@ class Users extends Controller
     {
         $validator = Validator::make($request->all(), [
             'profile_picture' => 'required|image|mimes:jpeg,png,jpg|max:30720',
-            'pos_x' => 'required|numeric',
-            'pos_y' => 'required|numeric',
-            'scale' => 'required|numeric',
+            'pos_x' => 'numeric',
+            'pos_y' => 'numeric',
+            'scale' => 'numeric',
         ]);
 
         if ($validator->fails()) {
@@ -39,7 +39,7 @@ class Users extends Controller
         $imagePath = $request->file('profile_picture')->store('users/profile_pictures', 'public');
         $image = \Image::make(storage_path('app/public/' . $imagePath));
         $image->save(null, 50);
-        $user->setAvatar($imagePath, $request->get('pos_x'), $request->get('pos_y'), $request->get('scale'));
+        $user->setAvatar($imagePath, 0, 0, 1);
         $user->save();
 
         return response()->json([

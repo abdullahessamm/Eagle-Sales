@@ -24,7 +24,7 @@ class Updaters extends Controller
         if ($validation->fails())
             throw new \App\Exceptions\ValidationError($validation->errors()->all());
 
-        $customer = Customer::where('id', $request->get('id'))->first();
+        $customer = Customer::where('user_id', $request->get('id'))->first();
 
         if (! $customer)
             return response()->json(['success' => false], 404);
@@ -43,14 +43,7 @@ class Updaters extends Controller
         $rules = [
             'id'                    => 'required|integer',
             'shop_name'             => 'string|min:3|max:50',
-            'l1_address'            => 'regex:/^[a-zA-Z\d]+[\w\d\ \-]+$/|min:4|max:255',
-            'l1_address_ar'         => [ new ArabicLettersWithSpaces, 'min:4', 'max:255'],
-            'l2_address'            => 'regex:/^[a-zA-Z\d]+[\w\d\ \-]+$/|min:4|max:255',
-            'l2_address_ar'         => [new ArabicLettersWithSpaces, 'min:4', 'max:255'],
-            'location_coords'       => 'regex:/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/',
-            'vat_no'                => 'regex:/^[A-Za-z]{2}\d{3,18}$/|unique:suppliers,vat_no',
             'category_id'           => 'integer|between:1,255',
-            'shop_space'            => 'numeric|between:1,9999.99',
             'credit_limit'          => 'numeric|between:1,9999999999.99',
         ];
         $validation = Validator::make($request->all(), $rules);
@@ -58,7 +51,7 @@ class Updaters extends Controller
         if ($validation->fails())
             throw new \App\Exceptions\ValidationError($validation->errors()->all());
 
-        $customer = Customer::where('id', $request->get('id'))->first();
+        $customer = Customer::where('user_id', $request->get('id'))->first();
         
         if (! $customer)
             return response()->json(['success' => false], 404);

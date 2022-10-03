@@ -39,6 +39,6 @@ class Getters extends Controller
         if (! $authUser->can('view', $backofficeUser))
             throw new \App\Exceptions\ForbiddenException;
 
-        return response()->json(['success' => true, 'user' => $backofficeUser->withFullInfo()->showHiddens()]);
+        return response()->json(['success' => true, 'user' => $backofficeUser->withFullInfo()->showHiddens()->load(['phones', 'places'])]);
     }
 }

@@ -147,7 +147,7 @@ class AuthController extends Controller
 
     public function getAuthedUserInfo()
     {
-        return response()->json(['success'=> true, "user" => auth()->user()->userData]);
+        return response()->json(['success'=> true, "user" => auth()->user()->userData->load(['phones', 'places'])]);
     }
 
     public function logout()

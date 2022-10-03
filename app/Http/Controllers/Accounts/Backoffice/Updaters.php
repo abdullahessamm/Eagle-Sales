@@ -36,7 +36,7 @@ class Updaters extends Controller
             (int) $request->get('id') === (int) $authUser->userInfo->id
         ) throw new \App\Exceptions\ForbiddenException;
 
-        $backofficeUser = BackOfficeUser::where('id', $request->get('id'))->first();
+        $backofficeUser = BackOfficeUser::where('user_id', $request->get('id'))->first();
 
         if (! $backofficeUser)
             return response()->json(['success' =>false], 404);
@@ -127,7 +127,7 @@ class Updaters extends Controller
         if ($validation->fails())
             throw new \App\Exceptions\ValidationError($validation->errors()->all());
         
-        $backofficeUser = BackOfficeUser::where('id', $request->get('id'))->first();
+        $backofficeUser = BackOfficeUser::where('user_id', $request->get('id'))->first();
 
         if (! $backofficeUser)
             return response()->json(['success' => false], 404);

@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Accounts\Customers\Getters;
-use App\Http\Controllers\Accounts\Customers\Updaters;
+use App\Http\Controllers\Accounts\Suppliers\Getters;
+use App\Http\Controllers\Accounts\Suppliers\Updaters;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(Getters::class)

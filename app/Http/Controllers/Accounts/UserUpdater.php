@@ -21,23 +21,16 @@ class UserUpdater extends Controller
     public static function updateInfo(Request $request, User $user)
     {
         $rules = [
-            'f_name'      => 'regex:/^[a-zA-Z]{2,20}$/',
-            'f_name_ar'   => [new ArabicLetters, 'min:2', 'max:20'],
-            'l_name'      => 'regex:/^[a-zA-Z]{2,20}$/',
-            'l_name_ar'   => [new ArabicLetters, 'min:2', 'max:20'],
+            'f_name'      => 'regex:/^[a-zA-Z\x{0621}-\x{064A}]{2,20}$/u',
+            'l_name'      => 'regex:/^[a-zA-Z\x{0621}-\x{064A}]{2,20}$/u',
             'email'       => 'email|max:50|unique:users,email',
-            'country'     => 'regex:/^[A-Z]{2}$/',
-            'city'        => 'regex:/^[a-zA-Z]{3,10}$/',
-            'username'   => 'regex:/^\w[\w\.]+$/|min:4|max:50|unique:users,username',
+            'username'   => 'regex:/^[a-zA-Z]+$/|min:4|max:50|unique:users,username',
             'lang'        => 'in:en,ar,in',
         ];
         $validation = Validator::make($request->all(), $rules);
 
         if ($validation->fails())
             throw new \App\Exceptions\ValidationError($validation->errors()->all());
-
-        if (count($request->all()) <= 2)
-            return response()->json(['success' => false, 'msg' => 'No changes to be updated'], 400);
 
         foreach ($rules as $param => $rule)
         $user->$param = request()->get($param) ?? $user->$param;

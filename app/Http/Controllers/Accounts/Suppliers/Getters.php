@@ -24,6 +24,7 @@ class Getters extends Controller
         foreach ($suppliers as $supplier) {
             $supplier->showHiddens()->withFullInfo();
             $supplier->userInfo->showHiddens();
+            $supplier->load('phones');
         }
 
         return response()->json(['success' => true, 'users' => $suppliers]);
@@ -48,8 +49,14 @@ class Getters extends Controller
         $user = $supplier->withFullInfo();
         $user->userInfo->showHiddens();
         if ($authUser->job === User::ADMIN_JOB_NUMBER)
-            $user->showHiddens;
+            $user->showHiddens();
 
+        $user->load(['phones', 'places']);
+        $user->places->each(function ($place) {
+            $place->showHiddens();
+        });
+
+        $user->userInfo->load('commissions');
         return response()->json(['success' =>true, 'user' => $user]);
     }
 }

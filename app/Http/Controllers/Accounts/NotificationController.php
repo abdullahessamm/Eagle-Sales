@@ -15,8 +15,6 @@ class NotificationController extends Controller
 
         $validation = Validator::make($request->all(), [
             'unread_only' => 'integer|between:0,1',
-            'limit'       => 'integer|min:1|required_with:page',
-            'page'        => 'integer|min:1|required_with:limit'
         ]);
 
         if ($validation->fails())
@@ -28,11 +26,9 @@ class NotificationController extends Controller
             $notifications->where('read_at', null);
 
         $notifications->orderBy('created_at', 'desc');
-        
-        $notifications = $notifications->paginate($request->get('limit'), ['*'], 'page', $request->get('page'));
         return response()->json([
             'success' => true,
-            'notifications' => $notifications
+            'notifications' => $notifications->get()
         ]);
     }
 
