@@ -87,7 +87,7 @@ class UserUpdater extends Controller
 
         if (! $user->banUser())
             return response()->json(['success' => false, 'msg' => 'Some thing went wrong'], 500);
-        return response()->json(['success' => true, 'user has been banned']);
+        return response()->json(['success' => true, 'msg' => 'user has been banned']);
     }
 
     public function reactivate(int $id)

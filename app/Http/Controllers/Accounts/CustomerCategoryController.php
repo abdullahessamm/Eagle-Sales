@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Accounts;
 
+use App\Exceptions\ForbiddenException;
 use App\Http\Controllers\Controller;
 use App\Models\CustomerCategory;
 use App\Rules\ArabicLetters;
@@ -110,6 +111,8 @@ class CustomerCategoryController extends Controller
      */
     public function update(Request $request)
     {
+        $authUser = auth()->user()->userData;
+
         $validation = Validator::make($request->all(), [
             'id' => 'required|regex:/^[0-9]+$/',
             'category_name' => 'required_without:category_name_ar|regex:/^[a-zA-Z]{3,20}$/',
@@ -124,11 +127,16 @@ class CustomerCategoryController extends Controller
         if (! $category)
             return response()->json(['success' => false], 404);
 
+        if ($authUser->cannot('update', $category))
+            throw new ForbiddenException;
+
         if ($request->has('category_name'))
             $category->category_name = $request->get('category_name');
         
         if ($request->has('category_name'))
             $category->category_name = $request->get('category_name_ar');
+
+        $category->save();
 
         return response()->json(['success' =>true]);
     }

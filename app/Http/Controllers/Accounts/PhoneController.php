@@ -42,7 +42,7 @@ class PhoneController extends Controller
     public function resendCode(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'phone' => 'required|regex:/^\+[0-9]{11,14}$/exists:phones,phone'
+            'phone' => 'required|regex:/^\+[0-9]{11,14}$/|exists:phones,phone'
         ]);
 
         if ($validation->fails())

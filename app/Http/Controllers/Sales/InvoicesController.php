@@ -118,7 +118,10 @@ class InvoicesController extends Controller
         $invoice->load('orders');
         $invoice->orders->map(fn ($order) => $order->load('items'));
 
-        return response()->json(['invoice' => $invoice]);
+        return response()->json([
+            'success' => true,
+            'invoice' => $invoice
+        ]);
     }
 
     public function get(Request $request)

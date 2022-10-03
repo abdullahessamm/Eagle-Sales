@@ -108,6 +108,7 @@ class Items extends Controller
 
         $image->delete();
         return response()->json([
+            'success' => true,
             'message' => 'Image deleted'
         ]);
     }
@@ -167,6 +168,7 @@ class Items extends Controller
         $item->save();
         
         return response()->json([
+            'success' => true,
             'message' => 'Video deleted'
         ]);
     }
