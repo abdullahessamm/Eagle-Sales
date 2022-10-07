@@ -41,6 +41,6 @@ class Getters extends Controller
         if ((int) $authUser->job === User::ADMIN_JOB_NUMBER)
             $user->showHiddens();
 
-        return response()->json(['success' => true, 'user' => $user->load(['phones', 'places'])]);
+        return response()->json(['success' => true, 'user' => $user->load(['phones', 'places', 'orders'])]);
     }
 }

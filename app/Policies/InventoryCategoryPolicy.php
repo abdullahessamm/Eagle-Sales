@@ -17,12 +17,8 @@ class InventoryCategoryPolicy
             return false;
 
         // get user permissions
-        $permissions = $user->userInfo->permissions;
-        // get user permissions for inventory categories
-        $inventoryCategoriesPermissions = $permissions->categories_access_level;
+        $permission = (bool) $user->userInfo->permissions->app_config_access;
 
-        // check if user has permission to create inventory categories
-        $createInventoryCategoriesPermission = (bool) substr($inventoryCategoriesPermissions, 0, 1);
-        return $createInventoryCategoriesPermission;
+        return $permission;
     }
 }

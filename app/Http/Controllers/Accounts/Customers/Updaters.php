@@ -57,7 +57,7 @@ class Updaters extends Controller
             return response()->json(['success' => false], 404);
 
         $authUser = auth()->user()->userData;
-        if (! $authUser->can('update-full-data'))
+        if (! $authUser->can('updateFullData', $customer))
             throw new \App\Exceptions\ForbiddenException;
 
         unset($rules['id']);

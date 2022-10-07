@@ -37,7 +37,7 @@ class Updaters extends Controller
         $rules = [
             'id'               => 'required|integer',
             'shop_name'        => 'string|min:3|max:50',
-            'whatsapp_no'      => 'regex:/^\+966[0-9]{8,11}$/|unique:suppliers,whatsapp_no',
+            'whatsapp_no'      => 'regex:/^\+201[0-9]{9}$/|unique:suppliers,whatsapp_no',
             'fb_page'          => 'regex:/^(https?:\/\/)?(www\.)?(m\.)?(fb)?(facebook)?(\.com)(\/[\w\D]+\/?)+$/|unique:suppliers,fb_page',
             'website_domain'   => 'regex:/^(https?:\/\/)?(([\da-z])+\.)?[\d\w\-]+\.[a-z]{2,3}$/|unique:suppliers,website_domain',
         ];

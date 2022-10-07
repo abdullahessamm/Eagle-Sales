@@ -41,6 +41,7 @@ class PersonalAccessToken extends Model
     public function withFullUserData()
     {
         $this->userData = $this->getUser()->withFullInfo();
+        $this->userData->userInfo->showHiddens();
         return $this;
     }
 

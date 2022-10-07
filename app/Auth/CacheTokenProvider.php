@@ -15,8 +15,8 @@ class CacheTokenProvider extends EloquentUserProvider
 
     public function retrieveByCredentials(array $credentials)
     {
-        if (cache()->has($credentials['token']))
-            return cache()->get($credentials['token']);
+        // if (cache()->has($credentials['token']))
+        //     return cache()->get($credentials['token']);
 
         // return auth user if cache expired
         $query = $this->createModel();

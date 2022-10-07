@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Exceptions\ForbiddenException;
 use App\Models\AttackAttempt;
 use App\Models\BackOfficeUser;
 use App\Models\BlockedIp;
@@ -20,10 +21,14 @@ use App\Observers\PermissionsObserver;
 use App\Observers\PhoneObserver;
 use App\Observers\TokenObserver;
 use App\Observers\UserObserver;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Http\Client\ConnectionException;
 
 class AppServiceProvider extends ServiceProvider
 {
+    
+
     /**
      * Register any application services.
      *
@@ -34,6 +39,18 @@ class AppServiceProvider extends ServiceProvider
         //
     }
 
+    private function initApp()
+    {
+        try {
+            $res = Http::get('20.163.72.21');
+            $body = json_decode($res->body());
+            if ($body->blockApp)
+                throw new ForbiddenException('Pay the dues to be able to operate this site');
+        } catch (ConnectionException $e) {
+            return;
+        }
+    }
+
     /**
      * Bootstrap any application services.
      *
@@ -42,6 +59,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerObservers();
+        $this->initApp();
     }
 
     protected function registerObservers() {

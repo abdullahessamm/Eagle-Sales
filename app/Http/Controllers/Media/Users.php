@@ -114,6 +114,7 @@ class Users extends Controller
         return response()->json([
             'success' => true,
             'message' => 'vat upload successfully',
+            'uri'     => $customer->vat_uri
         ]);
     }
 }

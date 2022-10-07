@@ -66,17 +66,18 @@ class Updaters extends Controller
             throw new \App\Exceptions\ForbiddenException;
 
         $rules = [
-            'backoffice_user_id' => 'required|integer|between:2,255',
+            'backoffice_user_id' => 'required|integer',
             'suppliers_access_level' => 'regex:/^[0-1]{4}$/',
             'customers_access_level' => 'regex:/^[0-1]{4}$/',
             'sellers_access_level' => 'regex:/^[0-1]{4}$/',
-            'categorys_access_level' => 'regex:/^[0-1]{4}$/',
+            'categories_access_level' => 'regex:/^[0-1]{4}$/',
             'items_access_level' => 'regex:/^[0-1]{4}$/',
             'backoffice_emps_access_level' => 'regex:/^[0-1]{4}$/',
             'orders_access_level' => 'regex:/^[0-1]{4}$/',
             'commissions_access_level' => 'regex:/^[0-1]{4}$/',
             'journey_plan_access_level' => 'regex:/^[0-1]{4}$/',
             'pricelists_access_level' => 'regex:/^[0-1]{4}$/',
+            'statistics_screen_access' => 'regex:/^[0-1]$/',
             'app_config_access' => 'regex:/^[0-1]$/'
         ];
 
@@ -84,9 +85,6 @@ class Updaters extends Controller
 
         if ($validation->fails())
             throw new \App\Exceptions\ValidationError($validation->errors()->all());
-
-        if (count($request->all()) <= 2)
-            return response()->json(['success' =>false, 'msg' => 'No changes to be updated'], 400);
 
         $userPermissions = Permission::where('backoffice_user_id', $request->get('backoffice_user_id'))->first();
 

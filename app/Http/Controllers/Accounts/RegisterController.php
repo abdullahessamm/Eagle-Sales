@@ -136,8 +136,8 @@ class RegisterController extends Controller
 
         $availableCountries = AvailableCountry::get('iso_code')->pluck('iso_code')->toArray();
         $availableCities = AvailableCity::get('name')->pluck('name')->toArray();
-        $country = $country ? $country['short_name'] : null;
-        $governorate = $governorate ? $governorate['short_name'] : null;
+        $country = $country?->short_name;
+        $governorate = $governorate?->short_name;
 
         if (! in_array($country, $availableCountries)) {
             $user->delete();
@@ -156,18 +156,18 @@ class RegisterController extends Controller
         // init place object
         $place = new UsersPlace;
         $place->coords     = $coords;
-        $place->country    = $geocode_en->getCountry()['long_name'];
-        $place->country_ar = $geocode_ar->getCountry()['long_name'];
-        $place->country_code = $geocode_en->getCountry()['short_name'];
-        $place->governorate = $geocode_en->getGovernorate()['long_name'];
-        $place->governorate_ar = $geocode_ar->getGovernorate()['long_name'];
-        $place->city = $geocode_en->getCity() ? $geocode_en->getCity()['long_name'] : null;
-        $place->city_ar = $geocode_ar->getCity() ? $geocode_ar->getCity()['long_name'] : null;
-        $place->zone = $geocode_en->getZone() ? $geocode_en->getZone()['long_name'] : null;
-        $place->zone_ar = $geocode_ar->getZone() ? $geocode_ar->getZone()['long_name'] : null;
-        $place->street = $geocode_en->getStreet() ? $geocode_en->getStreet()['long_name'] : null;
-        $place->street_ar = $geocode_ar->getStreet() ? $geocode_ar->getStreet()['long_name'] : null;
-        $place->building_no = $geocode_en->getBuildingNumber() ? $geocode_en->getBuildingNumber()['long_name'] : null;
+        $place->country    = $geocode_en->getCountry()?->long_name;
+        $place->country_ar = $geocode_ar->getCountry()?->long_name;
+        $place->country_code = $geocode_en->getCountry()?->short_name;
+        $place->governorate = $geocode_en->getGovernorate()?->long_name;
+        $place->governorate_ar = $geocode_ar->getGovernorate()?->long_name;
+        $place->city = $geocode_en->getCity()?->long_name;
+        $place->city_ar = $geocode_ar->getCity()?->long_name;
+        $place->zone = $geocode_en->getZone()?->long_name;
+        $place->zone_ar = $geocode_ar->getZone()?->long_name;
+        $place->street = $geocode_en->getStreet()?->long_name;
+        $place->street_ar = $geocode_ar->getStreet()?->long_name;
+        $place->building_no = $geocode_en->getBuildingNumber()?->long_name;
         $place->setPrimary();
         
         // pass object to addPlace user's method
@@ -419,7 +419,6 @@ class RegisterController extends Controller
 
         $rules = [
             'shop_name'           => "required|string|min:3|max:50",
-            'vat_no'              => 'required|regex:/^[A-Za-z]{2}\d{3,18}$/|unique:customers,vat_no|unique:suppliers,vat_no',
             'category_id'         => 'required|integer|between:1,255',
             'shop_space'          => 'numeric|between:1,9999.99',
         ];
@@ -437,10 +436,11 @@ class RegisterController extends Controller
         
         $customer = new Customer;
         $customer->shop_name       = $request->get('shop_name');
-        $customer->vat_no          = $request->get('vat_no');
         $customer->category_id     = $request->get('category_id');
         $customer->shop_space      = $request->get('shop_space');
         $customer->user_id         = $createdUser->id;
+
+        
 
         try {
             $customer->save();

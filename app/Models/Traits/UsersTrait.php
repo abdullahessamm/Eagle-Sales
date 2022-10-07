@@ -25,7 +25,9 @@ trait UsersTrait {
     public function withFullInfo()
     {
         $user = $this->getUser()->withPhones();
-        $user->userInfo = $this->withRelatedOrders();
+        $user->userInfo = $this;
+        if ($user->job === User::SUPPLIER_JOB_NUMBER)
+            $user->userInfo = $this->withRelatedOrders();
         return $user;
     }
 

@@ -12,7 +12,7 @@ class UserApprovedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    private User $user;
+    public User $user;
 
     /**
      * Create a new message instance.
@@ -21,7 +21,7 @@ class UserApprovedMail extends Mailable
      */
     public function __construct(User $user)
     {
-        $this->$user = $user;
+        $this->user = $user;
     }
 
     /**
