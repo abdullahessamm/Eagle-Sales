@@ -39,7 +39,7 @@ class RegisterController extends Controller
             'password'  => 'required|min:8|max:80|regex:/^[\w\d\D\W]+$/',
             'gender'    => 'required|in:male,female',
             'lang'      => 'in:en,ar',
-            'coords'    => ['required', 'regex:/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/'],
+            'coords'    => ['regex:/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/'],
         ];
 
         $validation = Validator::make($request->all(), $rules);
@@ -70,7 +70,8 @@ class RegisterController extends Controller
         try {
             $createdUser->save();
             $this->phoneCreator($request->get('phone'), $createdUser->id, true);
-            $this->placeCreator($request->get('coords'), $createdUser);
+            if ($request->has('coords'))
+                $this->placeCreator($request->get('coords'), $createdUser);
             return $createdUser;
         } catch (QueryException $e) {
             throw new DBException($e);
@@ -248,7 +249,7 @@ class RegisterController extends Controller
             throw new \App\Exceptions\DBException($e);
         }
         
-        return response()->json(['success' => true], 200);
+        return response()->json(['success' => true, 'user' => $createdUser->withFullInfo()->load(['phones', 'places'])], 200);
     }
 
     // check unique fields in suppliers
@@ -303,7 +304,12 @@ class RegisterController extends Controller
         if ($validation->fails())
             throw new \App\Exceptions\ValidationError($validation->errors()->all());
 
-        $createdUser = $this->userCreator($request);
+        $createdByAdmin = false;
+
+        if (auth()->user())
+            $createdByAdmin = auth()->user()->userData->job === User::ADMIN_JOB_NUMBER;
+
+        $createdUser = $this->userCreator($request, $createdByAdmin);
 
         if ($isFreelancer)
             $createdUser->update([
@@ -324,7 +330,7 @@ class RegisterController extends Controller
 
         try {
             $seller->save();
-            return $seller;
+            return ['success' => true, 'user' => $createdUser->withFullInfo()->load(['phones', 'places'])];
         } catch (QueryException $e) {
             throw new \App\Exceptions\DBException($e);
         }
@@ -374,9 +380,7 @@ class RegisterController extends Controller
         if ($validation->fails())
             throw new \App\Exceptions\ValidationError($validation->errors()->all());
         
-        $this->registerSeller(false, $request);
-        
-        return response()->json(['success' => true]);
+        return $this->registerSeller(false, $request);
     }
 
     /**
@@ -493,7 +497,6 @@ class RegisterController extends Controller
             'rule.backoffice_emps_access_level' => 'required|regex:/^[0-1]{4}$/',
             'rule.orders_access_level'          => 'required|regex:/^[0-1]{4}$/',
             'rule.commissions_access_level'     => 'required|regex:/^[0-1]{4}$/',
-            'rule.orders_access_level'          => 'required|regex:/^[0-1]{4}$/',
             'rule.journey_plan_access_level'    => 'required|regex:/^[0-1]{4}$/',
             'rule.pricelists_access_level'      => 'required|regex:/^[0-1]{4}$/',
             'rule.statistics_screen_access'     => 'required|regex:/^[0-1]$/',
@@ -515,10 +518,14 @@ class RegisterController extends Controller
             $backofficeUser->save();
             $backofficeUser->permissions()->save(new Permission($request->get('rule')));
         } catch (QueryException $e) {
+            $backofficeUser->delete();
+            $createdUser->delete();
             throw new \App\Exceptions\DBException($e);
         }
 
-        return response()->json(['success' => true]);
+        $createdUser->showHiddens();
+
+        return response()->json(['success' => true, 'user' => $createdUser->withFullInfo()->load('phones')]);
     }
 
     /**

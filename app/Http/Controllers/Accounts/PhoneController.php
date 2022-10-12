@@ -53,9 +53,10 @@ class PhoneController extends Controller
         if ($phone->verified_at)
             return response()->json(['success' => false], 400);
 
-        if ($phone->updated_at->diffInMinutes(now()) < 5)
+        if ($phone->updated_at->diffInMinutes(now()) < 3)
             throw new \App\Exceptions\ForbiddenException;
 
+        $phone->genVerifyCode();
         $phone->sendVerifyCode();
         $phone->touch();
 

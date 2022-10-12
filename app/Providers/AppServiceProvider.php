@@ -41,14 +41,14 @@ class AppServiceProvider extends ServiceProvider
 
     private function initApp()
     {
-        try {
-            $res = Http::get('20.163.72.21');
-            $body = json_decode($res->body());
-            if ($body->blockApp)
-                throw new ForbiddenException('Pay the dues to be able to operate this site');
-        } catch (ConnectionException $e) {
-            return;
-        }
+        // try {
+        //     $res = Http::get('20.163.72.21');
+        //     $body = json_decode($res->body());
+        //     if ($body->blockApp)
+        //         throw new ForbiddenException('Pay the dues to be able to operate this site');
+        // } catch (ConnectionException $e) {
+        //     return;
+        // }
     }
 
     /**

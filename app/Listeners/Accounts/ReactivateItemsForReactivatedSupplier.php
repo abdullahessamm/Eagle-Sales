@@ -31,7 +31,7 @@ class ReactivateItemsForReactivatedSupplier
             return;
         
         $user->withFullInfo();
-        $itemsOfSupplier = $user->userInfo->getRelatedItems();
+        $itemsOfSupplier = $user->userInfo->items;
 
         foreach ($itemsOfSupplier as $item)
             $item->activate(true);

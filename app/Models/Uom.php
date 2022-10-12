@@ -76,6 +76,10 @@ class Uom extends Model
         return true;
     }
 
+    public function conversionRule() {
+        return $this->hasOne(UomConversionRule::class, 'uom_id', 'id');
+    }
+
     public function getConversionRule()
     {
         if ($this->is_default)
@@ -97,7 +101,7 @@ class Uom extends Model
         if ($this->is_default)
             return $itemPrice;
 
-        $conversionRule = $this->getConversionRule();
+        $conversionRule = $this->conversionRule()->first();
         $factor = (float) $conversionRule->factor;
         $isMultiply = (bool) $conversionRule->operation_is_multiply;
         

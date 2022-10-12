@@ -345,8 +345,8 @@ class ItemController extends Controller
             'vars.*.attribute.ar_name'                         => 'required|regex:/^[\x{0621}-\x{064A}]{2,20}$/u',
             'vars.*.values'                                    => 'required|array|min:1',
             'vars.*.values.*'                                  => 'array',
-            'vars.*.values.*.name'                             => 'required|regex:/^[A-Za-z\d\W]{2,20}$/',
-            'vars.*.values.*.ar_name'                          => 'required|regex:/^[\x{0621}-\x{064A}\d\W]{2,20}$/u',
+            'vars.*.values.*.name'                             => 'required|string',
+            'vars.*.values.*.ar_name'                          => 'required|string',
             'vars.*.values.*.is_available'                     => 'required|boolean',
             'vars.*.values.*.children'                         => 'array|min:1',
             'vars.*.values.*.children.*.attribute'             => 'required|array|min:2|max:2',
@@ -384,6 +384,8 @@ class ItemController extends Controller
         $item->ar_description = $request->get('ar_description');
         $item->total_available_count = $request->get('total_available_count');
         $item->price = $request->get('price');
+        $item->brand = $request->get('brand');
+        $item->ar_brand = $request->get('ar_brand');
 
         // update item vars
         $item->setItemToNotVariant();
@@ -513,6 +515,8 @@ class ItemController extends Controller
             }
         }
 
+        $item->loadSupplier();
+
         // return item
         return response()->json(['success' => true, 'item' => $item->withFullData()]);
     }
@@ -631,8 +635,10 @@ class ItemController extends Controller
         $items = $items->paginate($request->get('limit'), $fields, 'page', $request->get('page'))->all();
 
         // get full data of items
-        foreach ($items as $item)
+        foreach ($items as $item) {
             $item->withFullData();
+            $item->loadSupplier();
+        }
         
         // return items
         return response()->json(['success' => true, 'items' => $items]);

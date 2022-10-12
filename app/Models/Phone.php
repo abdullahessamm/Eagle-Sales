@@ -32,12 +32,12 @@ class Phone extends Model implements SmsAble
     public function genVerifyCode(): void
     {
         $this->verify_code              = rand(100000,999999);
-        $this->verify_code_expires_at   = now()->addDay();
+        $this->verify_code_expires_at   = now()->addMinutes(5);
     }
 
     public function sendVerifyCode(): void
     {
-        $message = "Your verify code is: {$this->verify_code}\nplease enter it to verify your phone number";
+        $message = "Welcome to EAGLE SALES:\nYour verify code is: {$this->verify_code}\nplease enter it to verify your phone number";
         $this->sendSms($message);
     }
 }

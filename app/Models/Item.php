@@ -77,6 +77,11 @@ class Item extends Model
         return $this->belongsTo(Supplier::class, 'supplier_id', 'id')->first();
     }
 
+    public function loadSupplier()
+    {
+        $this->Supplier = User::find($this->supplier()->user_id);
+    }
+
     public function getSupplierAttribute()
     {
         return $this->supplier();
@@ -571,7 +576,7 @@ class Item extends Model
 
     public function uoms()
     {
-        return $this->hasMany(Uom::class, 'item_id', 'id');
+        return $this->hasMany(Uom::class, 'item_id', 'id')->with('conversionRule');
     }
 
     public function getUOMs()
@@ -598,8 +603,8 @@ class Item extends Model
             throw new \App\Exceptions\NotFoundException(get_class($this), $id);
 
         try {
-            $uom->uom_name = $name;
-            $uom->ar_uom_name = $arName;
+            $uom->name = $name;
+            $uom->ar_name = $arName;
             $uom->description = $description;
             $uom->ar_description = $arDescription;
             $uom->is_default = $isDefault;
