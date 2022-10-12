@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,shrink-to-fit=no">
 <link rel="icon" type="image/png" href="/favicon.png"/>
 <link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700" rel="stylesheet">
-<script defer="defer" src="{{asset('assets/js/chunk-vendors.b143c1a9.js')}}"></script>
-<script defer="defer" src="{{asset('assets/js/app.591747f0.js')}}"></script>
+<script defer="defer" src="{{asset('assets/js/chunk-vendors.517ec153.js')}}"></script>
+<script defer="defer" src="{{asset('assets/js/app.5e5fa9a9.js')}}"></script>
 <link href="{{asset('assets/css/chunk-vendors.e2a1359d.css')}}" rel="stylesheet">
-<link href="{{asset('assets/css/app.04835e3c.css')}}" rel="stylesheet">
+<link href="{{asset('assets/css/app.db54cc26.css')}}" rel="stylesheet">
 </head>
 <body>
 <noscript>
